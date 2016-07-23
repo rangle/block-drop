@@ -1,0 +1,64 @@
+html, body {
+    background-color: black;
+    color: white;
+    font-family: 'Helvetica', 'Arial', 'Sans';
+    border-size: 0%;
+    margin: 0%;
+    padding: 0%;
+    width: 100%;
+    height: 100%;
+}
+
+#bd-root {
+    width: 80%;
+}
+
+.bd-border {
+    border-style: solid;
+    border-width: 1px;
+}
+
+.bd-border-white {
+    border-color: white;
+}
+
+.bd-border-green {
+    border-color: darkgreen;
+}
+
+.bd-debug {
+
+}
+
+.bd-game {
+    font-family: 'console', 'monospace';
+    width: 275px;
+    height: 575px;
+}
+
+.bd-clear {
+    clear: both;
+}
+
+.bd-float {
+    float: left;
+}
+
+.bd-tile-empty {
+    width: 25px;
+    height: 25px;
+}
+
+.bd-tile-active {
+    width: 23px;
+    height: 23px;
+    background-color: forestgreen;
+}
+
+.bd-black {
+    color: black;
+}
+
+.bd-green {
+    color: darkgreen;
+}

@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "es6-promise": "registry:npm/es6-promise#3.0.0+20160211003958",
+    "react": "registry:npm/react#15.0.1+20160601175240",
+    "react-dom": "registry:npm/react-dom#15.0.1+20160705210405",
+    "webpack": "registry:npm/webpack#1.12.9+20160418172948"
+  },
+  "globalDevDependencies": {
+    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446"
+  },
+  "globalDependencies": {
+    "node": "registry:dt/node#6.0.0+20160709114037",
+    "seedrandom": "registry:dt/seedrandom#2.4.2+20160316155526"
+  }
+}
