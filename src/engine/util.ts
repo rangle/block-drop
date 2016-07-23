@@ -65,7 +65,7 @@ export function noop() {
 export function safeCall(fn: Function, args?: any[]) {
   try {
     fn.apply(null, args);
-  } catch(e) {
+  } catch (e) {
     // fail over
   }
 }
