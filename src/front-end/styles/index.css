@@ -30,8 +30,19 @@ html, body {
 
 }
 
+.bd-margin-bottom {
+    margin-bottom: 5px;
+}
+
+.bd-margin-left {
+    margin-left: 5px;
+}
+
+.bd-mono-font {
+  font-family: 'monospace';
+}
+
 .bd-game {
-    font-family: 'console', 'monospace';
     width: 275px;
     height: 575px;
 }

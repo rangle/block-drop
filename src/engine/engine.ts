@@ -24,6 +24,7 @@ import {
   Block,
   Board,
   GameConfig,
+  NextBlockConfig,
   RandomMethod,
 } from './interfaces';
 
@@ -40,16 +41,108 @@ export function create1(config: GameConfig = {}) {
   const engine = Object.create(null);
   
   const c = deepFreeze(validateConfig(DEFAULT_CONFIG_1, config));
-  engine.config = c;
-  
   const events = createEventEmitter();
-  engine.on = events.on;
-  engine.emit = events.emit;
-  
   const board = c.createBoard(c.width, c.height);
-  engine.buffer = Uint8Array.from(board.desc);
-  engine.rowsCleared = 0;
+  const preview = [];
+  const nextBlock = createNextBlock(c, preview);
+  let timer;
+
+  Object.defineProperties(engine, {
+    activePiece: {
+      configurable: false,
+      writable: true,
+      value: nextBlock(),
+    },
+    buffer: {
+      configurable: false,
+      writable: false,
+      value: Uint8Array.from(board.desc),
+    },
+    clean: {
+      configurable: false,
+      writable: false,
+      value: () => {
+        clearInterval(timer);
+      },
+    },
+    config: {
+      configurable: false,
+      writable: false,
+      value: c,
+    },
+    controls: {
+      configurable: false,
+      writable: false,
+      value: Object.create(null, {
+        moveDown: {
+          configurable: false,
+          writable: false,
+          value: () => tryAndMoveBlock(engine, board, canMoveDown, 'y', 1),
+        },
+        moveLeft: {
+          configurable: false,
+          writable: false,
+          value: () => tryAndMoveBlock(engine, board, canMoveLeft, 'x', -1),
+        },
+        moveRight: {
+          configurable: false,
+          writable: false,
+          value: () => tryAndMoveBlock(engine, board, canMoveRight, 'x', 1),
+        },
+        moveUp: {
+          configurable: false,
+          writable: false,
+          value: () => tryAndMoveBlock(engine, board, canMoveUp, 'y', -1),
+        },
+        rotateLeft: {
+          configurable: false,
+          writable: false,
+          value: () => tryAndRotateBlock(
+            engine, board, rotateLeft, c.canRotateLeft),
+        },
+        rotateRight: {
+          configurable: false,
+          writable: false,
+          value: () => tryAndRotateBlock(
+            engine, board, rotateRight, c.canRotateRight),
+        },
+      }),
+    },
+    on: {
+      configurable: false,
+      writable: false,
+      value: events.on,
+    },
+    emit: {
+      configurable: false,
+      writable: false,
+      value: events.emit,
+    },
+    preview: {
+      configurable: false,
+      writable: false,
+      value: preview,
+    },
+    rowsCleared: {
+      configurable: false,
+      writable: true,
+      value: 0,
+    },
+  });
   
+  // go
+  addBlock(board, engine.activePiece, engine.buffer);
+
+  timer = setInterval(() => {
+    tick1(engine, board, nextBlock, c.detectAndClear);
+  }, c.speed);
+
+  return engine;
+}
+
+export function createNextBlock(c: NextBlockConfig, 
+                                previewContainer: Block[] = []) {
+
   const blocks = c.blockDescriptions
     .map((el) => c.createBlock(el.desc, 0, 0, el.name));
   const rand = c.seedRandom(c.seed);
@@ -58,46 +151,20 @@ export function create1(config: GameConfig = {}) {
     () => spawn(blocks[between(rand, blocks.length)]) :
     createNextBlockRandomSet(spawn, blocks, rand);
   
-  // go
-  engine.activePiece = nextBlock();
-  addBlock(board, engine.activePiece, engine.buffer);
+  if (c.preview <= 0) {
+    return nextBlock;
+  }
   
-  const timer = setInterval(() => {
-    tick1(engine, board, nextBlock, c.detectAndClear);
-  }, c.speed);
-
-  const listeners = [
-    events.on('left', () => {
-      tryAndMoveBlock(engine, board, canMoveLeft, 'x', -1);
-    }),
-
-    events.on('right', () => {
-      tryAndMoveBlock(engine, board, canMoveRight, 'x', 1);
-    }),
-
-    events.on('down', () => {
-      tryAndMoveBlock(engine, board, canMoveDown, 'y', 1);
-    }),
-    
-    events.on('up', () => {
-      tryAndMoveBlock(engine, board, canMoveUp, 'y', -1);
-    }),
-
-    events.on('rotateLeft', () => {
-      tryAndRotateBlock(engine, board, rotateLeft, c.canRotateLeft);
-    }),
-    
-    events.on('rotateRight', () => {
-      tryAndRotateBlock(engine, board, rotateRight, c.canRotateRight);
-    }),
-  ];
-
-  engine.clean = () => {
-    clearInterval(timer);
-    listeners.forEach((l) => l());
+  const max = c.preview > blocks.length ? blocks.length : c.preview;
+  
+  for (let i = 0; i < max; i += 1) {
+    previewContainer.push(nextBlock());
+  }
+  
+  return () => {
+    previewContainer.push(nextBlock());
+    return previewContainer.shift();
   };
-  
-  return engine;
 }
 
 export function tick1(engine, 
@@ -114,7 +181,7 @@ export function tick1(engine,
   } else {
     moveBlock(board, engine.activePiece, 'y', 1, engine.buffer);
   }
-  engine.emit('render');
+  engine.emit('redraw');
   engine.emit('drop');
 }
 
@@ -148,7 +215,7 @@ export function tryAndRotateBlock(engine,
 
   if (can) {
     rotateBlock(board, engine, rotateFn);
-    engine.emit('render');
+    engine.emit('redraw');
   } else {
     engine.emit('invalid-move');
   }
@@ -173,7 +240,7 @@ export function tryAndMoveBlock(engine,
 
   if (can) {
     moveBlock(board, engine.activePiece, axis, quantity, engine.buffer);
-    engine.emit('render');
+    engine.emit('redraw');
   } else {
     engine.emit('invalid-move');
   }

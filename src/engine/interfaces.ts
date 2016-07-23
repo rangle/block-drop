@@ -41,23 +41,27 @@ export enum Direction {
   Right,
 }
 
-export interface GameConfig {
+export interface NextBlockConfig {
   width?: number;
   height?: number;
-  board?: Uint8Array;
   blockDescriptions?: BlockDescription[];
-  canRotateLeft?: (board: Board, block: Block) => boolean;
-  canRotateRight?: (board: Board, block: Block) => boolean;
-  createBlock?: (desc: Matrix, x?: number, y?: number) => Block;
-  createBoard?: (width: number, height: number) => Board;
-  detectAndClear?: (board: Board) => number;
-  name?: string;
+  createBlock?: (desc: Matrix, x?: number, y?: number, name?: string) => Block;
+  preview?: number;
+  seedRandom?: (seed: string, options?: Object) => () => number;
   randomMethod?: RandomMethod;
   seed?: string;
-  seedRandom?: (seed: string, options?: Object) => () => number;
   spawn?: (boardWidth: number,
            boardHeight: number,
            block: Block) => Block;
+}
+
+export interface GameConfig extends NextBlockConfig {
+  board?: Uint8Array;
+  canRotateLeft?: (board: Board, block: Block) => boolean;
+  canRotateRight?: (board: Board, block: Block) => boolean;
+  createBoard?: (width: number, height: number) => Board;
+  detectAndClear?: (board: Board) => number;
+  name?: string;
   speed?: number;
 }
 

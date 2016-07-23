@@ -72,6 +72,7 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   createBoard: createBoard1,
   createBlock: createBlock,
   detectAndClear: detectAndClear1,
+  preivew: 0,
   randomMethod: RandomMethod.RandomFromSet,
   seedRandom: defaultRandom,
   spawn: spawn1,
