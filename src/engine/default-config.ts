@@ -4,7 +4,6 @@
 
 import {
   createBlock,
-  spawn1,
 } from './block';
 
 import {
@@ -21,6 +20,13 @@ import {
 import {
   defaultRandom,
 } from './random';
+
+import {
+  checkForLoss1,
+  gameOver1,
+  spawn1,
+  tick1,
+} from './rules';
 
 import {
   deepFreeze,
@@ -69,13 +75,16 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   ],
   canRotateLeft: canRotateLeft1,
   canRotateRight: canRotateRight1,
+  checkForLoss: checkForLoss1,
   createBoard: createBoard1,
   createBlock: createBlock,
+  gameOver: gameOver1,
   detectAndClear: detectAndClear1,
   preivew: 0,
   randomMethod: RandomMethod.RandomFromSet,
   seedRandom: defaultRandom,
   spawn: spawn1,
   speed: 1000,
+  tick: tick1,
 });
 

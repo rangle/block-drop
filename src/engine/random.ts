@@ -1,6 +1,14 @@
 /**
  * Random helper functions
  */
+import {
+  SeedRandom, 
+} from './interfaces';
+
+import {
+  partial,
+} from './util';
+
 const seedRandom = require('seedrandom');
 
 export const defaultRandom = seedRandom.xor4096;
@@ -15,14 +23,15 @@ const randomFunctions = {
   xorwow: seedRandom.xorwow,
 };
 
-export const getRandomFunction: (fnName: string) => () => number =
-  getRandomFunctionFrom.bind(null, randomFunctions);
+export const getRandomFunction: SeedRandom =
+  partial<SeedRandom>(getRandomFunctionFrom, randomFunctions);
 
 export const listRandomFunctions: () => string[] =
   Object.keys.bind(Object, randomFunctions);
 
 export const registerRandom: (prop: string, randomFunc: () => number) => void = 
-  registerRandomTo.bind(null, randomFunctions);
+  partial<(prop: string, randomFunc: () => number) => void>(
+    registerRandomTo, randomFunctions);
 
 /**
  * Generates a random integer using the given random function, assumes between

@@ -113,6 +113,12 @@ export function createBlock(desc: Matrix,
   });
 }
 
+export function debugBlock(msg: string, block: Block) {
+  const { desc, name, x, y } = block;
+  /* tslint:disable no-console */
+  console.log(`${msg} name: ${name} x: ${x} y: ${y} shape: ${desc}`);
+}
+
 export function forEach(block: Block, 
                         fn: (el: number, 
                              boardX: number, 
@@ -144,6 +150,10 @@ export function forEach(block: Block,
       fn(block.desc[i][j], posX, posY, i, j);
     } 
   }
+}
+
+export function move(block: Block, axis: 'x' | 'y', value: number) {
+  block[axis] += value; 
 }
 
 export function up(block: Block) {
@@ -218,12 +228,4 @@ export function rotateRight(block: Block) {
       right(block);
       break;
   }
-}
-
-export function spawn1(width: number, height: number, block: Block): Block {
-  up(block);
-  block.x = intMidFloor(width);
-  block.y = 0;
-
-  return block;
 }

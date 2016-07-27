@@ -30,6 +30,8 @@ export interface Board {
   desc: Uint8Array;
 }
 
+export type BooleanFunction = (...args: any[]) => boolean;
+
 export interface Board1 extends Board {
   descBuffer: Uint8Array; 
 }
@@ -47,7 +49,7 @@ export interface NextBlockConfig {
   blockDescriptions?: BlockDescription[];
   createBlock?: (desc: Matrix, x?: number, y?: number, name?: string) => Block;
   preview?: number;
-  seedRandom?: (seed: string, options?: Object) => () => number;
+  seedRandom?: SeedRandom;
   randomMethod?: RandomMethod;
   seed?: string;
   spawn?: (boardWidth: number,
@@ -57,15 +59,28 @@ export interface NextBlockConfig {
 
 export interface GameConfig extends NextBlockConfig {
   board?: Uint8Array;
+  debug?: boolean;
   canRotateLeft?: (board: Board, block: Block) => boolean;
   canRotateRight?: (board: Board, block: Block) => boolean;
+  checkForLoss?: (board: Board, block: Block) => boolean;
   createBoard?: (width: number, height: number) => Board;
   detectAndClear?: (board: Board) => number;
   name?: string;
   speed?: number;
+  tick?: (engine, 
+          board: Board, 
+          moveBlock: (axis: 'x' | 'y', magnitude: number) => any,
+          newBlock: () => any,
+          clearCheck: () => any,
+          commitBlock: () => any,
+          checkForLoss: () => boolean,
+          gameOver: (engine?: any, board?: Board) => any,
+          fnOnBlock: (fn: () => any) => any) =>  any;
 }
 
 export type Matrix = Array<number[]>;
+
+export type SeedRandom = (seed: string, ...args: any[]) => () => number;
 
 export enum RandomMethod {
   RandomFromSet,

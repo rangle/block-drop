@@ -8,7 +8,11 @@ import {
   InputDevice, 
 } from '../components';
 
-const game = create1({ preview: 3 });
+const game = create1({ 
+  debug: true,
+  preview: 3, 
+});
+
 const board = game.buffer;
 
 function boardToArray(b) {
@@ -68,7 +72,7 @@ export const App = React.createClass({
         </div>
         <div className='bd-debug bd-clear bd-float'>
           <InputDevice lastKeyCode={ this.state.lastEvent.keyCode } />
-          <ActivePiece p={ this.state.game.activePiece } />
+          <ActivePiece p={ this.state.game.activePiece() } />
         </div>
       </div>
     </div>);

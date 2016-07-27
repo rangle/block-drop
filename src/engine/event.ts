@@ -2,10 +2,11 @@
  * Events and Event emitter
  */
 import {
+  partial,
   safeCall,
 } from './util';
 
-export function emitFrom(dict, message, ...args) {
+export function emitFrom(dict: Object, message: string, ...args: any[]) {
   if (!dict[message]) {
     return;
   }
@@ -13,7 +14,7 @@ export function emitFrom(dict, message, ...args) {
     .forEach((prop) => safeCall(dict[message][prop], args));
 }
 
-export function onTo(dict, message, listener) {
+export function onTo(dict: Object, message: string, listener: Function) {
   if (!dict[message]) {
     dict[message] = Object.create(null);
   }
@@ -35,12 +36,13 @@ export function createEventEmitter() {
     emit: {
       writable: false,
       configurable: false,
-      value: emitFrom.bind(null, dict),
+      value: partial<(message: string, ...args: any[]) => void>(emitFrom, dict),
     },
     on: {
       writable: false,
       configurable: false,
-      value: onTo.bind(null, dict),
+      value: partial<(message: string, listener: Function) => () => void>(
+        onTo, dict),
     },
   });
 }

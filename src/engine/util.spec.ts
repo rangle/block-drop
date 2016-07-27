@@ -1,14 +1,128 @@
 import {
+  copyBuffer,
+  createReadOnlyApiTo,
   deepFreeze,
   intMidCeil,
   intMidFloor,
+  invertBoolean,
   isBoard1,
   isObject,
   noop,
+  partial,
+  pipe,
   safeCall,
 } from './util';
 
 describe('utility functions', () => {
+  describe('copyBuffer function', () => {
+    it('should overwrite the second argument', () => {
+      const from = new Uint8Array([1, 2, 3]);
+      const to = new Uint8Array([4, 5, 6]);
+      copyBuffer(from, to);     
+      expect(Array.from(to)).toEqual([1, 2, 3]);
+    });   
+  });
+  
+  describe('createReadOnlyApiTo function', () => {
+    it('should throw if not given an Object', () => {
+      expect(() => createReadOnlyApiTo(5)).toThrowError();
+    });
+    
+    it('should create a read only API', () => {
+      const readOnly = createReadOnlyApiTo({
+        a: 5,
+      });
+      expect(readOnly.a).toBe(5);
+      readOnly.a = 5;
+      expect(readOnly.a).toBe(5);
+    });
+    
+    it('should ignore methods', () => {
+      const readOnly = createReadOnlyApiTo({
+        a: noop,
+      });
+      expect(readOnly.a).toBeUndefined();
+    });
+    
+    it('should update if the original object is changed', () => {
+      const writable = {
+        a: 5,
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      expect(readOnly.a).toBe(5);
+      writable.a = 7;
+      expect(readOnly.a).toBe(7);
+    });
+    
+    it('nested objects should also be read only', () => {
+      const writable = {
+        a: {
+          b: 5,
+        },
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      readOnly.a.b = 7;
+      expect(readOnly.a.b).toBe(5);
+    });
+    
+    it('nested objects should not be configurable', () => {
+      const writable = {
+        a: {
+          b: 5,
+        },
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      readOnly.a = 52;
+      expect(readOnly.a.b).toBe(5);
+    });
+    
+    it('nested objects should also update if their writable changes', () => {
+      const writable = {
+        a: {
+          b: 5,
+        },
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      expect(readOnly.a.b).toBe(5);
+      writable.a.b = 7;
+      expect(readOnly.a.b).toBe(7);
+    });
+
+    it('nested arrays should also be read only', () => {
+      const writable = {
+        a: [
+          5,
+        ],
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      readOnly.a[0] = 7;
+      expect(readOnly.a[0]).toBe(5);
+    });
+
+    it('nested arrays should not be configurable', () => {
+      const writable = {
+        a: [
+          5,
+        ],
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      readOnly.a = 52;
+      expect(readOnly.a[0]).toBe(5);
+    });
+
+    it('nested arrays should also update if their writable changes', () => {
+      const writable = {
+        a: [
+          5,
+        ],
+      };
+      const readOnly = createReadOnlyApiTo(writable);
+      expect(readOnly.a[0]).toBe(5);
+      writable.a[0] = 7;
+      expect(readOnly.a[0]).toBe(7);
+    });
+  }); 
+  
   describe('deepFreeze function', () => {
     it('should return an identity if given a non-object', () => {
       expect(deepFreeze(null)).toBe(null);
@@ -72,6 +186,24 @@ describe('utility functions', () => {
     });
   });
 
+  describe('invertBoolean function', () => {
+    it('should return true instead of false', () => {
+      expect(invertBoolean(() => false)()).toBe(true);
+    });
+    
+    it('should return false instead of true', () => {
+      expect(invertBoolean(() => true)()).toBe(false);
+    });
+    
+    it('should take an argument', () => {
+      expect(invertBoolean((arg) => arg)(false)).toBe(true);
+    });
+    
+    it('should take variadic argument', () => {
+      expect(invertBoolean((a, b, c) => c)(null, null, true)).toBe(false);
+    });
+  });
+
   describe('isBoard1', () => {
     it('should return false if given a falsey', () => {
       expect(isBoard1(null)).toBe(false);
@@ -107,6 +239,43 @@ describe('utility functions', () => {
   describe('noop function', () => {
     it('should do nothing', () => {
       expect(() => noop()).not.toThrowError();
+    });
+  });
+
+  describe('partial function', () => {
+    function addThreeArgs(a: number, b: number, c: number): number {
+      return a + b * c; 
+    }
+    
+    it('should work for a simple single argument', () => {
+      expect(partial<(b: number, c: number) => number>(addThreeArgs, 3)(2, 3))
+        .toBe(9);
+    });
+    
+    it('should work for two arguments', () => {
+      expect(partial<(c: number) => number>(addThreeArgs, 3, 2)(3)).toBe(9);
+    });
+    
+    it('should work for three arguments', () => {
+      expect(partial<() => number>(addThreeArgs, 3, 2, 3)()).toBe(9);
+    });
+  });
+
+  describe('pipe function', () => {
+    it('should return throw if given nothing', () => {
+      expect(() => pipe()).toThrowError();
+    });
+    
+    it('should return the identity if given one argument', () => {
+      expect(pipe(pipe)).toBe(pipe);
+    });
+    
+    it('should compose functions from left to right', () => {
+      const add1 = (i) => i + 1;
+      const times3 = (i) => i * 3;
+      const addOneThenTimes3 = pipe<(val: number) => number, number, number>(
+        add1, times3);
+      expect(addOneThenTimes3(5)).toBe(18);
     });
   });
 
