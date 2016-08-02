@@ -29,6 +29,8 @@ import {
   RandomMethod,
 } from './interfaces';
 
+import '../license';
+
 import {
   between,
   randomSet,

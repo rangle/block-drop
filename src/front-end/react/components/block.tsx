@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { forEach } from '../../engine/block';
+import { forEach } from '../../../engine/block';
 
 const boxStyle = 'bd-border bd-border-white bd-margin-bottom bd-margin-left';
 

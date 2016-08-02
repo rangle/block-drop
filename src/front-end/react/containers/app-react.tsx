@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { create1 } from '../../engine/engine';
+import { create1 } from '../../../engine/engine';
 
 import {
   ActivePiece,
@@ -56,14 +56,24 @@ export const App = React.createClass({
   getInitialState: () => ({
     board: boardToArray(board),
     game,
+    gameType: 0,
+    gameTypes: ['Row Clear', 'Match Clear'],
     lastEvent: { keyPress: null },
   }),
-  render: function() {
+  render() {
     return (<div className='bd-app'>
       <h1>Block Drop</h1>
       <Board game= { this.state.game }
              board={ this.state.board } />
       <div className='bd-float'>
+        <select name='game-type'
+                value={ this.state.gameType }
+                onChange={ this.gameType }>{
+          this.state.gameTypes
+            .map((opt, i) => <option key={i} value={i}>{
+              opt
+            }</option>)
+        }</select>
         <div className='bd-float'>
           <h2>Next:</h2>
           { this.state.game.preview.map((block, i) => (
@@ -77,4 +87,9 @@ export const App = React.createClass({
       </div>
     </div>);
   },
+  gameType(event) {
+    this.setState({
+      gameType: event.target.value,
+    });
+  }
 });
