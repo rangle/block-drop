@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { create1 } from '../../../engine/engine';
+import { connect } from 'react-redux';
+import { keyPress } from '../../actions/events.actions';
+import { changeGameType } from '../../actions/game.actions';
+import { objects } from '../../store/store';
+import { registerKeyControls } from '../../controls';
+import { noop } from '../../../engine/util';
 
 import {
   ActivePiece,
@@ -8,58 +13,57 @@ import {
   InputDevice, 
 } from '../components';
 
-const game = create1({ 
-  debug: true,
-  preview: 3, 
-});
-
-const board = game.buffer;
-
 function boardToArray(b) {
-  return Array.from(b.slice(game.config.width * 2));
+  return Array.from(b.slice(objects.engine.config.width * 2));
 }
 
-export const App = React.createClass({
+function mapStateToProps(state) {
+  return {
+    gameType: state.game.gameType,
+    gameTypes: state.game.gameTypes,
+    lastEvent: state.game.lastEvent,
+  };
+}
+
+function mapDispatchToProps(dispatch)  {
+  return {
+    changeGameType: (type) => dispatch(changeGameType(type)),
+    keyPress: (event) => dispatch(keyPress(event)),
+  };
+}
+
+export const App = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.createClass({
+  deRegister: [],
   componentDidMount: function() {
-    this.state.game.on('redraw', () => {
-      this.setState(() => ({ board: boardToArray(board)})); 
-    }); 
-    
-    window.addEventListener('keydown', (e) => {
-      switch (e.keyCode) {
-        case 37:
-          this.state.game.controls.moveLeft();
-          break;
-        case 38:
-          this.state.game.controls.moveUp();
-          break;
-        case 39:
-          this.state.game.controls.moveRight();
-          break;
-        case 40:
-          this.state.game.controls.moveDown();
-          break;
-        case 81:
-          this.state.game.controls.rotateLeft();
-          break;
-        case 87:
-          this.state.game.controls.rotateRight();
-          break;
-        default:
-          break;
-      }
-      
-      this.state.lastEvent = { keyCode: e.keyCode };
-    });
+    this.deRegister.push(this.state.game.on('redraw', () => {
+      this.setState(() => ({ board: boardToArray(objects.engine.buffer)}));
+    }));
+
+    const { controls } = this.state.game;
+
+    this.deRegister.push(registerKeyControls({
+      37: controls.moveLeft,
+      38: controls.moveUp,
+      39: controls.moveRight,
+      40: controls.moveDown,
+      81: controls.rotateLeft,
+      87: controls.rotateRight,
+    }, this.props.keyPress));
+  },
+
+  componentWillUnmount: function () {
+    this.deRegister.forEach((unsubscribe) => unsubscribe());
+    this.deRegister = [];
   },
   
   getInitialState: () => ({
-    board: boardToArray(board),
-    game,
-    gameType: 0,
-    gameTypes: ['Row Clear', 'Match Clear'],
-    lastEvent: { keyPress: null },
+    board: boardToArray(objects.engine.buffer),
+    game: objects.engine,
   }),
+
   render() {
     return (<div className='bd-app'>
       <h1>Block Drop</h1>
@@ -67,9 +71,9 @@ export const App = React.createClass({
              board={ this.state.board } />
       <div className='bd-float'>
         <select name='game-type'
-                value={ this.state.gameType }
+                value={ this.props.gameType }
                 onChange={ this.gameType }>{
-          this.state.gameTypes
+          this.props.gameTypes
             .map((opt, i) => <option key={i} value={i}>{
               opt
             }</option>)
@@ -81,15 +85,13 @@ export const App = React.createClass({
           )) }
         </div>
         <div className='bd-debug bd-clear bd-float'>
-          <InputDevice lastKeyCode={ this.state.lastEvent.keyCode } />
+          <InputDevice lastKeyCode={ this.props.lastEvent.keyCode } />
           <ActivePiece p={ this.state.game.activePiece() } />
         </div>
       </div>
     </div>);
   },
   gameType(event) {
-    this.setState({
-      gameType: event.target.value,
-    });
+    this.props.changeGameType(event.target.value);
   }
-});
+}));

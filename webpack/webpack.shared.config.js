@@ -18,15 +18,18 @@ const loaders = {
   ts: loadTs(),
 };
 
-const pluginIndex = new HtmlWebpackPlugin({
-  template: path.join(__dirname, '..', 'src', 'index.html'),
-  inject: 'body',
-});
+function pluginIndex(file) {
+  return new HtmlWebpackPlugin({
+    template: path.join(__dirname, '..', 'src', 'templates', file),
+    inject: 'body',
+  });
+}
 
 const plugins = [
   new webpack.DefinePlugin({
     __DEV__: process.env.NODE_ENV !== 'production',
     __PRODUCTION__: process.env.NODE_ENV === 'production',
+    __STAND_ALONE__: process.env.STAND_ALONE ? true : false,
     __TEST__: JSON.stringify(process.env.TEST || false),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),

@@ -1,6 +1,8 @@
 const path = require('path');
 const shared = require('./webpack.shared.config.js');
-const plugins = shared.plugins.concat([ shared.pluginIndex ]);
+const plugins = shared.plugins.concat([
+  shared.pluginIndex('index.angular.html'),
+]);
 
 module.exports = {
   entry: {
