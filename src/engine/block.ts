@@ -17,7 +17,24 @@ import {
   deepFreeze,
   intMidCeil,
   intMidFloor,
-} from './util';
+} from '../util';
+
+export function columnsFromBlock(block: Block) {
+  const cols = [];
+  let desc = [];
+  let lastJ = 0;
+
+  forEach(block, (el, x, y, i, j) => {
+    if (j !== lastJ) {
+      cols.push(desc);
+      desc = [];
+      lastJ = j;
+    }
+    desc.push(el);
+  });
+  cols.push(desc);
+  return cols;
+}
 
 export function createBlock(desc: Matrix,
                             posX: number = 0,

@@ -29,6 +29,8 @@ import {
   RandomMethod,
 } from './interfaces';
 
+import '../license';
+
 import {
   between,
   randomSet,
@@ -40,7 +42,7 @@ import {
   deepFreeze,
   noop,
   partial,
-} from './util';
+} from '../util';
 
 
 /**

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Tile } from './';
-
-const boardStyle = 'bd-clear bd-game bd-border bd-border-white bd-float ' + 
-    'bd-mono-font';
+import { boardStyle } from '../../styles';
 
 export function Board(props) {
     return (

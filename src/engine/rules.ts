@@ -14,7 +14,7 @@ import {
 import { 
   intMidFloor,
   invertBoolean,
-} from './util';
+} from '../util';
 
 export function gameOver1(engine: { gameOver: () => any }, board?: Board) {
   // must call game over when done

@@ -3,6 +3,7 @@
     "es6-promise": "registry:npm/es6-promise#3.0.0+20160211003958",
     "react": "registry:npm/react#15.0.1+20160601175240",
     "react-dom": "registry:npm/react-dom#15.0.1+20160705210405",
+    "react-redux": "registry:npm/react-redux#4.4.0+20160614222153",
     "webpack": "registry:npm/webpack#1.12.9+20160418172948"
   },
   "globalDevDependencies": {

@@ -4,7 +4,7 @@
 import {
   partial,
   safeCall,
-} from './util';
+} from '../util';
 
 export function emitFrom(dict: Object, message: string, ...args: any[]) {
   if (!dict[message]) {

@@ -1,7 +1,11 @@
 import {
   Board1, 
   BooleanFunction,
-} from './interfaces';
+} from './engine/interfaces';
+
+export function boardToArray(b, width) {
+  return Array.from(b.slice(width * 2));
+}
 
 export function copyBuffer(from, to) {
   from.forEach((el, i) => to[i] = from[i]);

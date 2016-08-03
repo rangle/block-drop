@@ -1,5 +1,5 @@
-const loaders = require('./webpack.config').loaders;
-const plugins = require('./webpack.config').plugins;
+const loaders = require('./webpack/webpack.shared.config').loaders;
+const plugins = require('./webpack/webpack.shared.config').plugins;
 
 module.exports = (config) => {
   config.set({
@@ -44,7 +44,7 @@ module.exports = (config) => {
       devtool: 'inline-source-map',
       verbose: false,
       resolve: {
-        extensions: ['', '.webpack.js', '.web.js', 
+        extensions: ['', '.webpack.js', '.web.js',
           '.ts', '.js', '.tsx', '.jsx'],
       },
       module: {
