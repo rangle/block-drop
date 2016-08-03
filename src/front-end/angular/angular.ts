@@ -2,11 +2,12 @@ import '../../license';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import 'ts-helpers';
-import { enableProdMode } from '@angular/core';
+import { enableProdMode, Injectable } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { App } from'./containers/app-angular';
 import { NgRedux } from 'ng2-redux';
-import { partial } from '../../engine/util';
+import { partial } from '../../util';
+import { Singletons } from './singletons';
 
 // Global styles
 import '../styles/index.css';
@@ -35,7 +36,7 @@ export function mount() {
     return;
   }
   isStarting = true;
-  return bootstrap(App, [ NgRedux ])
+  return bootstrap(App, [ NgRedux, Singletons ])
     .then((ref) => {
       isStarting = false;
       appRef = ref;

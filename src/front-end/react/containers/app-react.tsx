@@ -2,9 +2,9 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { keyPress } from '../../actions/events.actions';
 import { changeGameType } from '../../actions/game.actions';
-import { objects } from '../../store/store';
+import { singletons } from '../../store/store';
 import { registerKeyControls } from '../../controls';
-import { noop } from '../../../engine/util';
+import { boardToArray } from '../../../util';
 
 import {
   ActivePiece,
@@ -12,10 +12,6 @@ import {
   Board, 
   InputDevice, 
 } from '../components';
-
-function boardToArray(b) {
-  return Array.from(b.slice(objects.engine.config.width * 2));
-}
 
 function mapStateToProps(state) {
   return {
@@ -39,7 +35,10 @@ export const App = connect(
   deRegister: [],
   componentDidMount: function() {
     this.deRegister.push(this.state.game.on('redraw', () => {
-      this.setState(() => ({ board: boardToArray(objects.engine.buffer)}));
+      this.setState(() => ({
+        board: boardToArray(singletons.engine.buffer,
+          singletons.engine.config.width)
+      }));
     }));
 
     const { controls } = this.state.game;
@@ -60,8 +59,9 @@ export const App = connect(
   },
   
   getInitialState: () => ({
-    board: boardToArray(objects.engine.buffer),
-    game: objects.engine,
+    board: boardToArray(singletons.engine.buffer,
+      singletons.engine.config.width),
+    game: singletons.engine,
   }),
 
   render() {

@@ -4,7 +4,7 @@ import {
   deepFreeze,
   noop,
   partial,
-} from '../engine/util';
+} from '../util';
 import { show, hide } from './elements';
 import * as angular from './angular/angular';
 import * as react from './react/react';

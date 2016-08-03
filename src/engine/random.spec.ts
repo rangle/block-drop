@@ -8,7 +8,7 @@ import {
 
 import {
   noop,
-} from './util';
+} from '../util';
 
 const seedRandom = require('seedrandom');
 

@@ -1,23 +1,18 @@
 
-
-function thing() {
-
-}
-
 export interface Keymap {
   [keyCode: number]: Function;
 }
 
 export function registerKeyControls(keymap: Keymap,
                           dispatch: (event: {
-                            keyCode: string | number
+                            keyCode: number
                           }) => any) {
 
   function listener(e) {
     if (keymap[e.keyCode]) {
       keymap[e.keyCode]();
+      dispatch({ keyCode: e.keyCode });
     }
-    dispatch({ keyCode: e.keyCode });
   }
 
 

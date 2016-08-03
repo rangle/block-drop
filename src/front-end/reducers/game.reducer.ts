@@ -1,19 +1,19 @@
 export interface IGameState {
   gameType: number;
   gameTypes: string[];
-  lastEvent: { keyPress: number };
+  lastEvent: { keyCode: number };
 }
 
 import {
   deepFreeze,
-} from '../../engine/util';
+} from '../../util';
 
 import * as aTypes from '../actions/action-types';
 
 const INIT: IGameState = deepFreeze({
   gameType: 0,
   gameTypes: ['Row Clear', 'Match Clear'],
-  lastEvent: { keyPress: 0 },
+  lastEvent: { keyCode: 0 },
 });
 
 export function game(state = INIT, action) {

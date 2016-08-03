@@ -42,7 +42,7 @@ import {
   deepFreeze,
   noop,
   partial,
-} from './util';
+} from '../util';
 
 
 /**

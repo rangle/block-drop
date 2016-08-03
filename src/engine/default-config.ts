@@ -30,7 +30,7 @@ import {
 
 import {
   deepFreeze,
-} from './util';
+} from '../util';
 
 export const DEFAULT_CONFIG_1 = deepFreeze({
   width: 11,

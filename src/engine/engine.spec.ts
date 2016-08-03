@@ -26,7 +26,7 @@ import {
 
 import {
   noop,
-} from './util';
+} from '../util';
 
 const seedrandom = require('seedrandom');
 
