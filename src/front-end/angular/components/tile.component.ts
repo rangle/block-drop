@@ -5,8 +5,8 @@ import {
   OnChanges,
 } from '@angular/core';
 import {
-  activeTile,
   emptyTile,
+  tileByNumber,
 } from '../../styles';
 
 @Component({
@@ -17,10 +17,10 @@ import {
 `,
 })
 export class Tile implements OnChanges {
-  @Input() value: number | string;
+  @Input() value: number;
   style: string = emptyTile;
 
   ngOnChanges() {
-    this.style = this.value === 0 ? emptyTile : activeTile;
+    this.style = this.value === 0 ? emptyTile : tileByNumber(this.value);
   }
 }
