@@ -1,5 +1,6 @@
 import { 
   createBlock,
+  rotateRight,
 } from './block';
 
 import {
@@ -13,7 +14,11 @@ import {
   canRotateRight1,
   createBoard1,
   detectAndClear1,
-  indexFromPoint, 
+  detectAndClearTile1,
+  detectAndClear2,
+  gravityDrop,
+  gravityDropTile,
+  indexFromPoint,
   isOverlapping, 
   removeBlock,
 } from './board';
@@ -416,6 +421,204 @@ describe('game-board functions', () => {
     });
   });
 
+  describe('detectAndClearTile1 function', () => {
+    let board;
+
+    beforeEach(() => {
+      board = createBoard1(10, 10);
+    });
+
+    it('should throw if given a negative range', () => {
+      expect(() => detectAndClearTile1(board, -1)).toThrowError();
+    });
+
+    it('should throw if given an excessive range', () => {
+      expect(() => detectAndClearTile1(board, 100)).toThrowError();
+    });
+
+    it('should return the given adjacents array if tile at offset is 0', () => {
+      const adj = [ 27 ];
+      const result = detectAndClearTile1(board, 5, adj);
+      expect(result).toBe(adj);
+      expect(result).toEqual([ 27 ]);
+    });
+
+    it('should add the given tile to adjacents if tile is non-zero and given ' +
+      'value is zero or omitted', () => {
+      board.desc[5] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 5, adj);
+      expect(adj[0]).toBe(5);
+    });
+
+    it('should not add a value twice', () => {
+      board.desc[5] = 7;
+      const adj = [5];
+      detectAndClearTile1(board, 5, adj);
+      expect(adj.length).toBe(1);
+    });
+
+    it('should add the given tile to adjacents if tile\'s value matches ' +
+      'given value', () => {
+      board.desc[5] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 5, adj, [], 7);
+      expect(adj[0]).toBe(5);
+    });
+
+    it('should return adjacents if on the last (bottom right) tile', () => {
+      board.desc[99] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 99, adj);
+      expect(adj).toEqual([ 99 ]);
+    });
+
+    it('should not match the east (right) tile if its value is different',
+      () => {
+        board.desc[5] = 7;
+        board.desc[6] = 6;
+        const adj = [];
+        detectAndClearTile1(board, 5, adj);
+        expect(adj[0]).toBe(5);
+        expect(adj.length).toBe(1);
+    });
+
+    it('should not match the west (left) tile if its value is different',
+      () => {
+        board.desc[5] = 7;
+        board.desc[4] = 6;
+        const adj = [];
+        detectAndClearTile1(board, 5, adj);
+        expect(adj[0]).toBe(5);
+        expect(adj.length).toBe(1);
+      });
+
+    it('should not match the south (bottom) tile if its value is different',
+      () => {
+        board.desc[5] = 7;
+        board.desc[15] = 6;
+        const adj = [];
+        detectAndClearTile1(board, 5, adj);
+        expect(adj[0]).toBe(5);
+        expect(adj.length).toBe(1);
+      });
+
+    it('should match the east (right) tile if its value matches', () => {
+        board.desc[5] = 7;
+        board.desc[6] = 7;
+        const adj = [];
+        detectAndClearTile1(board, 5, adj);
+        expect(adj[0]).toBe(5);
+        expect(adj.length).toBe(2);
+      });
+
+    it('should match the west (left) tile if its value matches', () => {
+        board.desc[5] = 7;
+        board.desc[4] = 7;
+        const adj = [];
+        detectAndClearTile1(board, 5, adj);
+        expect(adj[0]).toBe(5);
+        expect(adj.length).toBe(2);
+      });
+
+    it('should match the south (bottom) tile if its value matches', () => {
+        board.desc[5] = 7;
+        board.desc[15] = 7;
+        const adj = [];
+        detectAndClearTile1(board, 5, adj);
+        expect(adj[0]).toBe(5);
+        expect(adj.length).toBe(2);
+      });
+
+    it('should not match the east (right) tile if it\'s on the east (right) ' +
+      'edge', () => {
+      board.desc[9] = 7;
+      board.desc[10] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 9, adj);
+      expect(adj[0]).toBe(9);
+      expect(adj.length).toBe(1);
+    });
+
+    it('should not match the west (left) tile if it\'s on the west (left) edge',
+      () => {
+        board.desc[9] = 7;
+        board.desc[10] = 7;
+        const adj = [];
+        detectAndClearTile1(board, 10, adj);
+        expect(adj[0]).toBe(10);
+        expect(adj.length).toBe(1);
+      });
+
+    it('should not match the east (right) tile if skip is "right"', () => {
+      board.desc[8] = 7;
+      board.desc[9] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 8, adj, [], 7, 'right');
+      expect(adj[0]).toBe(8);
+      expect(adj.length).toBe(1);
+    });
+
+    it('should not match the west (left) tile if skip is "left"', () => {
+      board.desc[8] = 7;
+      board.desc[9] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 9, adj, [], 7, 'left');
+      expect(adj[0]).toBe(9);
+      expect(adj.length).toBe(1);
+    });
+
+  });
+
+  describe('detectAndClear2 function', () => {
+    let board;
+
+    beforeEach(() => {
+      board = createBoard1(10, 10);
+    });
+
+    it('should return 0 if given an empty board', () => {
+      expect(detectAndClear2(board)).toBe(0);
+    });
+
+    it('should return 41 if given a checkerboard', () => {
+      board = checkerboard();
+      expect(detectAndClear2(board)).toBe(41);
+    });
+  });
+
+  describe('gravityDropTile function', () => {
+    let board;
+
+    beforeEach(() => {
+      board = createBoard1(10, 10);
+    });
+
+    it('should do nothing if it\'s in the top row', () => {
+      const initBoard = board.desc.slice(0);
+
+      gravityDropTile(board, 5);
+
+      expect(board.desc).toEqual(initBoard);
+    });
+    
+    it('should execute against the above tile', () => {
+      board.desc[5] = 1;
+      expect(board.desc[15]).toBe(0);
+      gravityDropTile(board, 15);
+      expect(board.desc[15]).toBe(1);
+    });
+  });
+
+  describe('gravityDrop function', () => {
+    let board;
+
+    beforeEach(() => {
+      board = createBoard1(10, 10);
+    });
+
+  });
+
   describe('indexFromPoint function', () => {
     it('should return 0 for 0, 0', () => {
       expect(indexFromPoint(250, 0, 0)).toBe(0);
@@ -464,8 +667,8 @@ describe('game-board functions', () => {
     });
     
     it('should not include blank spaces on the object', () => {
-
       const block = createBlock([[0, 1, 1], [0, 1, 1], [0, 1, 1]]);
+
       expect(isOverlapping(board, block, 5, 1)).toBe(false);
     });
   });
@@ -508,3 +711,12 @@ function populateBoard(board) {
     board.desc[i + 9] = 1;
   }
 }
+
+function checkerboard() {
+  const b = createBoard1(9, 9);
+  for (let i = 0; i < b.desc.length; i += 2) {
+    b.desc[i] = 1;
+  }
+  return b;
+}
+

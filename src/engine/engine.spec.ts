@@ -18,7 +18,7 @@ import {
 
 import {
   RandomMethod,
-} from './interfaces';
+} from '../interfaces';
 
 import {
   spawn1,

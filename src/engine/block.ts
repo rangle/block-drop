@@ -6,7 +6,7 @@ import {
   BlockDescription,
   Direction,
   Matrix,
-} from './interfaces';
+} from '../interfaces';
 
 import {
   rotateLeft as rotateMatrixLeft,

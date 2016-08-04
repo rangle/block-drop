@@ -1,7 +1,8 @@
 import {
   Board1, 
   BooleanFunction,
-} from './engine/interfaces';
+  TypedArray,
+} from './interfaces';
 
 export function boardToArray(b, width) {
   return Array.from(b.slice(width * 2));
@@ -155,5 +156,16 @@ export function safeCall(fn: Function, args?: any[]) {
     fn.apply(null, args);
   } catch (e) {
     // fail over
+  }
+}
+
+export function throwOutOfBounds(buffer: any[] | TypedArray,
+                                 offset: number,
+                                 message: string = '') {
+  if (offset < 0) {
+    throw new RangeError(`${message} out of bounds < 0`)
+  }
+  if (offset >= buffer.length) {
+    throw new RangeError(`${message} out of bounds > length`)
   }
 }

@@ -65,6 +65,7 @@ export interface GameConfig extends NextBlockConfig {
   checkForLoss?: (board: Board, block: Block) => boolean;
   createBoard?: (width: number, height: number) => Board;
   detectAndClear?: (board: Board) => number;
+  forceBufferUpdateOnClear?: boolean;
   name?: string;
   speed?: number;
   tick?: (engine, 
@@ -86,3 +87,7 @@ export enum RandomMethod {
   RandomFromSet,
   Random,
 }
+
+export type SignedTypedArray = Int8Array | Int16Array | Int32Array;
+export type UnsignedTypedArray = Uint8Array | Uint16Array | Uint32Array;
+export type TypedArray = UnsignedTypedArray | SignedTypedArray;

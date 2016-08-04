@@ -12,7 +12,11 @@ import {
   Board,
   Board1,
   Direction,
-} from './interfaces';
+} from '../interfaces';
+
+import {
+  throwOutOfBounds,
+} from '../util';
 
 export function addBlock(board: Board,
                          block: Block,
@@ -203,6 +207,155 @@ export function detectAndClear1(board: Board1): number {
   return clearedRows;
 }
 
+export function detectAndClearTile1(board: Board,
+                                    offset: number,
+                                    adjacents: number[] = [],
+                                    visited: number[] = [],
+                                    value: number = 0,
+                                    skip: 'left' | 'right' |
+                                      'down' | 'up' | 'none' = 'none') {
+  throwOutOfBounds(board.desc, offset, 'detectAndClearTile1');
+
+  // skip if visited
+  if (visited.indexOf(offset) !== -1) {
+    return adjacents;
+  }
+
+  visited.push(offset);
+
+  // return the existing array if it's empty
+  if (board.desc[offset] === 0) {
+    return adjacents;
+  }
+
+  // setup the value if it isn't already
+  if (value === 0) {
+    value = board.desc[offset];
+  }
+
+  // return the existing array if it's not a match
+  if (board.desc[offset] !== value) {
+    return adjacents;
+  }
+
+  // add the offset if it's not present
+  if (adjacents.indexOf(offset) === -1) {
+    adjacents.push(offset);
+  }
+
+  // stop looking on the last tile
+  if (offset + 1 === board.desc.length) {
+    return adjacents;
+  }
+
+  // look down if possible
+  if ((offset + board.width) < board.desc.length) {
+    detectAndClearTile1(
+      board, offset + board.width, adjacents, visited, value, 'up');
+  }
+
+  // look up if possilbe
+  if (offset >= board.width) {
+    if (skip !== 'up') {
+      detectAndClearTile1(
+        board, offset - board.width, adjacents, visited, value, 'down');
+    }
+  }
+
+  // if it's not the left most tile
+  if (offset % board.width !== 0) {
+    if (skip !== 'left') {
+      detectAndClearTile1(
+        board, offset - 1, adjacents, visited, value, 'right');
+    }
+  }
+
+  // if it's the right most tile
+  if (((offset + 1) % board.width) === 0) {
+    // if not, we've already looked left and down...
+    return adjacents;
+  } else {
+    if (skip !== 'right') {
+      detectAndClearTile1(board, offset + 1, adjacents, visited, value, 'left');
+    }
+  }
+
+  return adjacents;
+}
+
+export function gravityDropTile(board: Board, offset: number) {
+  throwOutOfBounds(board.desc, offset, 'detectAndClearTile1');
+
+  // don't drop empty tiles
+  if (board[offset] === 0) {
+    return;
+  }
+
+  // skip the last row
+  if (offset + board.width >= board.desc.length) {
+    return;
+  }
+
+  // if the bottom block is empty drop
+  if (board.desc[offset + board.width] === 0) {
+    board.desc[offset + board.width] = board.desc[offset];
+    board.desc[offset] = 0;
+
+    // drop any overhead blocks if we can
+    if (offset - board.width >= 0) {
+      gravityDropTile(board, offset - board.width);
+    }
+  }
+}
+
+export function gravityDrop(board: Board) {
+  const len = board.desc.length;
+  for (let i = 0; i < len; i += 1) {
+    // skip last row
+    if (i + board.width >= len) {
+      break;
+    }
+    gravityDropTile(board, i);
+  }
+}
+
+export function detectAndClear2Sweeper(board: Board, max: number) {
+  let clearedTiles = 0;
+
+  for (let i = 0; i < board.desc.length; i += 1) {
+    const adjacentTiles = detectAndClearTile1(board, i);
+    const len = adjacentTiles.length;
+    if (len >= max) {
+      clearedTiles += len;
+      adjacentTiles.forEach((offset) => board.desc[offset] = 0);
+    }
+  }
+
+  return clearedTiles;
+}
+
+export function detectAndClear2(board: Board, max = 9): number {
+  let total = 0;
+  let current = 1;
+
+  function loop() {
+    let clearedTiles = detectAndClear2Sweeper(board, max);
+    gravityDrop(board);
+    clearedTiles += detectAndClear2Sweeper(board, max);
+
+    return clearedTiles;
+  }
+
+  while (current) {
+    current = loop();
+    if (current) {
+      total += current;
+    }
+  }
+
+  return total;
+}
+
 export function indexFromPoint(width: number, x: number, y: number): number {
   return y * width + x;
 }
@@ -245,8 +398,7 @@ export function isOverlapping(board: Board,
       const index = indexFromPoint(board.width, testX, testY);
       if (board.desc[index] !== 0) {
         if (block.desc[i][j] !== 0) {
-          overlaps = true;
-          break;
+          return true;
         }
       }
     }

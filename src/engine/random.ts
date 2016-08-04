@@ -3,7 +3,7 @@
  */
 import {
   SeedRandom, 
-} from './interfaces';
+} from '../interfaces';
 
 import {
   partial,

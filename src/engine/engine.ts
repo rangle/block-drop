@@ -17,7 +17,7 @@ import {
   removeBlock,
 } from './board';
 
-import { DEFAULT_CONFIG_1 } from './default-config';
+import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
 import { createEventEmitter } from './event';
 
@@ -27,7 +27,7 @@ import {
   GameConfig,
   NextBlockConfig,
   RandomMethod,
-} from './interfaces';
+} from '../interfaces';
 
 import '../license';
 
@@ -236,7 +236,8 @@ export function create1(config: GameConfig = {}) {
   
   function bClearCheck() {
     writableState.games[0].rowsCleared +=
-      clearCheck(engine, board, partial(c.detectAndClear, board));
+      clearCheck(engine, board, partial(c.detectAndClear, board),
+        c.forceBufferUpdateOnClear);
   }
   
   const commitBlock = boardBlockFn<() => void>(addBlock);
@@ -296,10 +297,11 @@ export function createNextBlock(c: NextBlockConfig,
 }
 export function clearCheck(engine: { rowsCleared: number, buffer: Uint8Array },
                            board: Board,
-                           detectAndClear: () => number) {
+                           detectAndClear: () => number,
+                           forceBufferCopy: boolean) {
   const cleared = detectAndClear();
   engine.rowsCleared += cleared;
-  if (cleared) { copyBuffer(board.desc, engine.buffer); }
+  if (cleared || forceBufferCopy) { copyBuffer(board.desc, engine.buffer); }
   return cleared;
 }
 

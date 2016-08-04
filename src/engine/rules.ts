@@ -9,7 +9,7 @@ import {
 import { 
   Block,
   Board,
-} from './interfaces';
+} from '../interfaces';
 
 import { 
   intMidFloor,

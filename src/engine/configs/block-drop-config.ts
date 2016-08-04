@@ -1,36 +1,36 @@
 /**
- * Default configuration
+ * Block Drop
  */
 
 import {
   createBlock,
-} from './block';
+} from '../block';
 
 import {
   canRotateLeft1,
   canRotateRight1,
   createBoard1,
   detectAndClear1,
-} from './board';
+} from '../board';
 
 import {
   RandomMethod,
-} from './interfaces';
+} from '../../interfaces';
 
 import {
   defaultRandom,
-} from './random';
+} from '../random';
 
 import {
   checkForLoss1,
   gameOver1,
   spawn1,
   tick1,
-} from './rules';
+} from '../rules';
 
 import {
   deepFreeze,
-} from '../util';
+} from '../../util';
 
 export const DEFAULT_CONFIG_1 = deepFreeze({
   width: 11,
@@ -80,6 +80,7 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   createBlock: createBlock,
   gameOver: gameOver1,
   detectAndClear: detectAndClear1,
+  forceBufferUpdateOnClear: false,
   preivew: 0,
   randomMethod: RandomMethod.RandomFromSet,
   seedRandom: defaultRandom,
