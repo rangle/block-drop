@@ -8,18 +8,28 @@ import {
 import { show, hide } from './elements';
 import * as angular from './angular/angular';
 import * as react from './react/react';
+import {
+  changeFramework as changeFrameworkA,
+  changeMultiFramework,
+} from './actions/app.actions';
+import { store } from './store/store';
 
-const ROOT = 'bd-root';
-const VERSION = '0.0.1';
-const SPLASH = 'bd-splash';
+// no idea why editor dislikes store.dispatch :/
+(<any>store).dispatch(changeMultiFramework(true));
+
+// no idea why editor dislikes store.dispatch :/
+const changeFramework = (offset: number) => (<any>store)
+  .dispatch(changeFrameworkA(offset));
+
+const APP_STATE = store.getState().app;
+const ROOT = APP_STATE.elementRoot;
+const VERSION = APP_STATE.version;
+const SPLASH = APP_STATE.elementSplash;
 
 const splash = document.getElementById(SPLASH);
 const root = document.getElementById(ROOT);
 
-const frameWorkDescs = deepFreeze([
-  { id: 'bd-root-angular', name: 'Angular 2' },
-  { id: 'bd-root-react', name: 'React' },
-]);
+const frameWorkDescs = APP_STATE.frameworkDescriptions;
 
 const frameWorks = deepFreeze({
   'bd-root-angular': angular,
@@ -57,7 +67,7 @@ function hideAll() {
 
 function mount() {
   root.innerHTML = '';
-  frameWorkDescs.forEach((fwDesc) => {
+  frameWorkDescs.forEach((fwDesc, i) => {
     const button = document.createElement('input');
     button.type = 'button';
     button.value = fwDesc.name;
@@ -71,6 +81,7 @@ function mount() {
       fw.mount();
       show(el);
       unmountCurrent = partial(fw.unmount, el);
+      changeFramework(i);
     }
 
     listeners.push(() => {

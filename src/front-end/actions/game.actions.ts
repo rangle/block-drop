@@ -1,8 +1,9 @@
-import { CHANGE_GAME_TYPE } from './action-types';
+import { CHANGE_GAME_CONFIG } from './action-types';
 
-export function changeGameType(type: number) {
+export function changeConfig(prop: string, value: number | string) {
   return {
-    type: CHANGE_GAME_TYPE,
-    payload: type,
+    type: CHANGE_GAME_CONFIG,
+    payload: value,
+    meta: prop,
   };
 }

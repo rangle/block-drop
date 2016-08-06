@@ -110,15 +110,23 @@ export function isBoard1(board: any): board is Board1 {
   return board.descBuffer instanceof Uint8Array;
 }
 
+export function isNumber(val: any): val is number {
+  return typeof val === 'number';
+}
+
 /**
  * Is the given value a truthy object?
  */
-export function isObject(obj: any): boolean {
+export function isObject(obj: any): obj is Object {
   if (!obj) {
     return false;
   }
 
   return typeof obj === 'object';
+}
+
+export function isString(val: any): val is string {
+  return typeof val === 'string';
 }
 
 /**

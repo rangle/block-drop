@@ -7,6 +7,8 @@ import {
   rotateRight,
 } from './block';
 
+import { makeCollection } from './function-collection';
+
 import {
   Block,
   Board,
@@ -17,6 +19,11 @@ import {
 import {
   throwOutOfBounds,
 } from '../util';
+
+export const functionsDetectClear = makeCollection({
+  detectAndClear1,
+  detectAndClear2,
+}, detectAndClear1);
 
 export function addBlock(board: Board,
                          block: Block,

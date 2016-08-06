@@ -5,84 +5,60 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { NgRedux, select } from 'ng2-redux';
-import { store } from '../../store/store';
 import { Singletons } from '../singletons';
 import { IState } from '../../reducers/root.reducer';
 import {
   ActivePiece,
-  Block,
   Board,
+  Button,
+  Debug,
   InputDevice,
+  NextPieces,
+  Select,
 }  from '../components';
 import { boardToArray } from '../../../util';
 import { keyPress } from '../../actions/events.actions';
-import { changeGameType } from '../../actions/game.actions';
 import { Observable } from 'rxjs/Rx';
 import { registerKeyControls } from '../../controls';
 import {
   columnsFromBlock,
 } from '../../../engine/block';
 
-
-//     <ActivePiece p={ this.state.game.activePiece() } />
-
-
 @Component({
-  directives: [ActivePiece, Block, Board, InputDevice],
-  selector: 'bd-angular',
+  directives: [
+    ActivePiece, Board, Debug, Button, NextPieces, InputDevice, Select
+  ],
+  selector: 'bd-game',
   template: `
-    <div class="bd-app">
-      <h1>Block Drop</h1>
+    <div class="bd-game-window">
       <board [rowsCleared]="rowsCleared" [board]="board"></board> 
       <div class="bd-float">
-        <select [ngModel]="(gameType$ | async)" 
-        (change)="updateSelection($event.target.value)">
-          <option *ngFor="let type of (gameTypes$ | async); let i = index" 
-            [value]="i">
-            {{ type }}
-          </option> 
-        </select>
         <div class="bd-float">
-          <h2>Next:</h2>
-          <block *ngFor="let p of preview" 
-          [name]="p.name" 
-          [cols]="p.cols"></block>
+          <bd-next-pieces [preview]="preview"></bd-next-pieces>
         </div>
         <div class="bd-debug bd-clear bd-float">
-          <input-device [lastKeyCode]="(lastEvent$ | async).keyCode"> 
-          </input-device> 
-          <active-piece [centreX]="activePiece.centreX"
-            [centreY]="activePiece.centreY"
-            [desc]="stringify(activePiece.desc, null, 2)"
-            [height]="activePiece.height"
-            [name]="activePiece.name"
-            [width]="activePiece.width"
-            [x]="activePiece.x"
-            [y]="activePiece.y"></active-piece>
+          <bd-debug></bd-debug>
         </div>
       </div>
     </div>
 `,
 })
-export class App implements OnInit, OnDestroy {
-  activePiece: any;
+export class Game implements OnInit, OnDestroy {
   board: any = [];
   deRegister: Function[] = [];
-  @select((s) => s.game.gameType) gameType$: Observable<string>;
-  @select((s) => s.game.gameTypes) gameTypes$: Observable<string[]>;
-  @select((s) => s.game.lastEvent) lastEvent$: Observable<{ keyCode: number}>;
-  preview: any[] = [];
+  preview: { name: string, cols: number[][]}[] = [];
   rowsCleared: number = 0;
-  stringify = JSON.stringify.bind(JSON);
   constructor(private ngRedux: NgRedux<IState>,
               private singletons: Singletons,
               private cdRef: ChangeDetectorRef) {
-    this.ngRedux.provideStore(store);
   }
 
   ngOnInit() {
+    const localRedraw = this.redraw.bind(this);
     this.deRegister
-      .push(this.singletons.engine.on('redraw', this.redraw.bind(this)));
+      .push(this.singletons.engine.on('redraw', localRedraw));
+
+    this.deRegister.push(this.singletons.on('new-game', localRedraw));
 
     const { controls } = this.singletons.engine;
 
@@ -104,12 +80,10 @@ export class App implements OnInit, OnDestroy {
       this.singletons.engine.buffer,
       this.singletons.engine.config.width);
     this.rowsCleared = this.singletons.engine.rowsCleared;
-    this.preview = [];
     this.preview = this.singletons.engine.preview.map((el) => ({
       name: el.name,
       cols: columnsFromBlock(el),
     }));
-    this.activePiece = this.singletons.engine.activePiece();
     this.cdRef.detectChanges();
   }
 
@@ -118,7 +92,4 @@ export class App implements OnInit, OnDestroy {
     this.deRegister = [];
   }
 
-  updateSelection(selection) {
-    this.ngRedux.dispatch(changeGameType(selection));
-  }
 }

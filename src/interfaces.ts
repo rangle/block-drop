@@ -43,9 +43,20 @@ export enum Direction {
   Right,
 }
 
-export interface NextBlockConfig {
+export interface FunctionsCollection<T extends Function> {
+  default(): T;
+  get(name: string): T;
+  list(): string;
+  register(name: string, func: T): void;
+}
+
+export interface MapBaseConfig {
   width?: number;
   height?: number;
+  depth?: number;
+}
+
+export interface NextBlockConfig extends MapBaseConfig {
   blockDescriptions?: BlockDescription[];
   createBlock?: (desc: Matrix, x?: number, y?: number, name?: string) => Block;
   preview?: number;
@@ -64,7 +75,7 @@ export interface GameConfig extends NextBlockConfig {
   canRotateRight?: (board: Board, block: Block) => boolean;
   checkForLoss?: (board: Board, block: Block) => boolean;
   createBoard?: (width: number, height: number) => Board;
-  detectAndClear?: (board: Board) => number;
+  detectAndClear?: string;
   forceBufferUpdateOnClear?: boolean;
   name?: string;
   speed?: number;
@@ -80,6 +91,11 @@ export interface GameConfig extends NextBlockConfig {
 }
 
 export type Matrix = Array<number[]>;
+
+export interface TypeDesc<T> {
+  type: 'string',
+  is: (x: any) => boolean;
+}
 
 export type SeedRandom = (seed: string, ...args: any[]) => () => number;
 

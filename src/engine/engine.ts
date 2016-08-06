@@ -14,12 +14,15 @@ import {
   canMoveUp,
   canMoveLeft,
   canMoveRight,
+  functionsDetectClear,
   removeBlock,
 } from './board';
 
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
-import { createEventEmitter } from './event';
+import { createEventEmitter } from '../event';
+
+import { makeCollection } from './function-collection';
 
 import {
   Block,
@@ -44,6 +47,7 @@ import {
   partial,
 } from '../util';
 
+export { configInterfaces } from './configs/config-interfaces';
 
 /**
  * Partially applies the invocation (and ultimately result) of one or more 
@@ -59,9 +63,10 @@ export function paramsToFn<T>(params: Function[], fn: Function) {
 export function create1(config: GameConfig = {}) {
   const engine = Object.create(null);
   
-  const c = deepFreeze(validateConfig(DEFAULT_CONFIG_1, config));
+  const c = deepFreeze(forceValidateConfig(DEFAULT_CONFIG_1, config));
   const events = createEventEmitter();
   const board = c.createBoard(c.width, c.height);
+  const detectAndClear = functionsDetectClear.get(c.detectAndClear);
   const preview = [];
   const nextBlock = createNextBlock(c, preview);
   const writableState = {
@@ -79,7 +84,7 @@ export function create1(config: GameConfig = {}) {
   const getBuffer = () => buffer;
   const blockFn = partial<(f: Function) => Function>(paramsToFn, 
     [getActivePiece]);
-  const boardBlockFn = partial<(f: Function) => Function>(paramsToFn, 
+  const boardBlockFn = partial<(f: Function) => Function>(paramsToFn,
     [getBoard, getActivePiece]);
   const updateActiveBlock = partial<(fn: Function) => void>(updateBlock,
     getBoard, getActivePiece, getBuffer);
@@ -236,7 +241,7 @@ export function create1(config: GameConfig = {}) {
   
   function bClearCheck() {
     writableState.games[0].rowsCleared +=
-      clearCheck(engine, board, partial(c.detectAndClear, board),
+      clearCheck(engine, board, partial(detectAndClear, board),
         c.forceBufferUpdateOnClear);
   }
   
@@ -357,8 +362,8 @@ export function tryFnRedraw(canFn: () => boolean,
   }
 }
 
-export function validateConfig(defaults: GameConfig, 
-                               config: any = {}): GameConfig {
+export function forceValidateConfig(defaults: GameConfig,
+                                    config: any = {}): GameConfig {
   Object.keys(defaults).forEach((prop) => {
     config[prop] = config[prop] === undefined ? defaults[prop] : config[prop];
   });

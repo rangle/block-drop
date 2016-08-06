@@ -4,7 +4,7 @@
 import {
   partial,
   safeCall,
-} from '../util';
+} from './util';
 
 export function emitFrom(dict: Object, message: string, ...args: any[]) {
   if (!dict[message]) {
@@ -22,6 +22,12 @@ export function onTo(dict: Object, message: string, listener: Function) {
   dict[message][id] = listener;
 
   return () => {
+    if (!dict[message]) {
+      return;
+    }
+    if (!dict[message][id]) {
+      return;
+    }
     delete dict[message][id]; 
     if (Object.keys(dict[message]).length === 0) {
       delete dict[message];

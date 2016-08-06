@@ -6,32 +6,23 @@ import {
 } from '../interfaces';
 
 import {
-  partial,
-} from '../util';
+  makeCollection,
+} from './function-collection';
 
 const seedRandom = require('seedrandom');
 
 export const defaultRandom = seedRandom.xor4096;
 
-const randomFunctions = {
-  alea: seedRandom.alea,
-  quick: seedRandom.quick,
-  tychei: seedRandom.tychei,
-  xor128: seedRandom.xor128,
-  xor4096: seedRandom.xor4096,
-  xorshift7: seedRandom.xorshift7,
-  xorwow: seedRandom.xorwow,
-};
-
-export const getRandomFunction: SeedRandom =
-  partial<SeedRandom>(getRandomFunctionFrom, randomFunctions);
-
-export const listRandomFunctions: () => string[] =
-  Object.keys.bind(Object, randomFunctions);
-
-export const registerRandom: (prop: string, randomFunc: () => number) => void = 
-  partial<(prop: string, randomFunc: () => number) => void>(
-    registerRandomTo, randomFunctions);
+export const functions = makeCollection<(seed: string) => () => number>(
+  {
+    alea: seedRandom.alea,
+    quick: seedRandom.quick,
+    tychei: seedRandom.tychei,
+    xor128: seedRandom.xor128,
+    xor4096: seedRandom.xor4096,
+    xorshift7: seedRandom.xorshift7,
+    xorwow: seedRandom.xorwow,
+  }, seedRandom.xor4096);
 
 /**
  * Generates a random integer using the given random function, assumes between
@@ -45,14 +36,6 @@ export function between(randomFunc: () => number,
   }
 
   return Math.floor((randomFunc() * (max - min)) + min);
-}
-
-export function getRandomFunctionFrom(collection: Object, fnName?: string) {
-  if (collection[fnName]) {
-    return collection[fnName];
-  } 
-  
-  return defaultRandom;
 }
 
 /**
@@ -75,32 +58,6 @@ export function randomSet<T>(randomFunc: () => number,
     
     return ret;
   };
-}
-
-/**
- * Adds `randomFunc` to `collection` as `prop` *if* `prop` does *not* exist on
- * `collection`
- */
-export function registerRandomTo(collection: Object,
-                        prop: string,
-                        randomFunc: () => number) {
-  if (typeof randomFunc !== 'function') {
-    throw new TypeError('registerRandom requires a function');
-  }
-  
-  if (!prop) {
-    throw new TypeError('registerRandom requires a prop');
-  }
-  
-  if (typeof prop !== 'string') {
-    throw new TypeError('registerRandom requires prop to be a string');
-  }
-  
-  if (collection[prop]) {
-    return;
-  }
-  
-  collection[prop] = randomFunc;
 }
 
 /**
