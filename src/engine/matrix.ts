@@ -3,7 +3,7 @@
  */
 import {
   Matrix,
-} from './interfaces';
+} from '../interfaces';
 
 /**
  * Non destructive rotateLeft function

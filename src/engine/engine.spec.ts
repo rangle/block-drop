@@ -13,12 +13,12 @@ import {
   paramsToFn,
   tryFnRedraw,
   updateBlock,
-  validateConfig,
+  forceValidateConfig,
 } from './engine';
 
 import {
   RandomMethod,
-} from './interfaces';
+} from '../interfaces';
 
 import {
   spawn1,
@@ -102,7 +102,7 @@ describe('engine functions', () => {
       expect(clearCheck({ 
         rowsCleared: 0,
         buffer: Uint8Array.from([1, 2, 3]),
-      }, board, () => 77)).toBe(77);
+      }, board, () => 77, false)).toBe(77);
     });
     
     it('should copy the board\'s buffer to buffer if rows were cleared', () => {
@@ -113,7 +113,7 @@ describe('engine functions', () => {
       clearCheck({
         rowsCleared: 0,
         buffer,
-      }, board, () => 3);
+      }, board, () => 3, false);
       expect(buffer[0]).toBe(1);
       expect(buffer[1]).toBe(0);
       expect(buffer[3]).toBe(1);
@@ -128,7 +128,7 @@ describe('engine functions', () => {
       clearCheck({
         rowsCleared: 0,
         buffer,
-      }, board, () => 0);
+      }, board, () => 0, false);
       expect(buffer[0]).toBe(0);
       expect(buffer[1]).toBe(0);
       expect(buffer[3]).toBe(0);
@@ -279,16 +279,16 @@ describe('engine functions', () => {
     });
   });
   
-  describe('validateConfig', () => {
+  describe('forceValidateConfig', () => {
     it('should keep existing properties', () => {
       const config = { name: '1' };
-      validateConfig({ name: 'default' }, config);
+      forceValidateConfig({ name: 'default' }, config);
       expect(config.name).toBe('1');
     });
 
     it('should fill in missing properties', () => {
       const config = <{ name: string }>{ name: undefined };
-      validateConfig({ name: 'default' }, config);
+      forceValidateConfig({ name: 'default' }, config);
       expect(config.name).toBe('default');
     });
   });

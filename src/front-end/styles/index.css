@@ -26,6 +26,14 @@ html, body {
     border-color: darkgreen;
 }
 
+.bd-border-red {
+    border-color: darkred;
+}
+
+.bd-border-blue {
+    border-color: darkblue;
+}
+
 .bd-debug {
 
 }
@@ -63,7 +71,6 @@ html, body {
 .bd-tile-active {
     width: 23px;
     height: 23px;
-    background-color: forestgreen;
 }
 
 .bd-black {
@@ -73,3 +80,24 @@ html, body {
 .bd-green {
     color: darkgreen;
 }
+
+.bd-red {
+    color: darkred;
+}
+
+.bd-blue {
+    color: darkblue;
+}
+
+.bd-bg-green {
+    background-color: forestgreen;
+}
+
+.bd-bg-red {
+    background-color: indianred;
+}
+
+.bd-bg-blue {
+    background-color: cornflowerblue;
+}
+

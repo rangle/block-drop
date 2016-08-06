@@ -7,7 +7,7 @@ import {
 
 import {
   Direction
-} from './interfaces';
+} from '../interfaces';
 
 describe('block functions', () => {
   describe('createBlock', () => {

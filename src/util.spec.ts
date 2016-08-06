@@ -11,6 +11,7 @@ import {
   partial,
   pipe,
   safeCall,
+  throwOutOfBounds,
 } from './util';
 
 describe('utility functions', () => {
@@ -286,6 +287,16 @@ describe('utility functions', () => {
 
     it('should resolve normal cases', () => {
       expect(() => safeCall(noop)).not.toThrowError();
+    });
+  });
+
+  describe('throwOutOfBounds function', () => {
+    it('should throw if offset is less than zero', () => {
+      expect(() => throwOutOfBounds([], -1)).toThrowError();
+    });
+
+    it('should throw if offset is greater than or equal to length', () => {
+      expect(() => throwOutOfBounds(['1'], 1)).toThrowError();
     });
   });
 });

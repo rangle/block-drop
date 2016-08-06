@@ -1,8 +1,10 @@
-export interface IGameState {
-  gameType: number;
-  gameTypes: string[];
-  lastEvent: { keyCode: number };
-}
+import {
+  functionsDetectClear,
+} from '../../engine/board';
+
+import {
+  GameConfig,
+} from '../../interfaces';
 
 import {
   deepFreeze,
@@ -10,9 +12,18 @@ import {
 
 import * as aTypes from '../actions/action-types';
 
+
+export interface IGameState {
+  config: GameConfig;
+  lastEvent: { keyCode: number };
+}
+
 const INIT: IGameState = deepFreeze({
-  gameType: 0,
-  gameTypes: ['Row Clear', 'Match Clear'],
+  config: {
+    debug: true,
+    detectAndClear: 0,
+    next: 3,
+  },
   lastEvent: { keyCode: 0 },
 });
 
@@ -22,9 +33,11 @@ export function game(state = INIT, action) {
       return Object.assign({}, state, {
         lastEvent: action.payload,
       });
-    case aTypes.CHANGE_GAME_TYPE:
-      return Object.assign({},state, {
-        gameType: action.payload
+    case aTypes.CHANGE_GAME_CONFIG:
+      const updated = {};
+      updated[action.meta] = action.payload;
+      return Object.assign({}, state, {
+        config: Object.assign({}, state.config, updated),
       });
     default:
       return state;

@@ -4,7 +4,7 @@ import {
   onTo,
 } from './event';
 
-import { noop } from '../util';
+import { noop } from './util';
 
 describe('event emitter functions', () => {
   describe('createEventEmitter', () => {
