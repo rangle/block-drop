@@ -7,6 +7,15 @@ import { Observable } from 'rxjs/Rx';
 import { changeScreen } from '../../actions/app.actions';
 import { GameConfig } from './config.container';
 import { Button, } from '../components';
+import {
+  flex,
+  flexCol,
+  flex11auto,
+  windowApp,
+  windowApplet,
+} from '../../styles';
+
+const angularApplet = `${flex} ${flexCol} ${flex11auto}`;
 
 @Component({
   directives: [
@@ -16,15 +25,12 @@ import { Button, } from '../components';
   ],
   selector: 'bd-angular',
   template: `
-    <div class="bd-app">
-      <h1>Block Drop</h1>
-      <button *ngFor="let screen of (screens$ | async)"
-         [onClick]="changeScreen(screen.id)"
-         [value]="screen.name"></button>
-      <div [ngSwitch]="(currentScreen$ | async)">
-        <bd-game *ngSwitchCase="'game'"></bd-game>
-        <bd-config *ngSwitchCase="'config'"></bd-config>
-      </div>
+    <button *ngFor="let screen of (screens$ | async)"
+       [onClick]="changeScreen(screen.id)"
+       [value]="screen.name"></button>
+    <div class="${angularApplet}" [ngSwitch]="(currentScreen$ | async)">
+      <bd-game class="${windowApplet}" *ngSwitchCase="'game'"></bd-game>
+      <bd-config class="${windowApplet}" *ngSwitchCase="'config'"></bd-config>
     </div>
 `,
 })

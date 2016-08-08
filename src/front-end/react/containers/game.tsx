@@ -4,12 +4,19 @@ import { keyPress } from '../../actions/events.actions';
 import { singletons } from '../../store/store';
 import { registerKeyControls } from '../../controls';
 import { boardToArray } from '../../../util';
+import {
+  flexCol,
+  previewDebug,
+  windowApplet,
+} from '../../styles';
 
 import {
   Board,
   Debug,
   NextPieces,
 } from '../components';
+
+const reactWindowApplet = `${windowApplet} ${flexCol}`;
 
 function mapStateToProps(state) {
   return {
@@ -62,10 +69,11 @@ export const Game = connect(
   }),
 
   render() {
-    return (<div className='bd-game-window'>
-      <Board game= { this.state.game }
-             board={ this.state.board } />
-      <div className='bd-float'>
+    return (<div className={ reactWindowApplet }>
+      <Board game={ this.state.game }
+             board={ this.state.board }
+             width={ this.state.game.config.width } />
+      <div className={ previewDebug }>
         <NextPieces preview={ this.state.game.preview } />
         <Debug activePiece={ this.state.game.activePiece }
                lastEvent={ this.props.lastEvent } />

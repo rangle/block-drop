@@ -1,15 +1,63 @@
-export const base = 'bd-float';
-export const boardStyle = 'bd-clear bd-game bd-border bd-border-white ' +
-  'bd-float bd-mono-font';
-export const boxStyle = 'bd-border bd-border-white bd-margin-bottom ' +
-  'bd-margin-left';
-export const activeTile = `${base} bd-tile-active bd-border ` +
-  `bd-border-green`;
-export const emptyTile = `${base} bd-tile-empty bd-black`;
+import { deepFreeze } from '../util';
 
-export const tileRed = `${activeTile} bd-red bd-bg-red`;
-export const tileGreen = `${activeTile} bd-green bd-bg-green`;
-export const tileBlue = `${activeTile} bd-blue bd-bg-blue`;
+const colours = deepFreeze({
+  black: 'bd-black',
+  blue: 'bd-blue',
+  red: 'bd-red',
+  green: 'bd-blue',
+  bgGreen: 'bd-bg-green',
+  bgBlue: 'bd-bg-blue',
+  bgRed: 'bd-bg-red',
+  borderBlack: 'bd-border-black',
+  borderBlue: 'bd-border-blue',
+  borderGreen: 'bd-border-green',
+  borderRed: 'bd-border-red',
+  borderWhite: 'bd-border-white',
+});
+
+export const border = 'bd-border';
+
+export const monoFont = 'bd-mono-font';
+
+export const flex = 'bd-flex';
+export const flex11auto = 'bd-flex-1-1-auto';
+export const flex31auto = 'bd-flex-3-1-auto';
+export const flexCol = 'bd-flex-col';
+export const flexRow = 'bd-flex-row';
+
+export const flexNoWrap = `bd-flex-nowrap`;
+
+export const flexGrowRow = `${flex} ${flexRow} ${flex11auto} ${flexNoWrap}`;
+export const flexGrowCol = `${flex} ${flexCol} ${flex11auto} ${flexNoWrap}`;
+
+export const flexColIfPortrait = 'bd-flex-col-if-portrait';
+export const flexRowIfPortrait = 'bd-flex-row-if-portrait';
+
+export const justifyAround = 'bd-flex-justify-around';
+export const flexGrowShrink = `${flex} ${flex11auto} ${flexNoWrap} ` +
+  `${justifyAround}`;
+export const flexGrowShrink31 = `${flex} ${flex31auto} ${flexNoWrap} ` +
+  `${justifyAround}`;
+
+export const tileBase = `${border} ${flex11auto}`;
+export const activeTile = `${tileBase}`;
+export const emptyTile = `${tileBase} ${colours.black} ${colours.borderBlack}`;
+
+export const windowApp = `${flexGrowShrink} ${flexCol} ` +
+  `bd-padding-5`;
+export const windowApplet = `${flexGrowShrink} ${flexColIfPortrait}`;
+
+export const tileRed = `${activeTile} ${colours.bgRed} ${colours.red} ` +
+  `${colours.borderRed}`;
+export const tileGreen = `${activeTile} ${colours.bgGreen} ${colours.green} ` +
+  `${colours.borderGreen}`;
+export const tileBlue = `${activeTile} ${colours.bgBlue} ${colours.blue} ` +
+  `${colours.borderBlue}`;
+
+export const board = `${border} ${colours.borderWhite} ${monoFont} ` +
+  `${flexGrowShrink31} ${flexCol}`;
+
+export const previewDebug = `${flexGrowShrink} ${flexRowIfPortrait}`;
 
 export function tileByNumber(val: number) {
   switch (val) {
@@ -23,4 +71,3 @@ export function tileByNumber(val: number) {
       return tileGreen;
   }
 }
-

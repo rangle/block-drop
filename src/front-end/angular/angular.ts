@@ -11,6 +11,7 @@ import { Singletons } from './singletons';
 
 // Global styles
 import '../styles/index.css';
+import { windowApp } from '../styles';
 
 // Production mode
 declare const __PRODUCTION__: boolean;
@@ -47,7 +48,10 @@ export function unmount(element: HTMLElement) {
   if (appRef) {
     appRef.destroy();
     appRef = null;
-    element.appendChild( document.createElement('bd-angular') );
+    const el = document.createElement('bd-angular');
+    el.style.display = 'flex';
+    el.className += ` ${windowApp} `;
+    element.appendChild(el);
     if (timeOut) {
       clearTimeout(timeOut);
       timeOut = null;

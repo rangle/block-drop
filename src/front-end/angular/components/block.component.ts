@@ -4,28 +4,39 @@ import {
   Input,
 } from '@angular/core';
 
-import { boxStyle } from '../../styles';
+import { Tile } from './tile.component';
+
+import {
+  flexGrowRow,
+  tileByNumber,
+} from '../../styles';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
+  directives: [Tile],
   selector: 'block',
   template: `
-    <div class="${boxStyle}">
-      <table>
-        <caption>{{ name }}</caption>
-        <tbody>
-          <tr *ngFor="let col of cols">
-            <td *ngFor="let el of col"
-              [ngClass]="el ? 'bd-border bd-border-white' : ''">
-              {{ el || '' }}
-            </td> 
-          </tr>
-        </tbody>
-      </table>
+    {{ name }}
+    <div class="${flexGrowRow}" *ngFor="let row of cols; trackBy: trackCol">
+      <tile [ngClass]="tile === 0 ? emptyTile : tileByNumber(tile)"
+       *ngFor="let tile of row; trackBy: trackRow" [value]="tile"></tile>
     </div>
 `,
 })
 export class Block {
   @Input() cols: number[][];
   @Input() name: string;
+  tileByNumber: Function;
+
+  constructor() {
+    this.tileByNumber = tileByNumber;
+  }
+
+  trackCol(index: number) {
+    return index;
+  }
+
+  trackRow(index: number, value: number) {
+    return value;
+  }
 }

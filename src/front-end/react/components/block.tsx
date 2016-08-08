@@ -1,23 +1,20 @@
 import * as React from 'react';
 import { columnsFromBlock } from '../../../engine/block';
-
-const boxStyle = 'bd-border bd-border-white bd-margin-bottom bd-margin-left';
+import { Tile } from './tile';
+import {
+  flexGrowCol,
+  flexGrowRow,
+} from '../../styles';
 
 export function Block(props) {
   const cols = columnsFromBlock(props.block);
 
-  return (<div className={ boxStyle }>
-    <table>
-      <caption>{ props.block.name }</caption>
-      <tbody>
+  return (<div className={ flexGrowCol }>
+      { props.block.name }
       {
-        cols.map((row, i) => (<tr key={i}>
-          { row.map((el, j) => (<td key={j} className={
-            el ? 'bd-border bd-border-white' : '' 
-          }>{el || ''}</td>)) } 
-        </tr>))
+        cols.map((row, i) => (<div className={ flexGrowRow } key={i}>
+          { row.map((el, j) => (<Tile key={j} value={el} />)) }
+        </div>))
       }
-      </tbody>
-    </table>
   </div>);
 }

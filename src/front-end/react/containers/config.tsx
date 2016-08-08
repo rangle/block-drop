@@ -7,6 +7,7 @@ import {
   Button,
   Select,
 } from '../components';
+import { windowApplet } from '../../styles';
 
 function mapStateToProps(state) {
   return {
@@ -25,7 +26,7 @@ export const Config = connect(
   mapDispatchToProps,
 )(React.createClass({
   render() {
-    return (<div>{ singletons.configInterfaces
+    return (<div className={ windowApplet }>{ singletons.configInterfaces
       .map((i) => makeInterface(i,
         this.props.detectAndClear,
         partial(this.props.changeConfig, i.prop)))

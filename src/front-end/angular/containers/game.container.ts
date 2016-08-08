@@ -18,11 +18,14 @@ import {
 }  from '../components';
 import { boardToArray } from '../../../util';
 import { keyPress } from '../../actions/events.actions';
-import { Observable } from 'rxjs/Rx';
 import { registerKeyControls } from '../../controls';
+import { columnsFromBlock } from '../../../engine/block';
 import {
-  columnsFromBlock,
-} from '../../../engine/block';
+  board,
+  flexCol,
+  flexGrowShrink,
+  previewDebug,
+} from '../../styles';
 
 @Component({
   directives: [
@@ -30,24 +33,22 @@ import {
   ],
   selector: 'bd-game',
   template: `
-    <div class="bd-game-window">
-      <board [rowsCleared]="rowsCleared" [board]="board"></board> 
-      <div class="bd-float">
-        <div class="bd-float">
-          <bd-next-pieces [preview]="preview"></bd-next-pieces>
-        </div>
-        <div class="bd-debug bd-clear bd-float">
-          <bd-debug></bd-debug>
-        </div>
-      </div>
+    <board class="${board}" 
+    [board]="board"
+    [width]="boardWidth"
+    ></board> 
+    <div class="${previewDebug}">
+      <bd-next-pieces class="${flexGrowShrink} ${flexCol}" 
+      [preview]="preview"></bd-next-pieces>
+      <bd-debug class="${flexGrowShrink}"></bd-debug>
     </div>
 `,
 })
 export class Game implements OnInit, OnDestroy {
-  board: any = [];
+  board: number[] = [];
+  boardWidth: number;
   deRegister: Function[] = [];
   preview: { name: string, cols: number[][]}[] = [];
-  rowsCleared: number = 0;
   constructor(private ngRedux: NgRedux<IState>,
               private singletons: Singletons,
               private cdRef: ChangeDetectorRef) {
@@ -74,12 +75,28 @@ export class Game implements OnInit, OnDestroy {
     this.redraw();
   }
 
-  redraw() {
+  recomputeBoard() {
     // angular does *not* like getters do lots of mapping instead
-    this.board = boardToArray(
-      this.singletons.engine.buffer,
-      this.singletons.engine.config.width);
-    this.rowsCleared = this.singletons.engine.rowsCleared;
+    this.board = [];
+    this.boardWidth = this.singletons.engine.config.width;
+    const board = boardToArray(this.singletons.engine.buffer, this.boardWidth);
+
+    let rows;
+
+    board.forEach((el, i) => {
+      if (i % this.boardWidth === 0) {
+        rows = [];
+      }
+      rows.push(el);
+      if (rows.length === this.boardWidth) {
+        this.board.push(rows);
+      }
+    });
+  }
+
+  redraw() {
+    this.recomputeBoard();
+
     this.preview = this.singletons.engine.preview.map((el) => ({
       name: el.name,
       cols: columnsFromBlock(el),

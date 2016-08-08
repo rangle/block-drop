@@ -22,7 +22,7 @@ const INIT: IGameState = deepFreeze({
   config: {
     debug: true,
     detectAndClear: 0,
-    next: 3,
+    preview: 3,
   },
   lastEvent: { keyCode: 0 },
 });

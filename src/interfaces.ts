@@ -36,6 +36,10 @@ export interface Board1 extends Board {
   descBuffer: Uint8Array; 
 }
 
+export interface Dictionary<T> {
+  [id: string]: T;
+}
+
 export enum Direction {
   Up,
   Down,

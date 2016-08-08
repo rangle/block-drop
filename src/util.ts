@@ -8,6 +8,14 @@ export function boardToArray(b, width) {
   return Array.from(b.slice(width * 2));
 }
 
+export function camelToKebab(string: string) {
+  return string.replace(/([A-Z])/g, (s) => '-' + s.toLowerCase());
+}
+
+export function kebabToCamel(string: string) {
+  return string.replace(/(\-[a-z])/g, (s) => s.toUpperCase().replace('-', ''));
+}
+
 export function copyBuffer(from, to) {
   from.forEach((el, i) => to[i] = from[i]);
 }

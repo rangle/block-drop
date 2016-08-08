@@ -22,11 +22,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <style>html, body { background-color: black; margin: 0; }</style>
     <title>Block Drop</title>
   </head>
-  <body>
-    <div id="bd-root-angular">
-      <bd-angular></bd-angular>
+  <body class="bd-flex bd-flex-col bd-flex-justify-around">
+    <div class="bd-flex bd-flex-row bd-flex-11-auto bd-flex-justify-around"
+         id="bd-root-angular">
+      <!--
+       Angular is in its own box because when Angular 2 is unmounted it destroys
+       its root element.  By wrapping it in a div we can re-mount it with less
+       JavaScript
+      -->
+      <bd-angular class="bd-flex bd-flex-nowrap bd-flex-col bd-flex-1-1-auto bd-flex-justify-around bd-padding-5">
+      </bd-angular>
     </div>
   </body>
 </html>

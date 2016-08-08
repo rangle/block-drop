@@ -1,7 +1,9 @@
 import {
+  camelToKebab,
   copyBuffer,
   createReadOnlyApiTo,
   deepFreeze,
+  kebabToCamel,
   intMidCeil,
   intMidFloor,
   invertBoolean,
@@ -15,6 +17,34 @@ import {
 } from './util';
 
 describe('utility functions', () => {
+  describe('kebabToCamel function', () => {
+    it('should do nothing to no dashes', () => {
+      expect(kebabToCamel('test')).toBe('test');
+    });
+
+    it('should do a single dash', () => {
+      expect(kebabToCamel('test-it')).toBe('testIt');
+    });
+
+    it('should do many dashes', () => {
+      expect(kebabToCamel('test-it-real-good')).toBe('testItRealGood');
+    });
+  });
+
+  describe('camelToKebab function', () => {
+    it('should do nothing to no humps', () => {
+      expect(kebabToCamel('test')).toBe('test');
+    });
+
+    it('should do a single hump', () => {
+      expect(camelToKebab('testIt')).toBe('test-it');
+    });
+
+    it('should do many humps', () => {
+      expect(camelToKebab('testItRealGood')).toBe('test-it-real-good');
+    });
+  });
+
   describe('copyBuffer function', () => {
     it('should overwrite the second argument', () => {
       const from = new Uint8Array([1, 2, 3]);
