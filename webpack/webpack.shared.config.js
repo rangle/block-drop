@@ -26,6 +26,7 @@ function pluginIndex(file) {
 }
 
 const plugins = [
+  /** ensure splitBypath is first to work with testing hack */
   new SplitByPathPlugin([
     { name: 'vendor', path: [path.join(__dirname, '..', 'node_modules')] },
   ]),

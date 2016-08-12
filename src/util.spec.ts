@@ -1,7 +1,11 @@
 import {
+  aspectRatio,
   camelToKebab,
   copyBuffer,
+  computeAspectRatioDimensions,
   createReadOnlyApiTo,
+  debounce,
+  divide,
   deepFreeze,
   kebabToCamel,
   intMidCeil,
@@ -10,13 +14,98 @@ import {
   isBoard1,
   isObject,
   noop,
+  numberFromString,
   partial,
   pipe,
   safeCall,
+  throttle,
   throwOutOfBounds,
 } from './util';
 
 describe('utility functions', () => {
+  describe('aspect ratio', () => {
+    it('should divide width by height', () => {
+      expect(aspectRatio(10, 5)).toBe(2);
+    });
+  });
+
+  describe('computeAspectRatioDimensions function', () => {
+    it('should return 7.5/10 outer if given 15/10 outer, 20/10 inner', () => {
+      const result = computeAspectRatioDimensions(15, 10, 20, 10);
+      expect(result.x).toBe(15);
+      expect(result.y).toBe(7.5);
+    });
+
+    it('should return 6/10 outer if given 50/10 outer 15/25 inner', () => {
+      const result = computeAspectRatioDimensions(50, 10, 15, 25);
+      expect(result.x).toBe(6);
+      expect(result.y).toBe(10);
+    });
+  });
+
+  describe('debounce function', () => {
+    it('should throw if not given a function', () => {
+      expect(() => debounce(0, <Function>5)).toThrowError();
+    });
+
+    it('should only call a function once, after a delay', (done) => {
+      let result = 0;
+      const inc = () => result += 1;
+      const debouncedInc = debounce<() => void>(0, inc);
+      debouncedInc();
+      debouncedInc();
+      debouncedInc();
+      setTimeout(() => {
+        expect(result).toBe(1);
+        done();
+      });
+    });
+
+    it('the last call\'s arguments should "win"', (done) => {
+      let result = 0;
+      const addToResult = (val: number) => result += val;
+      const debouncedInc = debounce<(value: number) => number>(0, addToResult);
+      debouncedInc(1);
+      debouncedInc(2);
+      debouncedInc(3);
+      setTimeout(() => {
+        expect(result).toBe(3);
+        done();
+      });
+    });
+
+    it('should support multiple calls if they\'re adequately spaced',
+      (done) => {
+        let result = 0;
+        const inc = () => result += 1;
+        const debouncedInc = debounce<() => void>(0, inc);
+        debouncedInc();
+        setTimeout(() => {
+          expect(result).toBe(1);
+          debouncedInc();
+          setTimeout(() => {
+            expect(result).toBe(2);
+            done();
+          }, 5);
+        }, 5);
+      });
+  });
+
+  describe('divide function', () => {
+    it('should throw on non-numeric input', () => {
+      expect(() => divide(<number>'5', 6)).toThrowError();
+      expect(() => divide(2, <number>'54')).toThrowError();
+    });
+
+    it('should return zero on divide by zero', () => {
+      expect(divide(5, 0)).toBe(0);
+    });
+
+    it('should divide', () => {
+      expect(divide(10, 2)).toBe(5);
+    });
+  });
+
   describe('kebabToCamel function', () => {
     it('should do nothing to no dashes', () => {
       expect(kebabToCamel('test')).toBe('test');
@@ -273,6 +362,28 @@ describe('utility functions', () => {
     });
   });
 
+  describe('number from string', () => {
+    it('should return simple strings', () => {
+      expect(numberFromString('5')).toBe(5);
+    });
+
+    it('should handle simple decimals', () => {
+      expect(numberFromString('.25')).toBe(.25);
+    });
+
+    it('should handle silly decimals', () => {
+      expect(numberFromString('11.11.12.13')).toBe(11.11);
+    });
+
+    it('should remove pretext', () => {
+      expect(numberFromString('goto52.11')).toBe(52.11);
+    });
+
+    it('should remove posttext', () => {
+      expect(numberFromString('11.22px')).toBe(11.22);
+    });
+  });
+
   describe('partial function', () => {
     function addThreeArgs(a: number, b: number, c: number): number {
       return a + b * c; 
@@ -317,6 +428,52 @@ describe('utility functions', () => {
 
     it('should resolve normal cases', () => {
       expect(() => safeCall(noop)).not.toThrowError();
+    });
+  });
+
+  describe('throttle function', () => {
+    it('should throw if not given a function', () => {
+      expect(() => throttle(0, <Function>'not')).toThrowError();
+    });
+
+    it('should run a function once after a predefined delay', (done) => {
+      let result = 0;
+      const throttled = throttle<() => void>(5, () => result += 1);
+      throttled();
+      throttled();
+      throttled();
+      throttled();
+      expect(result).toBe(0);
+      setTimeout(() => {
+        expect(result).toBe(1);
+        done();
+      }, 15);
+    });
+
+    it('should optionally run a function at the _start_ of a delay', (done) => {
+      let result = 0;
+      const throttled = throttle<() => void>(5, () => result += 1, true);
+      throttled();
+      expect(result).toBe(1);
+      setTimeout(() => {
+        expect(result).toBe(1);
+        done();
+      }, 15);
+    });
+
+    it('should work multiple times', (done) => {
+      let result = 0;
+      const throttled = throttle<() => void>(5, () => result += 1);
+      throttled();
+      expect(result).toBe(0);
+      setTimeout(() => {
+        expect(result).toBe(1);
+        throttled();
+        setTimeout(() => {
+          expect(result).toBe(2);
+          done();
+        }, 15);
+      }, 15);
     });
   });
 

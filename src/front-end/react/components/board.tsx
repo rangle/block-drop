@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { Tile } from './';
 import { board, flexGrowRow } from '../../styles';
+import {
+  flex,
+  flexNoWrap,
+} from '../../styles';
+
+const gameViewportClass = `${flex} ${flexNoWrap}`;
 
 export function Board(props) {
   const jsx = boardToJsx(props.board, props.width);
   return (
-    <div className={ board }>
+    <div style={ props.styles } className={ board }>
       {
         jsx.map((el, i) => (
         <div key={i} className={ flexGrowRow }>{ el }</div>))

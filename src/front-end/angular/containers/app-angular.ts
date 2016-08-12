@@ -9,13 +9,10 @@ import { GameConfig } from './config.container';
 import { Button, } from '../components';
 import {
   flex,
-  flexCol,
-  flex11auto,
-  windowApp,
+  flexNoWrap,
   windowApplet,
+  verticalUiClass,
 } from '../../styles';
-
-const angularApplet = `${flex} ${flexCol} ${flex11auto}`;
 
 @Component({
   directives: [
@@ -25,16 +22,20 @@ const angularApplet = `${flex} ${flexCol} ${flex11auto}`;
   ],
   selector: 'bd-angular',
   template: `
-    <button *ngFor="let screen of (screens$ | async)"
-       [onClick]="changeScreen(screen.id)"
-       [value]="screen.name"></button>
-    <div class="${angularApplet}" [ngSwitch]="(currentScreen$ | async)">
-      <bd-game class="${windowApplet}" *ngSwitchCase="'game'"></bd-game>
+    <div class="${flex} ${verticalUiClass}">
+      <button *ngFor="let screen of (screens$ | async)"
+         [onClick]="changeScreen(screen.id)"
+         [value]="screen.name"></button>
+    </div>
+    <div [ngSwitch]="(currentScreen$ | async)">
+      <bd-game class="${flex} ${flexNoWrap}" 
+      [ngStyle]="styles" *ngSwitchCase="'game'"></bd-game>
       <bd-config class="${windowApplet}" *ngSwitchCase="'config'"></bd-config>
     </div>
 `,
 })
 export class App {
+  styles = { };
   @select(
     (state) => state.app.currentScreen) currentScreen$: Observable<number>;
   @select((state) => state.app.screens
@@ -42,6 +43,14 @@ export class App {
 
   constructor(private ngRedux: NgRedux<IState>) {
     this.ngRedux.provideStore(store);
+    ngRedux.subscribe(() => {
+      const game = ngRedux.getState().game;
+      if (game.currentGameViewportDimensions.direction === 'row') {
+        this.styles['flex-direction'] = 'row';
+      } else {
+        this.styles['flex-direction'] = 'column';
+      }
+    });
   }
 
   changeScreen(screen: string) {

@@ -4,7 +4,7 @@ import { changeScreen } from '../../actions/app.actions';
 import { Button } from '../components';
 import { Config } from './config';
 import { partial } from '../../../util';
-import { windowApp } from '../../styles';
+import {windowApp, verticalUiClass} from '../../styles';
 
 import {
   Game,
@@ -28,7 +28,8 @@ export const App = connect(
   mapDispatchToProps
 )(React.createClass({
   render() {
-    return (<div className={ windowApp }>
+    return (<div>
+      <div className={ verticalUiClass }>
       {
         this.props.screens.map((screen, i) => {
           if (this.props.currentScreen === screen.id) {
@@ -41,6 +42,7 @@ export const App = connect(
                           }/>);
         })
       }
+      </div>
       {
         (() => {
           switch (this.props.currentScreen) {

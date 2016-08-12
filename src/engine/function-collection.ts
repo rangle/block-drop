@@ -1,5 +1,5 @@
 import { FunctionsCollection } from '../interfaces';
-import { partial } from '../util';
+import { isFunction, partial } from '../util';
 
 export function getFunctionFrom(defaultFn,
                                 collection: Object, fnName?: string) {
@@ -56,7 +56,7 @@ FunctionsCollection<T> {
 export function registerTo(collection: Object,
                                  prop: string,
                                  func: () => number) {
-  if (typeof func !== 'function') {
+  if (!isFunction(func)) {
     throw new TypeError('registerTo requires a function');
   }
 

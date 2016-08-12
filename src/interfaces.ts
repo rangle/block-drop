@@ -97,7 +97,7 @@ export interface GameConfig extends NextBlockConfig {
 export type Matrix = Array<number[]>;
 
 export interface TypeDesc<T> {
-  type: 'string',
+  type: 'string';
   is: (x: any) => boolean;
 }
 

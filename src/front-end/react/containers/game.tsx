@@ -4,11 +4,14 @@ import { keyPress } from '../../actions/events.actions';
 import { singletons } from '../../store/store';
 import { registerKeyControls } from '../../controls';
 import { boardToArray } from '../../../util';
+import { bindResizeToWindow, resize } from '../../aspect-resizer';
 import {
-  flexCol,
+  flex,
+  flexNoWrap,
   previewDebug,
-  windowApplet,
 } from '../../styles';
+
+const gameViewportClass = `${flex} ${flexNoWrap}`;
 
 import {
   Board,
@@ -16,11 +19,18 @@ import {
   NextPieces,
 } from '../components';
 
-const reactWindowApplet = `${windowApplet} ${flexCol}`;
-
 function mapStateToProps(state) {
   return {
     lastEvent: state.game.lastEvent,
+    styles: {
+      flexDirection: state.game.currentGameViewportDimensions.direction,
+    },
+    subStyles: {
+      minWidth: state.game.currentGameViewportDimensions.x + 'px',
+      minHeight: state.game.currentGameViewportDimensions.y + 'px',
+      maxWidth: state.game.currentGameViewportDimensions.x + 'px',
+      maxHeight: state.game.currentGameViewportDimensions.y + 'px',
+    },
   };
 }
 
@@ -36,10 +46,12 @@ export const Game = connect(
 )(React.createClass({
   deRegister: [],
   componentDidMount: function() {
+    resize();
     const updateBoard = () => ({
       board: boardToArray(singletons.engine.buffer,
         singletons.engine.config.width)
     });
+    this.deRegister.push(bindResizeToWindow());
     this.deRegister.push(
       this.state.game.on('redraw', () => this.setState(updateBoard)));
 
@@ -69,10 +81,11 @@ export const Game = connect(
   }),
 
   render() {
-    return (<div className={ reactWindowApplet }>
+    return (<div className={ gameViewportClass } style={ this.props.styles }>
       <Board game={ this.state.game }
              board={ this.state.board }
-             width={ this.state.game.config.width } />
+             width={ this.state.game.config.width }
+             styles={ this.props.subStyles } />
       <div className={ previewDebug }>
         <NextPieces preview={ this.state.game.preview } />
         <Debug activePiece={ this.state.game.activePiece }

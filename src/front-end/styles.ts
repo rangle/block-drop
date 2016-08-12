@@ -15,11 +15,14 @@ const colours = deepFreeze({
   borderWhite: 'bd-border-white',
 });
 
+
+export const verticalUiClass = 'bd-vert-ui';
 export const border = 'bd-border';
 
 export const monoFont = 'bd-mono-font';
 
 export const flex = 'bd-flex';
+export const flex01auto = 'bd-flex-0-1-auto';
 export const flex11auto = 'bd-flex-1-1-auto';
 export const flex31auto = 'bd-flex-3-1-auto';
 export const flexCol = 'bd-flex-col';
@@ -34,6 +37,8 @@ export const flexColIfPortrait = 'bd-flex-col-if-portrait';
 export const flexRowIfPortrait = 'bd-flex-row-if-portrait';
 
 export const justifyAround = 'bd-flex-justify-around';
+export const flexShrink = `${flex} ${flex01auto} ${flexNoWrap} ` +
+  `${justifyAround}`;
 export const flexGrowShrink = `${flex} ${flex11auto} ${flexNoWrap} ` +
   `${justifyAround}`;
 export const flexGrowShrink31 = `${flex} ${flex31auto} ${flexNoWrap} ` +
@@ -43,9 +48,8 @@ export const tileBase = `${border} ${flex11auto}`;
 export const activeTile = `${tileBase}`;
 export const emptyTile = `${tileBase} ${colours.black} ${colours.borderBlack}`;
 
-export const windowApp = `${flexGrowShrink} ${flexCol} ` +
-  `bd-padding-5`;
-export const windowApplet = `${flexGrowShrink} ${flexColIfPortrait}`;
+export const windowApp = `${flexGrowShrink}`;
+export const windowApplet = `${flexGrowShrink}`;
 
 export const tileRed = `${activeTile} ${colours.bgRed} ${colours.red} ` +
   `${colours.borderRed}`;
@@ -57,7 +61,7 @@ export const tileBlue = `${activeTile} ${colours.bgBlue} ${colours.blue} ` +
 export const board = `${border} ${colours.borderWhite} ${monoFont} ` +
   `${flexGrowShrink31} ${flexCol}`;
 
-export const previewDebug = `${flexGrowShrink} ${flexRowIfPortrait}`;
+export const previewDebug = `${flexGrowShrink} ${flexCol}`;
 
 export function tileByNumber(val: number) {
   switch (val) {

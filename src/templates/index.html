@@ -25,23 +25,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <style>html, body { background-color: black; margin: 0; }</style>
     <title>Block Drop</title>
   </head>
-  <body class="bd-flex bd-flex-col">
+  <body>
     <div id="bd-splash">
       <input type="button" value="Welcome..."
              onclick="window.BLOCK_DROP.mount()" />
     </div>
-    <div class="bd-flex bd-flex-row bd-flex-19-auto" id="bd-root"></div>
-    <div class="bd-flex bd-flex-row bd-flex-11-auto bd-flex-justify-around"
-         id="bd-root-react"></div>
-    <div class="bd-flex bd-flex-row bd-flex-11-auto bd-flex-justify-around"
-         id="bd-root-angular">
+    <div id="bd-root" class="bd-vert-ui"></div>
+    <div id="bd-root-react"></div>
+    <div id="bd-root-angular">
       <!--
        Angular is in its own box because when Angular 2 is unmounted it destroys
        its root element.  By wrapping it in a div we can re-mount it with less
        JavaScript
       -->
-      <bd-angular class="bd-flex bd-flex-nowrap bd-flex-col bd-flex-1-1-auto bd-flex-justify-around bd-padding-5">
-      </bd-angular>
+      <bd-angular></bd-angular>
     </div>
   </body>
 </html>

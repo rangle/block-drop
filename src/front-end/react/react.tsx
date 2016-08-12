@@ -1,4 +1,5 @@
 import '../../license';
+import '../aspect-resizer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';

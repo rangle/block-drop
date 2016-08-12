@@ -1,8 +1,9 @@
 import '../../license';
+import '../aspect-resizer';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import 'ts-helpers';
-import { enableProdMode, Injectable } from '@angular/core';
+import { enableProdMode } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { App } from'./containers/app-angular';
 import { NgRedux } from 'ng2-redux';
@@ -49,8 +50,6 @@ export function unmount(element: HTMLElement) {
     appRef.destroy();
     appRef = null;
     const el = document.createElement('bd-angular');
-    el.style.display = 'flex';
-    el.className += ` ${windowApp} `;
     element.appendChild(el);
     if (timeOut) {
       clearTimeout(timeOut);

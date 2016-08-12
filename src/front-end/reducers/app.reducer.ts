@@ -21,6 +21,7 @@ const FRAMEWORK_DESCRIPTIONS = deepFreeze([
   { id: 'bd-root-angular', name: 'Angular 2' },
   { id: 'bd-root-react', name: 'React' },
 ]);
+
 const ROOT = 'bd-root';
 const SPLASH = 'bd-splash';
 const VERSION = '0.0.1';

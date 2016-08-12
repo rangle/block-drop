@@ -4,6 +4,9 @@ import {
   TypedArray,
 } from './interfaces';
 
+export const aspectRatio =
+  (width: number, height: number) => divide(width, height);
+
 export function boardToArray(b, width) {
   return Array.from(b.slice(width * 2));
 }
@@ -14,6 +17,49 @@ export function camelToKebab(string: string) {
 
 export function kebabToCamel(string: string) {
   return string.replace(/(\-[a-z])/g, (s) => s.toUpperCase().replace('-', ''));
+}
+
+/**
+ * Creates percentage based sizes to optimally fit ix/iy in ox,oy
+ *
+ * ix === inner x, iy === inner y
+ * ox === outer x, oy === outer y
+ *
+ * @example
+ * // Example 1:
+ *
+ * // Viewport is 15x10
+ * const ox = 15, oy = 10;
+ *
+ * // Inner Viewport with aspect ratio requirements is 20x10
+ * const ix = 20, iy = 10;
+ *
+ * // remainder percentages for both x/y are zero (0)
+ *
+ * const result1 = computeAspectRatioDimensions(ox, oy, ix, iy);
+ *
+ * console.log(result1.x); // 15
+ * console.log(result1.y); // 7.5
+ *
+ **/
+export function computeAspectRatioDimensions(ox: number, oy: number,
+                                      ix: number, iy: number
+): { x: number, y: number } {
+
+  const result = { x: 0, y: 0 };
+
+  const oar = aspectRatio(ox, oy); // outer aspect ratio
+  const ar = aspectRatio(ix, iy);    // desired aspect ratio
+
+  if (ar > oar) {
+    result.x = ox;
+    result.y = divide(ox, ar);
+  } else {
+    result.x = oy * ar;
+    result.y = oy;
+  }
+
+  return result;
 }
 
 export function copyBuffer(from, to) {
@@ -59,7 +105,7 @@ export function createReadOnlyApiTo(state: Object) {
         }); 
       }
     } else {
-      if (typeof state[i] === 'function') {
+      if (isFunction(state[i])) {
         // ignore functions (no smuggling :)) 
       } else {
         Object.defineProperty(stats, i, {
@@ -72,6 +118,27 @@ export function createReadOnlyApiTo(state: Object) {
   }
 
   return stats;
+}
+
+/**
+ * Debounces a function by delay.  Last call's parameters win
+ */
+export function debounce<T>(delay: number, fn: Function) {
+  if (!isFunction(fn)) {
+    throw new TypeError('debounceTo: expecting a function');
+  }
+  let timer = null;
+
+  return (...args) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      fn(...args);
+      // reset the timer
+      timer = null;
+    }, delay);
+  };
 }
 
 /**
@@ -91,6 +158,16 @@ export function deepFreeze(obj) {
   }
   
   return Object.freeze(obj);
+}
+
+export function divide(a: number, b: number): number {
+  if (!isNumber(a) || !isNumber(b)) {
+    throw new TypeError('divide: expecting numeric input');
+  }
+  if (b === 0) {
+    return 0;
+  }
+  return a / b;
 }
 
 /**
@@ -118,6 +195,10 @@ export function isBoard1(board: any): board is Board1 {
   return board.descBuffer instanceof Uint8Array;
 }
 
+export function isFunction(fn: any): fn is Function {
+  return typeof fn === 'function';
+}
+
 export function isNumber(val: any): val is number {
   return typeof val === 'number';
 }
@@ -141,6 +222,26 @@ export function isString(val: any): val is string {
  * Sometimes a no operation is useful
  */
 export function noop() {
+}
+
+export function numberFromString(string: string): number {
+  const mostlyNumeric = string.replace(/[^\d.-]/g, '');
+
+  const firstDecimal = mostlyNumeric.indexOf('.');
+  if (firstDecimal === -1) {
+    return parseFloat(mostlyNumeric);
+  }
+
+  const lastDecimal = mostlyNumeric.lastIndexOf('.');
+  if (lastDecimal === firstDecimal) {
+    return parseFloat(mostlyNumeric);
+  }
+
+  return parseFloat(mostlyNumeric
+    .split('.')
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('.'));
 }
 
 /**
@@ -173,6 +274,49 @@ export function safeCall(fn: Function, args?: any[]) {
   } catch (e) {
     // fail over
   }
+}
+
+/**
+ * throttles a given function so it only fires in "throttled" intervals
+ *
+ * last call prior to the interval "wins" with respect to passed arguments
+ *
+ * can optionally invokeImmediately
+ */
+export function throttle<T>(delay: number,
+                            fn: Function,
+                            invokeImmediate: boolean = false) {
+  if (!isFunction(fn)) {
+    throw new TypeError('throttle expects a function');
+  }
+
+
+  let timer = null;
+  let lastArgs: any[];
+  let isFirst = true;
+
+  return <T>(...args) => {
+    lastArgs = args;
+    if (timer) {
+      return;
+    }
+
+    if (invokeImmediate && isFirst) {
+      fn(...lastArgs);
+      isFirst = false;
+    }
+
+    timer = setTimeout(() => {
+      if (!invokeImmediate) {
+        fn(...lastArgs);
+        timer = null;
+        return;
+      }
+      // reset isFirst state
+      isFirst = true;
+      timer = null;
+    }, delay);
+  };
 }
 
 export function throwOutOfBounds(buffer: any[] | TypedArray,

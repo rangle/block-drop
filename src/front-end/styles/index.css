@@ -29,6 +29,11 @@ html, body {
     justify-content: space-around;
 }
 
+.bd-flex-0-1-auto {
+    min-height: 0;
+    flex: 1 1 auto;
+}
+
 .bd-flex-1-9-auto {
     min-height: 0;
     flex: 1 9 auto;
