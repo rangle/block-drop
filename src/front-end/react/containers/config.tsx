@@ -1,23 +1,24 @@
 import * as React from 'react';
-import { changeConfig } from '../../actions/game.actions';
+import { nextConfigProp } from '../../actions/game.actions';
 import { connect } from 'react-redux';
 import { partial } from '../../../util';
-import { singletons } from '../../store/store';
 import {
   Button,
   Select,
 } from '../components';
 import { windowApplet } from '../../styles';
+import { configInterfaces } from '../../../engine/configs/config-interfaces'
+import { store } from '../../store/store';
 
 function mapStateToProps(state) {
   return {
-    detectAndClear: state.game.config.detectAndClear,
+    detectAndClear: state.nextConfig.detectAndClear,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    changeConfig: (prop, value) => dispatch(changeConfig(prop, value)),
+    changeConfig: (prop, value) => dispatch(nextConfigProp(prop, value)),
   };
 }
 
@@ -26,11 +27,11 @@ export const Config = connect(
   mapDispatchToProps,
 )(React.createClass({
   render() {
-    return (<div className={ windowApplet }>{ singletons.configInterfaces
+    return (<div className={ windowApplet }>{ configInterfaces
       .map((i) => makeInterface(i,
         this.props.detectAndClear,
         partial(this.props.changeConfig, i.prop)))
-    }<Button onClick={ singletons.createEngine } value='New Game' /></div>);
+    }<Button onClick={ store.game.create } value='New Game' /></div>);
   },
 }));
 

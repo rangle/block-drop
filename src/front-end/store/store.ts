@@ -1,33 +1,22 @@
-import { root } from '../reducers/root.reducer';
-import { createStore } from 'redux';
-import { configInterfaces, create1 } from '../../engine/engine';
-import { createEventEmitter } from '../../event';
+import { IState, root } from '../reducers/root.reducer';
+import { compose, createStore } from 'redux';
+import {
+  blockDropEngine,
+  EngineStore as GEngineStore,
+} from './engine.enhancer';
+import { partial } from '../../util';
 
-export const debug = true;
-export const preview = 3;
+export type EngineStore = GEngineStore<IState>;
 
-const events = createEventEmitter();
+const references = Object.create(null);
 
-export interface Singletons {
-  configInterfaces: any[];
-  createEngine: Function;
-  engine: any;
-  on: (message: string, listener: Function) => any;
-}
+const engineEnhancer = partial(blockDropEngine, references);
 
-export const store = createStore(root,
-  (<any>window).devToolsExtension && (<any>window).devToolsExtension()
-);
+const devTools =
+  (<any>window).devToolsExtension && (<any>window).devToolsExtension();
 
-export const singletons = {
-  configInterfaces,
-  createEngine: () => {
-    singletons.engine = create1(
-      Object.assign({}, store.getState().game.config));
-    events.emit('update', singletons);
-    events.emit('new-game');
-    return singletons.engine;
-  },
-  engine: create1(Object.assign({}, store.getState().game.config)),
-  on: events.on,
-};
+
+export const store: GEngineStore<IState> =
+  <GEngineStore<IState>>createStore<IState>(
+    root, devTools ? compose(engineEnhancer, devTools) : engineEnhancer
+  );

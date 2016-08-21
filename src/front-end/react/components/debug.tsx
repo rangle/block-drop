@@ -7,6 +7,6 @@ export function Debug({ activePiece, lastEvent }) {
   return (
   <div className={ flexGrowShrink }>
     <InputDevice lastKeyCode={ lastEvent.keyCode } />
-    <ActivePiece p={ activePiece() } />
+    <ActivePiece p={ activePiece } />
   </div>);
 }

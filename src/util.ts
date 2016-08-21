@@ -141,29 +141,32 @@ export function debounce<T>(delay: number, fn: Function) {
   };
 }
 
-/**
- * Utility functions
- */
-export function deepFreeze(obj) {
+export function identity(value) {
+  return value;
+}
+
+export function deepCall(map, obj) {
   if (Array.isArray(obj)) {
-    obj.forEach(deepFreeze);
-  } else if (isObject(obj)) {
+    return map(obj.map(partial(deepCall, map)));
+  }
+
+  if (isObject(obj)) {
     for (let i in obj) {
       if (isObject(obj[i])) {
         if (!Object.isFrozen(obj[i])) {
-          obj[i] = deepFreeze(obj[i]);
+          obj[i] = partial(deepCall, map)(obj[i]);
         }
       }
     }
   }
-  
-  return Object.freeze(obj);
+
+  return map(obj);
 }
 
+export const deepFreeze = partial(deepCall, Object.freeze.bind(Object));
+
+
 export function divide(a: number, b: number): number {
-  if (!isNumber(a) || !isNumber(b)) {
-    throw new TypeError('divide: expecting numeric input');
-  }
   if (b === 0) {
     return 0;
   }

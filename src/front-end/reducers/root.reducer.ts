@@ -1,16 +1,19 @@
-import { app, IApp } from './app.reducer';
+import { app, IAppState } from './app.reducer';
 import { combineReducers } from 'redux';
 import { game, IGameState } from './game.reducer';
-import { framework, IFramework } from './framework.reducer';
+import { GameConfig } from '../../interfaces';
+import { nextConfig } from './next-config.reducer';
+
+
 
 export interface IState {
-  app: IApp;
-  framework: IFramework;
+  app: IAppState;
   game: IGameState;
+  nextConfig: GameConfig;
 }
 
 export const root = combineReducers<IState>({
   app,
-  framework,
   game,
+  nextConfig,
 });

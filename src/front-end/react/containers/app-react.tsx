@@ -4,7 +4,8 @@ import { changeScreen } from '../../actions/app.actions';
 import { Button } from '../components';
 import { Config } from './config';
 import { partial } from '../../../util';
-import {windowApp, verticalUiClass} from '../../styles';
+import { verticalUiClass } from '../../styles';
+import { SCREENS } from '../../constants';
 
 import {
   Game,
@@ -13,7 +14,6 @@ import {
 function mapStateToProps(state) {
   return {
     currentScreen: state.app.currentScreen,
-    screens: state.app.screens,
   };
 }
 
@@ -31,7 +31,7 @@ export const App = connect(
     return (<div>
       <div className={ verticalUiClass }>
       {
-        this.props.screens.map((screen, i) => {
+        SCREENS.map((screen, i) => {
           if (this.props.currentScreen === screen.id) {
             return null;
           }

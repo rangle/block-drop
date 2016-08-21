@@ -8,11 +8,11 @@ import { bootstrap } from '@angular/platform-browser-dynamic';
 import { App } from'./containers/app-angular';
 import { NgRedux } from 'ng2-redux';
 import { partial } from '../../util';
-import { Singletons } from './singletons';
-
 // Global styles
 import '../styles/index.css';
-import { windowApp } from '../styles';
+import { store } from '../store/store';
+import { Store } from './opaque-tokens';
+
 
 // Production mode
 declare const __PRODUCTION__: boolean;
@@ -38,7 +38,7 @@ export function mount() {
     return;
   }
   isStarting = true;
-  return bootstrap(App, [ NgRedux, Singletons ])
+  return bootstrap(App, [ NgRedux, { provide: Store, useValue: store } ])
     .then((ref) => {
       isStarting = false;
       appRef = ref;

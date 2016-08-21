@@ -6,6 +6,7 @@ import {
   createReadOnlyApiTo,
   debounce,
   divide,
+  deepCall,
   deepFreeze,
   kebabToCamel,
   intMidCeil,
@@ -45,7 +46,7 @@ describe('utility functions', () => {
 
   describe('debounce function', () => {
     it('should throw if not given a function', () => {
-      expect(() => debounce(0, <Function>5)).toThrowError();
+      expect(() => debounce(0, <Function>Object)).toThrowError();
     });
 
     it('should only call a function once, after a delay', (done) => {
@@ -92,11 +93,6 @@ describe('utility functions', () => {
   });
 
   describe('divide function', () => {
-    it('should throw on non-numeric input', () => {
-      expect(() => divide(<number>'5', 6)).toThrowError();
-      expect(() => divide(2, <number>'54')).toThrowError();
-    });
-
     it('should return zero on divide by zero', () => {
       expect(divide(5, 0)).toBe(0);
     });
@@ -241,8 +237,8 @@ describe('utility functions', () => {
       writable.a[0] = 7;
       expect(readOnly.a[0]).toBe(7);
     });
-  }); 
-  
+  });
+
   describe('deepFreeze function', () => {
     it('should return an identity if given a non-object', () => {
       expect(deepFreeze(null)).toBe(null);
@@ -433,7 +429,7 @@ describe('utility functions', () => {
 
   describe('throttle function', () => {
     it('should throw if not given a function', () => {
-      expect(() => throttle(0, <Function>'not')).toThrowError();
+      expect(() => throttle(0, <Function>Object)).toThrowError();
     });
 
     it('should run a function once after a predefined delay', (done) => {

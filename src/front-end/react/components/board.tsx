@@ -6,8 +6,6 @@ import {
   flexNoWrap,
 } from '../../styles';
 
-const gameViewportClass = `${flex} ${flexNoWrap}`;
-
 export function Board(props) {
   const jsx = boardToJsx(props.board, props.width);
   return (

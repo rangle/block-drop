@@ -2,12 +2,10 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  Inject,
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { NgRedux, select } from 'ng2-redux';
-import { Singletons } from '../singletons';
-import { IState } from '../../reducers/root.reducer';
 import { bindResizeToWindow, resize } from '../../aspect-resizer';
 import {
   ActivePiece,
@@ -29,6 +27,9 @@ import {
   flexShrink,
   previewDebug,
 } from '../../styles';
+import { Store } from '../opaque-tokens';
+import { EngineStore } from '../../store/store';
+import { select } from 'ng2-redux';
 
 @Component({
   directives: [
@@ -37,48 +38,49 @@ import {
   selector: 'bd-game',
   template: `
     <board class="${board}" 
-    [board]="board"
-    [width]="boardWidth"
+    [board]="(board$ | async)"
+    [width]="boardWidth$ | async"
     [ngStyle]="styles"
     ></board> 
     <div class="${previewDebug}">
       <bd-next-pieces class="${flexShrink} ${flexCol}" 
       [preview]="preview"></bd-next-pieces>
-      <bd-debug class="${flexGrowShrink}"></bd-debug>
+      <bd-debug 
+      class="${flexGrowShrink}" 
+      [activePiece]="(activePiece$ | async)"
+      [keyCode]="(lastEvent$ | async).keyCode"></bd-debug>
     </div>
 `,
 })
 export class Game implements AfterViewInit, OnInit, OnDestroy {
-  board: number[] = [];
-  boardWidth: number;
+  @select(
+    (s) => recomputeBoard(s.game.buffer, s.game.config.width)) board$;
+  @select((s) => s.game.lastEvent) lastEvent$;
+  boardWidth$: number;
   deRegister: Function[] = [];
   preview: { name: string, cols: number[][]}[] = [];
   styles = {};
-  constructor(private ngRedux: NgRedux<IState>,
-              private singletons: Singletons,
-              private cdRef: ChangeDetectorRef) {
-    ngRedux.subscribe(() => {
-      const game = ngRedux.getState().game;
-      this.styles['min-width'] = game.currentGameViewportDimensions.x + 'px';
-      this.styles['min-height'] = game.currentGameViewportDimensions.y + 'px';
-      this.styles['max-width'] = game.currentGameViewportDimensions.x + 'px';
-      this.styles['max-height'] = game.currentGameViewportDimensions.y + 'px';
-    });
-  }
+  constructor(@Inject(Store) private store: EngineStore,
+              private cdRef: ChangeDetectorRef) { }
 
   ngAfterViewInit() {
     resize();
   }
 
   ngOnInit() {
-    const localRedraw = this.redraw.bind(this);
+    this.deRegister.push(this.store.subscribe(() => {
+      const game = this.store.getState().game;
+      this.styles['min-width'] = game.currentGameViewportDimensions.x + 'px';
+      this.styles['min-height'] = game.currentGameViewportDimensions.y + 'px';
+      this.styles['max-width'] = game.currentGameViewportDimensions.x + 'px';
+      this.styles['max-height'] = game.currentGameViewportDimensions.y + 'px';
+    }));
     this.deRegister.push(bindResizeToWindow());
-    this.deRegister
-      .push(this.singletons.engine.on('redraw', localRedraw));
+    // our events happen "outside" of angular.  Account for that:
+    this.deRegister.push(
+      this.store.game.on('redraw', this.cdRef.detectChanges.bind(this.cdRef)));
 
-    this.deRegister.push(this.singletons.on('new-game', localRedraw));
-
-    const { controls } = this.singletons.engine;
+    const controls = this.store.game.controls();
 
     this.deRegister.push(registerKeyControls({
       37: controls.moveLeft,
@@ -87,34 +89,15 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
       40: controls.moveDown,
       81: controls.rotateLeft,
       87: controls.rotateRight,
-    }, (evt) => this.ngRedux.dispatch(keyPress(evt))));
+    }, (evt) => (<any>this.store.dispatch)(keyPress(evt))));
 
     this.redraw();
   }
 
-  recomputeBoard() {
-    // angular does *not* like getters do lots of mapping instead
-    this.board = [];
-    this.boardWidth = this.singletons.engine.config.width;
-    const board = boardToArray(this.singletons.engine.buffer, this.boardWidth);
-
-    let rows;
-
-    board.forEach((el, i) => {
-      if (i % this.boardWidth === 0) {
-        rows = [];
-      }
-      rows.push(el);
-      if (rows.length === this.boardWidth) {
-        this.board.push(rows);
-      }
-    });
-  }
-
   redraw() {
-    this.recomputeBoard();
+    const { preview } = this.store.getState().game;
 
-    this.preview = this.singletons.engine.preview.map((el) => ({
+    this.preview = preview.map((el) => ({
       name: el.name,
       cols: columnsFromBlock(el),
     }));
@@ -127,3 +110,23 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   }
 
 }
+
+function recomputeBoard(buffer, width) {
+  const newBoard = [];
+  const board = boardToArray(buffer, width);
+
+  let rows;
+
+  board.forEach((el, i) => {
+    if (i % width === 0) {
+      rows = [];
+    }
+    rows.push(el);
+    if (rows.length === width) {
+      newBoard.push(rows);
+    }
+  });
+
+  return newBoard;
+}
+

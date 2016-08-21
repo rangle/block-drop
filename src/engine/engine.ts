@@ -22,8 +22,6 @@ import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
 import { createEventEmitter } from '../event';
 
-import { makeCollection } from './function-collection';
-
 import {
   Block,
   Board,

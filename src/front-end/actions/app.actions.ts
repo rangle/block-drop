@@ -2,7 +2,7 @@ import {
   CHANGE_FRAMEWORK,
   CHANGE_MULTI_FRAMEWORK,
   CHANGE_SCREEN,
-} from './action-types';
+} from '../constants';
 
 export function changeFramework(fw: number) {
   return {

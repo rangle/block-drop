@@ -2,13 +2,15 @@
  * Stateful body re-sizer to preserve board aspect ratio
  */
 import { resize as resizeAction } from './actions/events.actions';
-import { store, singletons } from './store/store';
+import { store } from './store/store';
 import {
   computeAspectRatioDimensions,
   throttle,
 } from '../util';
 import { verticalUiClass } from './styles';
+import { FRAMEWORK_DESCRIPTIONS } from './constants';
 /**
+ *
  *
  *
  *
@@ -54,7 +56,7 @@ export function resize() {
     return;
   }
 
-  const containerId = appState.frameworkDescriptions[currentFw].id;
+  const containerId = FRAMEWORK_DESCRIPTIONS[currentFw].id;
 
   let elAppContainer;
   let verticalUiSize;
@@ -89,14 +91,14 @@ export function resize() {
     document.documentElement.clientHeight,
     document.documentElement.offsetHeight
   ) - verticalUiSize;
-  const gameX = singletons.engine.config.width - Math.abs(gameState.trimCols);
-  const gameY = singletons.engine.config.height - Math.abs(gameState.trimRows);
+  const gameX = gameState.config.width - Math.abs(gameState.trimCols);
+  const gameY = gameState.config.height - Math.abs(gameState.trimRows);
 
   const computed = computeAspectRatioDimensions(viewX, viewY, gameX, gameY);
 
   // portrait
   if (viewY > viewX) {
-    const limits = gameState.boardPortraitLimits;
+    const limits = appState.boardPortraitLimits;
     // portrait game
     if (gameY > gameX) {
       if (limits.y) {
@@ -117,7 +119,7 @@ export function resize() {
 
   // landscape
   if (viewX >= viewY) {
-    const limits = gameState.boardLandscapeLimits;
+    const limits = appState.boardLandscapeLimits;
     // portrait game
     if (gameY > gameX) {
       if (limits.y) {

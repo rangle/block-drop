@@ -23,17 +23,13 @@ import { Tile } from './tile.component';
 `,
 })
 export class Board {
-  @Input() board: number[];
+  @Input() board: number[][];
   @Input() width: number;
 
   cols: number[][];
-  emptyTile: string;
+  emptyTile: string = emptyTile;
   rows: number[];
-  tileByNumber: Function;
-  constructor() {
-    this.emptyTile = emptyTile;
-    this.tileByNumber = tileByNumber;
-  }
+  tileByNumber = tileByNumber;
 
   trackCol(index: number) {
     return index;

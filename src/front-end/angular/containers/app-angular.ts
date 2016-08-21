@@ -9,10 +9,12 @@ import { GameConfig } from './config.container';
 import { Button, } from '../components';
 import {
   flex,
+  flexCol,
   flexNoWrap,
-  windowApplet,
   verticalUiClass,
 } from '../../styles';
+
+import { SCREENS } from '../../constants';
 
 @Component({
   directives: [
@@ -30,7 +32,8 @@ import {
     <div [ngSwitch]="(currentScreen$ | async)">
       <bd-game class="${flex} ${flexNoWrap}" 
       [ngStyle]="styles" *ngSwitchCase="'game'"></bd-game>
-      <bd-config class="${windowApplet}" *ngSwitchCase="'config'"></bd-config>
+      <bd-config class="${flex} ${flexCol}" *ngSwitchCase="'config'">
+      </bd-config>
     </div>
 `,
 })
@@ -38,7 +41,7 @@ export class App {
   styles = { };
   @select(
     (state) => state.app.currentScreen) currentScreen$: Observable<number>;
-  @select((state) => state.app.screens
+  @select((state) => SCREENS
     .filter((screen) => screen.id !== state.app.currentScreen )) screens$;
 
   constructor(private ngRedux: NgRedux<IState>) {
