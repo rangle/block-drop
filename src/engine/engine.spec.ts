@@ -17,10 +17,6 @@ import {
 } from './engine';
 
 import {
-  RandomMethod,
-} from '../interfaces';
-
-import {
   spawn1,
 } from './rules';
 
@@ -41,8 +37,8 @@ describe('engine functions', () => {
         blockDescriptions: [{ desc: [[1]], name: 'test' }],
         createBlock,
         preview: 0,
-        seedRandom: seedrandom,
-        randomMethod: RandomMethod.Random,
+        seedRandom: 'xor4096',
+        randomMethod: 'random',
         seed: 'test',
         spawn: spawn1,
       };
@@ -60,7 +56,7 @@ describe('engine functions', () => {
     
     it('should skip previews if c.preview is 0 using RandomFromSet', () => {
       const preview = [];
-      config.randomMethod = RandomMethod.RandomFromSet;
+      config.randomMethod = 'randomFromSet';
       const nb = createNextBlock(config, preview);
       
       nb();

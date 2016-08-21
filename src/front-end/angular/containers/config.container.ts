@@ -16,7 +16,7 @@ import {
 
 import { select } from 'ng2-redux';
 import { Observable } from 'rxjs/Rx';
-import { isObject } from '../../../util';
+import { identity, isObject } from '../../../util';
 import { EngineStore } from '../../store/store';
 
 @Component({
@@ -41,6 +41,10 @@ import { EngineStore } from '../../store/store';
           (update)="updateSelection($event, i.prop)"
           [min]="(config$ | async)[i.min]"
           [max]="(config$ | async)[i.max]"></bd-number> 
+          <bd-number *ngSwitchCase="'string'"
+          [model]="(config$ | async)[i.prop]"
+          (update)="updateSelection($event, i.prop)"
+          [sanitizer]="i.sanitizer || identity"></bd-number> 
       </div>  
     </div>
     <button [onClick]="createGame" value="New Game"></button> 
@@ -50,6 +54,7 @@ export class GameConfig {
   @select((s) => s.nextConfig) config$: Observable<string>;
   createGame: Function;
   configInterfaces: any[];
+  identity = identity;
 
   constructor(@Inject(Store) private store: EngineStore) {
     this.configInterfaces = configInterfaces;

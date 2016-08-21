@@ -4,15 +4,19 @@ import { connect } from 'react-redux';
 import { partial } from '../../../util';
 import {
   Button,
+  Number,
   Select,
+  String,
 } from '../components';
-import { windowApplet } from '../../styles';
-import { configInterfaces } from '../../../engine/configs/config-interfaces'
+import { flex, flexCol } from '../../styles';
+import { configInterfaces } from '../../../engine/configs/config-interfaces';
 import { store } from '../../store/store';
+
+const configStyle = `${flex} ${flexCol}`;
 
 function mapStateToProps(state) {
   return {
-    detectAndClear: state.nextConfig.detectAndClear,
+    config: state.nextConfig,
   };
 }
 
@@ -27,22 +31,42 @@ export const Config = connect(
   mapDispatchToProps,
 )(React.createClass({
   render() {
-    return (<div className={ windowApplet }>{ configInterfaces
-      .map((i) => makeInterface(i,
-        this.props.detectAndClear,
-        partial(this.props.changeConfig, i.prop)))
-    }<Button onClick={ store.game.create } value='New Game' /></div>);
+    return (<div className={ configStyle }>
+      { configInterfaces
+        .map((i, key) => makeInterface(i,
+          this.props.config[i.prop],
+          partial(this.props.changeConfig, i.prop),
+          key
+        ))
+      }<Button onClick={ store.game.create } value='New Game' /></div>);
   },
 }));
 
-function makeInterface(i, selected, onChange) {
+function makeInterface(i, value, onChange, key) {
+
+  let input;
   switch (i.type) {
     case 'select':
-      return (<Select
-        key={ i }
-        selected={ selected }
+      input = (<Select
+        byValue={ true }
+        selected={ value }
         options={ i.options() }
-        onChange={ onChange }>
-      </Select>);
+        onChange={ onChange } />
+      );
+      break;
+
+    case 'number':
+      input = (<Number value={ value }
+                      min={ i.min }
+                      max={ i.max }
+                      onChange={ onChange } />);
+      break;
+
+    case 'string':
+      input = (<String value={ value }
+                      sanitizer={ i.sanitizer }
+                      onChange={ onChange } />);
+      break;
   }
+  return (<div key={ key }><strong>{ i.label }</strong>{ input }</div>);
 }

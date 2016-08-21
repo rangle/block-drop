@@ -13,10 +13,6 @@ import {
 } from '../board';
 
 import {
-  RandomMethod,
-} from '../../interfaces';
-
-import {
   defaultRandom,
 } from '../random';
 
@@ -57,8 +53,8 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   gameOver: gameOver1,
   detectAndClear: 'detectAndClear2',
   preview: 0,
-  randomMethod: RandomMethod.RandomFromSet,
-  seedRandom: defaultRandom,
+  randomMethod: 'randomFromSet',
+  seedRandom: 'xor4096',
   spawn: spawn1,
   speed: 1000,
   tick: tick1,

@@ -27,13 +27,13 @@ import {
   Board,
   GameConfig,
   NextBlockConfig,
-  RandomMethod,
 } from '../interfaces';
 
 import '../license';
 
 import {
   between,
+  functions as randomFunctions,
   randomSet,
 } from './random';
 
@@ -276,10 +276,10 @@ export function createNextBlock(c: NextBlockConfig,
 
   const blocks = c.blockDescriptions
     .map((el) => c.createBlock(el.desc, 0, 0, el.name));
-  const rand = c.seedRandom(c.seed);
+  const rand = randomFunctions.get(c.seedRandom)(c.seed);
   const spawn: (block: Block) => Block = partial(c.spawn, c.width, c.height);
   
-  const randomBlock: () => Block = c.randomMethod === RandomMethod.Random ?
+  const randomBlock: () => Block = c.randomMethod === 'random' ?
     () => blocks[between(rand, blocks.length)] :
     randomSet(rand, blocks);
   

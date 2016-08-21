@@ -7,7 +7,7 @@ import { IState } from '../reducers/root.reducer';
 import { create1 } from '../../engine/engine';
 import { partial } from '../../util';
 import {
-  changeConfig,
+  replaceConfig,
   replaceNextConfig,
   updateBuffer,
   updateActivePiece,
@@ -35,8 +35,9 @@ export function createGame(references: EngineReferences,
     create1(Object.assign({}, store.getState().nextConfig));
 
   (<any>store).dispatch(replaceNextConfig(references.engine.config));
+  (<any>store).dispatch(replaceConfig(references.engine.config));
 
-  changeConfig(references.engine.config);
+  replaceConfig(references.engine.config);
 
   updateState();
 

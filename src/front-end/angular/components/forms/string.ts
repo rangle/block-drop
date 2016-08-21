@@ -7,8 +7,7 @@ import {
 } from '@angular/core';
 
 import {
-  clamp,
-  numberFromString,
+  identity,
 } from '../../../../util';
 
 @Component({
@@ -21,16 +20,14 @@ import {
       (change)="onChange($event)">
 `,
 })
-export class Number {
-  @Input() model: number;
-  @Input() min: number = NaN;
-  @Input() max: number = NaN;
-  @Output() update: EventEmitter<number> = new EventEmitter<number>();
+export class String {
+  @Input() model: string;
+  @Input() sanitizer: (val: string) => string = identity;
+  @Output() update = new EventEmitter<string>();
 
   onChange($event) {
-    let val = numberFromString($event.target.value);
-
-    this.model = clamp(val, this.min, this.max);
-    this.update.emit(val);
+    this.update.emit(
+      this.sanitizer($event.target.value)
+    );
   }
 }

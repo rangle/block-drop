@@ -19,6 +19,24 @@ export function kebabToCamel(string: string) {
   return string.replace(/(\-[a-z])/g, (s) => s.toUpperCase().replace('-', ''));
 }
 
+export function clamp(val: number,
+                      min: number = NaN,
+                      max: number = NaN): number {
+  if (min === min) {
+    if (val < min) {
+      val = min;
+    }
+  }
+
+  if (max === max) {
+    if (val > this.max) {
+      val = this.max;
+    }
+  }
+
+  return val;
+}
+
 /**
  * Creates percentage based sizes to optimally fit ix/iy in ox,oy
  *
@@ -124,9 +142,6 @@ export function createReadOnlyApiTo(state: Object) {
  * Debounces a function by delay.  Last call's parameters win
  */
 export function debounce<T>(delay: number, fn: Function) {
-  if (!isFunction(fn)) {
-    throw new TypeError('debounceTo: expecting a function');
-  }
   let timer = null;
 
   return (...args) => {
@@ -289,10 +304,6 @@ export function safeCall(fn: Function, args?: any[]) {
 export function throttle<T>(delay: number,
                             fn: Function,
                             invokeImmediate: boolean = false) {
-  if (!isFunction(fn)) {
-    throw new TypeError('throttle expects a function');
-  }
-
 
   let timer = null;
   let lastArgs: any[];

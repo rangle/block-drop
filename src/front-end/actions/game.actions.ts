@@ -1,16 +1,16 @@
 import { Block, GameConfig, TypedArray } from '../../interfaces';
 import {
-  CHANGE_CONFIG,
   CHANGE_NEXT_CONFIG,
+  REPLACE_CONFIG,
   REPLACE_NEXT_CONFIG,
   UPDATE_ACTIVE_PIECE,
   UPDATE_BUFFER,
   UPDATE_PREVIEW,
 } from '../constants';
 
-export function changeConfig(config: GameConfig) {
+export function replaceConfig(config: GameConfig) {
   return {
-    type: CHANGE_CONFIG,
+    type: REPLACE_CONFIG,
     payload: config,
   };
 }

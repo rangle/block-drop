@@ -3,6 +3,10 @@ import {
 } from '../board';
 
 import {
+  functions as functionsRandom,
+} from '../random';
+
+import {
   deepFreeze,
   isNumber,
   isString,
@@ -48,4 +52,24 @@ export const configInterfaces = deepFreeze([
     prop: 'seed',
     type: 'string',
   },
+  {
+    label: 'Preview',
+    prop: 'preview',
+    type: 'number',
+    min: 0,
+  },
+  {
+    label: 'Random Method',
+    default: 'randomFromSet',
+    options: () => ['random', 'randomFromSet'],
+    prop: 'randomMethod',
+    type: 'select',
+  },
+  {
+    label: 'Random Function',
+    default: functionsRandom.default(),
+    options: () => functionsRandom.list(),
+    prop: 'seedRandom',
+    type: 'select',
+  }
 ]);

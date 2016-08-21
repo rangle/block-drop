@@ -64,7 +64,7 @@ export interface NextBlockConfig extends MapBaseConfig {
   blockDescriptions?: BlockDescription[];
   createBlock?: (desc: Matrix, x?: number, y?: number, name?: string) => Block;
   preview?: number;
-  seedRandom?: SeedRandom;
+  seedRandom?: string;
   randomMethod?: RandomMethod;
   seed?: string;
   spawn?: (boardWidth: number,
@@ -96,17 +96,9 @@ export interface GameConfig extends NextBlockConfig {
 
 export type Matrix = Array<number[]>;
 
-export interface TypeDesc<T> {
-  type: 'string';
-  is: (x: any) => boolean;
-}
-
 export type SeedRandom = (seed: string, ...args: any[]) => () => number;
 
-export enum RandomMethod {
-  RandomFromSet,
-  Random,
-}
+export type RandomMethod = 'randomFromSet' | 'random';
 
 export type SignedTypedArray = Int8Array | Int16Array | Int32Array;
 export type UnsignedTypedArray = Uint8Array | Uint16Array | Uint32Array;

@@ -1,7 +1,7 @@
 /**
  * Stateful body re-sizer to preserve board aspect ratio
  */
-import { resize as resizeAction } from './actions/events.actions';
+import { viewportResize } from './actions/events.actions';
 import { store } from './store/store';
 import {
   computeAspectRatioDimensions,
@@ -31,11 +31,25 @@ import { FRAMEWORK_DESCRIPTIONS } from './constants';
  *
  */
 let lastContainer;
+let lastWidth = 0;
+let lastHeight = 0;
 
 export const throttledResize = throttle<() => void>(30, resize);
 
-// call resize on init
+// call viewportResize on init
 resize();
+
+store.subscribe(() => {
+  const currentConfig = store.getState().game.config;
+  if (currentConfig.width !== lastWidth) {
+    resize();
+    return;
+  }
+  if (currentConfig.height !== lastHeight) {
+    resize();
+    return;
+  }
+});
 
 export function bindResizeToWindow() {
   window.addEventListener('resize', throttledResize);
@@ -55,6 +69,9 @@ export function resize() {
   if (currentFw < 0) {
     return;
   }
+
+  lastWidth = gameState.config.width;
+  lastHeight = gameState.config.height;
 
   const containerId = FRAMEWORK_DESCRIPTIONS[currentFw].id;
 
@@ -139,5 +156,5 @@ export function resize() {
   }
 
   /** why are the typings weird :/ ? */
-  (<any>store).dispatch(resizeAction(computed));
+  (<any>store).dispatch(viewportResize(computed));
 }

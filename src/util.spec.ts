@@ -45,10 +45,6 @@ describe('utility functions', () => {
   });
 
   describe('debounce function', () => {
-    it('should throw if not given a function', () => {
-      expect(() => debounce(0, <Function>Object)).toThrowError();
-    });
-
     it('should only call a function once, after a delay', (done) => {
       let result = 0;
       const inc = () => result += 1;
@@ -428,10 +424,6 @@ describe('utility functions', () => {
   });
 
   describe('throttle function', () => {
-    it('should throw if not given a function', () => {
-      expect(() => throttle(0, <Function>Object)).toThrowError();
-    });
-
     it('should run a function once after a predefined delay', (done) => {
       let result = 0;
       const throttled = throttle<() => void>(5, () => result += 1);

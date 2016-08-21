@@ -57,7 +57,10 @@ export function game(state = INIT, action) {
         lastEvent: action.payload,
       });
 
-    case aTypes.CHANGE_CONFIG:
+    case aTypes.REPLACE_CONFIG:
+      return Object.assign({}, state, { config: action.payload });
+
+    case aTypes.REPLACE_CONFIG:
       return Object.assign({}, state, { config: action.payload });
 
     case aTypes.EVENT_RESIZE:
