@@ -1,4 +1,4 @@
-const DEFAULT_DISPLAY = 'block';
+const DEFAULT_DISPLAY = 'flex';
 
 export interface Dictionary {
   [key: string]: string;

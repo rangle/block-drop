@@ -36,6 +36,10 @@ export interface Board1 extends Board {
   descBuffer: Uint8Array; 
 }
 
+export interface Dictionary<T> {
+  [id: string]: T;
+}
+
 export enum Direction {
   Up,
   Down,
@@ -93,7 +97,7 @@ export interface GameConfig extends NextBlockConfig {
 export type Matrix = Array<number[]>;
 
 export interface TypeDesc<T> {
-  type: 'string',
+  type: 'string';
   is: (x: any) => boolean;
 }
 

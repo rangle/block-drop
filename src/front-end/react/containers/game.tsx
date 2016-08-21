@@ -1,19 +1,39 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { keyPress } from '../../actions/events.actions';
-import { singletons } from '../../store/store';
 import { registerKeyControls } from '../../controls';
 import { boardToArray } from '../../../util';
-
+import { bindResizeToWindow, resize } from '../../aspect-resizer';
+import {
+  flex,
+  flexNoWrap,
+  previewDebug,
+} from '../../styles';
+import { store } from '../../store/store';
 import {
   Board,
   Debug,
   NextPieces,
 } from '../components';
 
+const gameViewportClass = `${flex} ${flexNoWrap}`;
+
 function mapStateToProps(state) {
   return {
+    activePiece: state.game.activePiece,
+    board: boardToArray(state.game.buffer, state.game.config.width),
     lastEvent: state.game.lastEvent,
+    preview: state.game.preview,
+    styles: {
+      flexDirection: state.game.currentGameViewportDimensions.direction,
+    },
+    subStyles: {
+      minWidth: state.game.currentGameViewportDimensions.x + 'px',
+      minHeight: state.game.currentGameViewportDimensions.y + 'px',
+      maxWidth: state.game.currentGameViewportDimensions.x + 'px',
+      maxHeight: state.game.currentGameViewportDimensions.y + 'px',
+    },
+    width: state.game.config.width,
   };
 }
 
@@ -29,16 +49,10 @@ export const Game = connect(
 )(React.createClass({
   deRegister: [],
   componentDidMount: function() {
-    const updateBoard = () => ({
-      board: boardToArray(singletons.engine.buffer,
-        singletons.engine.config.width)
-    });
-    this.deRegister.push(
-      this.state.game.on('redraw', () => this.setState(updateBoard)));
+    resize();
+    this.deRegister.push(bindResizeToWindow());
 
-    this.deRegister.push(singletons.on('new-game', this.setState(updateBoard)));
-
-    const { controls } = this.state.game;
+    const controls = store.game.controls();
 
     this.deRegister.push(registerKeyControls({
       37: controls.moveLeft,
@@ -55,19 +69,14 @@ export const Game = connect(
     this.deRegister = [];
   },
 
-  getInitialState: () => ({
-    board: boardToArray(singletons.engine.buffer,
-      singletons.engine.config.width),
-    game: singletons.engine,
-  }),
-
   render() {
-    return (<div className='bd-game-window'>
-      <Board game= { this.state.game }
-             board={ this.state.board } />
-      <div className='bd-float'>
-        <NextPieces preview={ this.state.game.preview } />
-        <Debug activePiece={ this.state.game.activePiece }
+    return (<div className={ gameViewportClass } style={ this.props.styles }>
+      <Board board={ this.props.board }
+             width={ this.props.width }
+             styles={ this.props.subStyles } />
+      <div className={ previewDebug }>
+        <NextPieces preview={ this.props.preview } />
+        <Debug activePiece={ this.props.activePiece }
                lastEvent={ this.props.lastEvent } />
       </div>
     </div>);

@@ -4,6 +4,8 @@ import { changeScreen } from '../../actions/app.actions';
 import { Button } from '../components';
 import { Config } from './config';
 import { partial } from '../../../util';
+import { verticalUiClass } from '../../styles';
+import { SCREENS } from '../../constants';
 
 import {
   Game,
@@ -12,7 +14,6 @@ import {
 function mapStateToProps(state) {
   return {
     currentScreen: state.app.currentScreen,
-    screens: state.app.screens,
   };
 }
 
@@ -27,10 +28,10 @@ export const App = connect(
   mapDispatchToProps
 )(React.createClass({
   render() {
-    return (<div className='bd-app'>
-      <h1>Block Drop</h1>
+    return (<div>
+      <div className={ verticalUiClass }>
       {
-        this.props.screens.map((screen, i) => {
+        SCREENS.map((screen, i) => {
           if (this.props.currentScreen === screen.id) {
             return null;
           }
@@ -41,6 +42,7 @@ export const App = connect(
                           }/>);
         })
       }
+      </div>
       {
         (() => {
           switch (this.props.currentScreen) {

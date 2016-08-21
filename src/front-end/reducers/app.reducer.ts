@@ -2,44 +2,26 @@ import {
   CHANGE_FRAMEWORK,
   CHANGE_MULTI_FRAMEWORK,
   CHANGE_SCREEN,
-} from '../actions/action-types';
+} from '../constants';
 import { deepFreeze } from '../../util';
 
-export type Screen = 'config' | 'game';
-export interface IApp {
+export type Screen = 'config' | 'game' | 'start-game';
+
+export interface IAppState {
+  boardLandscapeLimits: { x: number, y: number };
+  boardPortraitLimits: { x: number, y: number };
   currentFramework: number; // matches index in frameworkDescriptions
   currentScreen: Screen;
-  elementRoot: string;
-  elementSplash: string;
-  frameworkDescriptions: { id: string, name: string }[];
-  screens: { id: Screen, name: string }[];
   useMultiFrameworks: boolean;
-  version: string;
 }
 
-const FRAMEWORK_DESCRIPTIONS = deepFreeze([
-  { id: 'bd-root-angular', name: 'Angular 2' },
-  { id: 'bd-root-react', name: 'React' },
-]);
-const ROOT = 'bd-root';
-const SPLASH = 'bd-splash';
-const VERSION = '0.0.1';
 
-const INIT: IApp = deepFreeze({
+const INIT: IAppState = deepFreeze({
+  boardLandscapeLimits: { x: 0.25, y: 0 },
+  boardPortraitLimits: { x: 0, y: 0.25 },
   currentFramework: -1,
-  currentScreen: 'game',
-  elementRoot: ROOT,
-  elementSplash: SPLASH,
-  frameworkDescriptions: FRAMEWORK_DESCRIPTIONS,
-  screens: [{
-    id: 'config',
-    name: 'Config',
-  }, {
-    id: 'game',
-    name: 'Game',
-  }],
+  currentScreen: 'start-game',
   useMultiFrameworks: false,
-  version: VERSION,
 });
 
 export function app(state = INIT, action) {

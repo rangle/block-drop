@@ -10,7 +10,6 @@ import {
   canRotateLeft1,
   canRotateRight1,
   createBoard1,
-  detectAndClear2,
 } from '../board';
 
 import {

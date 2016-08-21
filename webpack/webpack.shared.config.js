@@ -26,6 +26,10 @@ function pluginIndex(file) {
 }
 
 const plugins = [
+  /** ensure splitBypath is first to work with testing hack */
+  new SplitByPathPlugin([
+    { name: 'vendor', path: [path.join(__dirname, '..', 'node_modules')] },
+  ]),
   new webpack.DefinePlugin({
     __DEV__: process.env.NODE_ENV !== 'production',
     __PRODUCTION__: process.env.NODE_ENV === 'production',
@@ -36,11 +40,6 @@ const plugins = [
 ];
 
 if (process.env.NODE_ENV === 'production') {
-  plugins.unshift(
-    new SplitByPathPlugin([
-      { name: 'vendor', path: [path.join(__dirname, '..', 'node_modules')] },
-    ])
-  );
   plugins.unshift(
     new webpack.optimize.UglifyJsPlugin({
       compressor: {

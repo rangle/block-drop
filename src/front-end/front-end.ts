@@ -13,6 +13,12 @@ import {
   changeMultiFramework,
 } from './actions/app.actions';
 import { store } from './store/store';
+import {
+  EL_ROOT,
+  EL_SPLASH,
+  FRAMEWORK_DESCRIPTIONS,
+  VERSION,
+} from './constants';
 
 // no idea why editor dislikes store.dispatch :/
 (<any>store).dispatch(changeMultiFramework(true));
@@ -21,22 +27,15 @@ import { store } from './store/store';
 const changeFramework = (offset: number) => (<any>store)
   .dispatch(changeFrameworkA(offset));
 
-const APP_STATE = store.getState().app;
-const ROOT = APP_STATE.elementRoot;
-const VERSION = APP_STATE.version;
-const SPLASH = APP_STATE.elementSplash;
-
-const splash = document.getElementById(SPLASH);
-const root = document.getElementById(ROOT);
-
-const frameWorkDescs = APP_STATE.frameworkDescriptions;
+const splash = document.getElementById(EL_SPLASH);
+const root = document.getElementById(EL_ROOT);
 
 const frameWorks = deepFreeze({
   'bd-root-angular': angular,
   'bd-root-react': react,
 });
 
-const elements = frameWorkDescs.reduce(
+const elements = FRAMEWORK_DESCRIPTIONS.reduce(
   (state, { id }) => {
     state[id] = document.getElementById(id);
     return state;
@@ -67,7 +66,7 @@ function hideAll() {
 
 function mount() {
   root.innerHTML = '';
-  frameWorkDescs.forEach((fwDesc, i) => {
+  FRAMEWORK_DESCRIPTIONS.forEach((fwDesc, i) => {
     const button = document.createElement('input');
     button.type = 'button';
     button.value = fwDesc.name;

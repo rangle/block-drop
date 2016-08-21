@@ -1,23 +1,28 @@
+/**
+ * NOTE: this component is relatively "smart".  Normally active piece would
+ * be passed in but Angular doesn't like objects that don't follow the "narrow"
+ * path and it's easier to just import the activePiece here.  At least for now
+ */
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  Inject,
   Input,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 
-import { select } from 'ng2-redux';
-import { Observable } from 'rxjs/Rx';
-
+import { Store } from '../opaque-tokens';
+import { EngineStore } from '../../store/store';
 import { ActivePiece } from './active-piece.component';
 import { InputDevice } from './input-device.component';
-
-import { Singletons } from '../singletons';
+import { O_EMPTY_BLOCK } from '../../constants';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   directives: [InputDevice, ActivePiece],
   selector: 'bd-debug',
   template: `
-    <input-device [lastKeyCode]="(lastEvent$ | async).keyCode"> 
+    <input-device [lastKeyCode]="keyCode"> 
     </input-device>
     <active-piece [centreX]="activePiece.centreX"
       [centreY]="activePiece.centreY"
@@ -29,11 +34,29 @@ import { Singletons } from '../singletons';
       [y]="activePiece.y"></active-piece>
   `,
 })
-export class Debug {
-  @Input() activePiece;
-  @select((s) => s.game.lastEvent) lastEvent$: Observable<{ keyCode: number}>;
+export class Debug implements OnDestroy, OnInit {
+  @Input() keyCode;
   stringify = JSON.stringify.bind(JSON);
-  constructor(private singletons: Singletons) {
-    this.activePiece = this.singletons.engine.activePiece();
+  private activePiece = O_EMPTY_BLOCK;
+  private destroyers: Function[] = [];
+
+/**
+ * NOTE: this component is relatively "smart".  Normally active piece would
+ * be passed in but Angular doesn't like objects that don't follow the "narrow"
+ * path and it's easier to just import the activePiece here.  At least for now
+ */
+constructor(@Inject(Store) private store: EngineStore,
+            private cd: ChangeDetectorRef) {}
+
+  ngOnDestroy() {
+    this.destroyers.forEach((unsub) => unsub());
+    this.destroyers = [];
+  }
+
+  ngOnInit() {
+    this.destroyers.push(this.store.subscribe(() => {
+      this.activePiece = this.store.getState().game.activePiece;
+      this.cd.detectChanges();
+    }));
   }
 }

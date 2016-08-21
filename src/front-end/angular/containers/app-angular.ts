@@ -7,6 +7,14 @@ import { Observable } from 'rxjs/Rx';
 import { changeScreen } from '../../actions/app.actions';
 import { GameConfig } from './config.container';
 import { Button, } from '../components';
+import {
+  flex,
+  flexCol,
+  flexNoWrap,
+  verticalUiClass,
+} from '../../styles';
+
+import { SCREENS } from '../../constants';
 
 @Component({
   directives: [
@@ -16,26 +24,36 @@ import { Button, } from '../components';
   ],
   selector: 'bd-angular',
   template: `
-    <div class="bd-app">
-      <h1>Block Drop</h1>
+    <div class="${flex} ${verticalUiClass}">
       <button *ngFor="let screen of (screens$ | async)"
          [onClick]="changeScreen(screen.id)"
          [value]="screen.name"></button>
-      <div [ngSwitch]="(currentScreen$ | async)">
-        <bd-game *ngSwitchCase="'game'"></bd-game>
-        <bd-config *ngSwitchCase="'config'"></bd-config>
-      </div>
+    </div>
+    <div [ngSwitch]="(currentScreen$ | async)">
+      <bd-game class="${flex} ${flexNoWrap}" 
+      [ngStyle]="styles" *ngSwitchCase="'game'"></bd-game>
+      <bd-config class="${flex} ${flexCol}" *ngSwitchCase="'config'">
+      </bd-config>
     </div>
 `,
 })
 export class App {
+  styles = { };
   @select(
     (state) => state.app.currentScreen) currentScreen$: Observable<number>;
-  @select((state) => state.app.screens
+  @select((state) => SCREENS
     .filter((screen) => screen.id !== state.app.currentScreen )) screens$;
 
   constructor(private ngRedux: NgRedux<IState>) {
     this.ngRedux.provideStore(store);
+    ngRedux.subscribe(() => {
+      const game = ngRedux.getState().game;
+      if (game.currentGameViewportDimensions.direction === 'row') {
+        this.styles['flex-direction'] = 'row';
+      } else {
+        this.styles['flex-direction'] = 'column';
+      }
+    });
   }
 
   changeScreen(screen: string) {

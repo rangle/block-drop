@@ -1,16 +1,18 @@
 import '../../license';
+import '../aspect-resizer';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import 'ts-helpers';
-import { enableProdMode, Injectable } from '@angular/core';
+import { enableProdMode } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { App } from'./containers/app-angular';
 import { NgRedux } from 'ng2-redux';
 import { partial } from '../../util';
-import { Singletons } from './singletons';
-
 // Global styles
 import '../styles/index.css';
+import { store } from '../store/store';
+import { Store } from './opaque-tokens';
+
 
 // Production mode
 declare const __PRODUCTION__: boolean;
@@ -36,7 +38,7 @@ export function mount() {
     return;
   }
   isStarting = true;
-  return bootstrap(App, [ NgRedux, Singletons ])
+  return bootstrap(App, [ NgRedux, { provide: Store, useValue: store } ])
     .then((ref) => {
       isStarting = false;
       appRef = ref;
@@ -47,7 +49,8 @@ export function unmount(element: HTMLElement) {
   if (appRef) {
     appRef.destroy();
     appRef = null;
-    element.appendChild( document.createElement('bd-angular') );
+    const el = document.createElement('bd-angular');
+    element.appendChild(el);
     if (timeOut) {
       clearTimeout(timeOut);
       timeOut = null;

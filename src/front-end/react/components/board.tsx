@@ -1,14 +1,33 @@
 import * as React from 'react';
 import { Tile } from './';
-import { boardStyle } from '../../styles';
+import { board, flexGrowRow } from '../../styles';
+import {
+  flex,
+  flexNoWrap,
+} from '../../styles';
 
 export function Board(props) {
-    return (
-      <div>
-          <div className='bd-float'>rows: { props.game.rowsCleared }</div>
-          <div className={ boardStyle }>
-              { props.board
-                .map((el, i) => (<Tile key={i} value={el}></Tile>)) }
-          </div>
-      </div>);
+  const jsx = boardToJsx(props.board, props.width);
+  return (
+    <div style={ props.styles } className={ board }>
+      {
+        jsx.map((el, i) => (
+        <div key={i} className={ flexGrowRow }>{ el }</div>))
+      }
+    </div>);
+}
+
+function boardToJsx(board: number[], width): number[][] {
+  const cols = [];
+  let row;
+  board.forEach((el, i) => {
+    if (i % width === 0) {
+      row = [];
+    }
+    row.push(<Tile key={i} value={el}></Tile>);
+    if (row.length === width) {
+      cols.push(row);
+    }
+  });
+  return cols;
 }

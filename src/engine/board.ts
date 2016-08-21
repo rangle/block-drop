@@ -13,7 +13,6 @@ import {
   Block,
   Board,
   Board1,
-  Direction,
 } from '../interfaces';
 
 import {

@@ -1,6 +1,9 @@
 const loaders = require('./webpack/webpack.shared.config').loaders;
 const plugins = require('./webpack/webpack.shared.config').plugins;
 
+/** testing hack, ensure webpack config has split or chunk plugin first */
+plugins.shift();
+
 module.exports = (config) => {
   config.set({
     frameworks: [

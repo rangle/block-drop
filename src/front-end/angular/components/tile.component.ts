@@ -2,25 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
-  OnChanges,
 } from '@angular/core';
-import {
-  emptyTile,
-  tileByNumber,
-} from '../../styles';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'tile',
-  template: `
-    <div [ngClass]="style">{{ value }}</div>
-`,
+  template: `{{ value }}`,
 })
-export class Tile implements OnChanges {
+export class Tile {
   @Input() value: number;
-  style: string = emptyTile;
-
-  ngOnChanges() {
-    this.style = this.value === 0 ? emptyTile : tileByNumber(this.value);
-  }
 }

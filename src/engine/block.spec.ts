@@ -1,4 +1,5 @@
 import {
+  columnsFromBlock,
   createBlock,
   forEach,
   rotateLeft,
@@ -10,6 +11,14 @@ import {
 } from '../interfaces';
 
 describe('block functions', () => {
+  describe('columnsFromBlock', () => {
+    it('should turn a block into a matrix organized by columns', () => {
+      const block = createBlock([[1, 1, 1]]);
+      const cols = columnsFromBlock(block);
+      expect(cols.length).toBe(3);
+    });
+  });
+
   describe('createBlock', () => {
     it('should throw if given a desc that is not an array', () => {
       expect(() => createBlock(<Array<number[]>>{})).toThrowError();

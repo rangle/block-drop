@@ -8,13 +8,18 @@ import {
   Input,
 } from '@angular/core';
 
+import {
+  flexGrowCol,
+} from '../../styles';
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   directives: [Block],
   selector: 'bd-next-pieces',
   template: `
-    <h2>Next:</h2>
-    <block *ngFor="let p of preview" 
+    <h3>Next:</h3>
+    <block class="${flexGrowCol}"
+      *ngFor="let p of preview" 
       [name]="p.name" 
       [cols]="p.cols"></block>
   `,
