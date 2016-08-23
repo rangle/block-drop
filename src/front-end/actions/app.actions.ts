@@ -1,7 +1,7 @@
 import {
   CHANGE_FRAMEWORK,
   CHANGE_MULTI_FRAMEWORK,
-  CHANGE_SCREEN,
+  ROUTE_BINDING_BOOTSTRAP,
 } from '../constants';
 
 export function changeFramework(fw: number) {
@@ -18,9 +18,9 @@ export function changeMultiFramework(useMultiFramework: boolean) {
   };
 }
 
-export function changeScreen(screen: string) {
+export function bootstrapRoutes(path: string) {
   return {
-    type: CHANGE_SCREEN,
-    payload: screen,
+    type: ROUTE_BINDING_BOOTSTRAP,
+    payload: path,
   };
 }

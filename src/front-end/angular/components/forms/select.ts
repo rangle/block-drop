@@ -5,9 +5,11 @@ import {
   Input,
   Output,
 } from '@angular/core';
+import { FORM_DIRECTIVES } from '@angular/forms';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
+  directives: [FORM_DIRECTIVES],
   selector: 'bd-select',
   template: `
     <select [ngModel]="model" 

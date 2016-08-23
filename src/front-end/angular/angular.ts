@@ -1,17 +1,23 @@
-import '../../license';
-import '../aspect-resizer';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import 'ts-helpers';
-import { enableProdMode } from '@angular/core';
+import { enableProdMode, provide } from '@angular/core';
 import { bootstrap } from '@angular/platform-browser-dynamic';
+import { provideRouter } from '@angular/router';
+import { provideForms } from '@angular/forms';
+import { APP_BASE_HREF } from '@angular/common';
 import { App } from'./containers/app-angular';
 import { NgRedux } from 'ng2-redux';
+import { NgReduxRouter } from 'ng2-redux-router';
+import { routes } from './routes-angular';
 import { partial } from '../../util';
-// Global styles
-import '../styles/index.css';
+import { LOCATION_STRATEGY } from '../constants';
+import '../../license';
+import '../aspect-resizer';
 import { store } from '../store/store';
 import { Store } from './opaque-tokens';
+// Global styles
+import '../styles/index.css';
 
 
 // Production mode
@@ -38,7 +44,15 @@ export function mount() {
     return;
   }
   isStarting = true;
-  return bootstrap(App, [ NgRedux, { provide: Store, useValue: store } ])
+
+  return bootstrap(App, [
+    NgRedux,
+    { provide: Store, useValue: store },
+    NgReduxRouter,
+    provide(APP_BASE_HREF, { useValue : '/' }),
+    provideForms(),
+    provideRouter(routes, { useHash: LOCATION_STRATEGY === 'hash' }),
+  ])
     .then((ref) => {
       isStarting = false;
       appRef = ref;

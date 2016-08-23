@@ -4,9 +4,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import { App } from './containers/app-react';
-
 import { store } from '../store/store';
+
+import { Routes } from './routes-react';
 
 // Global styles
 import '../styles/index.css';
@@ -22,7 +22,7 @@ if (__STAND_ALONE__) {
 export function mount() {
   ReactDOM.render(
     <Provider store={ store }>
-      <App></App>
+      <Routes></Routes>
     </Provider>,
     document.getElementById(REACT)
   );

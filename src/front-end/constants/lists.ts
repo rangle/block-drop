@@ -5,10 +5,12 @@ export const FRAMEWORK_DESCRIPTIONS = deepFreeze([
   { id: 'bd-root-react', name: 'React' },
 ]);
 
-export const SCREENS = deepFreeze([{
+export const ROUTES = deepFreeze([{
   id: 'config',
   name: 'Config',
+  path: 'config',
 }, {
   id: 'game',
   name: 'Game',
+  path: 'game',
 }]);
