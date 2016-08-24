@@ -5,6 +5,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "noEmitHelpers": true,
     "noImplicitAny": false,
     "outDir": "./lib",

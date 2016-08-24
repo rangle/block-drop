@@ -12,7 +12,7 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'bd-number',
+  selector: 'bd-string',
   template: `
     <input 
       type='string' 

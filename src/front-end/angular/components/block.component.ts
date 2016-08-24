@@ -13,7 +13,6 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  directives: [Tile],
   selector: 'block',
   template: `
     {{ name }}

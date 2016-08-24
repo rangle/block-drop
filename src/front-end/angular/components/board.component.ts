@@ -13,7 +13,6 @@ import { Tile } from './tile.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  directives: [ Tile ],
   selector: 'board',
   template: `
     <div class="${flexGrowRow}" *ngFor="let row of board; trackBy: trackCol">

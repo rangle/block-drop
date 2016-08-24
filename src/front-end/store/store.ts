@@ -15,8 +15,9 @@ const engineEnhancer = partial(blockDropEngine, references);
 const devTools =
   (<any>window).devToolsExtension && (<any>window).devToolsExtension();
 
-
 export const store: GEngineStore<IState> =
   <GEngineStore<IState>>createStore<IState>(
-    root, devTools ? compose(engineEnhancer, devTools) : engineEnhancer
+    root, devTools ?
+      compose(engineEnhancer, devTools) :
+      engineEnhancer
   );

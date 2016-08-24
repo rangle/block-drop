@@ -1,17 +1,14 @@
-import '../../license';
-import '../aspect-resizer';
 import 'reflect-metadata';
 import 'zone.js/dist/zone';
 import 'ts-helpers';
 import { enableProdMode } from '@angular/core';
-import { bootstrap } from '@angular/platform-browser-dynamic';
-import { App } from'./containers/app-angular';
-import { NgRedux } from 'ng2-redux';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppModule } from './app.module';
 import { partial } from '../../util';
+import '../../license';
+import '../aspect-resizer';
 // Global styles
 import '../styles/index.css';
-import { store } from '../store/store';
-import { Store } from './opaque-tokens';
 
 
 // Production mode
@@ -38,10 +35,15 @@ export function mount() {
     return;
   }
   isStarting = true;
-  return bootstrap(App, [ NgRedux, { provide: Store, useValue: store } ])
+
+  return platformBrowserDynamic().bootstrapModule(AppModule)
     .then((ref) => {
       isStarting = false;
       appRef = ref;
+    }).catch((err) => {
+      /* tslint:disable no-console */
+      console.log(`failed to bootstrap angular 2: ${err.message}`);
+      console.log(err.stack);
     });
 }
 

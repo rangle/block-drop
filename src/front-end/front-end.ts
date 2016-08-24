@@ -9,6 +9,7 @@ import { show, hide } from './elements';
 import * as angular from './angular/angular';
 import * as react from './react/react';
 import {
+  bootstrapRoutes,
   changeFramework as changeFrameworkA,
   changeMultiFramework,
 } from './actions/app.actions';
@@ -19,6 +20,8 @@ import {
   FRAMEWORK_DESCRIPTIONS,
   VERSION,
 } from './constants';
+
+(<any>store).dispatch(bootstrapRoutes(window.location.pathname));
 
 // no idea why editor dislikes store.dispatch :/
 (<any>store).dispatch(changeMultiFramework(true));
