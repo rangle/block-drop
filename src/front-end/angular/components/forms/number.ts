@@ -5,7 +5,6 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { FORM_DIRECTIVES } from '@angular/forms';
 
 import {
   clamp,
@@ -14,7 +13,6 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  directives: [FORM_DIRECTIVES],
   selector: 'bd-number',
   template: `
     <input 

@@ -19,7 +19,6 @@ import { InputDevice } from './input-device.component';
 import { O_EMPTY_BLOCK } from '../../constants';
 
 @Component({
-  directives: [InputDevice, ActivePiece],
   selector: 'bd-debug',
   template: `
     <input-device [lastKeyCode]="keyCode"> 

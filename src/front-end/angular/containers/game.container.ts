@@ -32,9 +32,6 @@ import { EngineStore } from '../../store/store';
 import { select } from 'ng2-redux';
 
 @Component({
-  directives: [
-    ActivePiece, Board, Debug, Button, NextPieces, InputDevice, Select
-  ],
   selector: 'bd-game',
   template: `
     <board class="${board}" 
@@ -47,7 +44,6 @@ import { select } from 'ng2-redux';
       [preview]="preview"></bd-next-pieces>
       <bd-debug 
       class="${flexGrowShrink}" 
-      [activePiece]="(activePiece$ | async)"
       [keyCode]="(lastEvent$ | async).keyCode"></bd-debug>
     </div>
 `,

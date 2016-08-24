@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router, ROUTER_DIRECTIVES } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgReduxRouter } from 'ng2-redux-router';
 import { NgRedux, select } from 'ng2-redux';
 import { store } from '../../store/store';
@@ -9,20 +9,12 @@ import { GameConfig } from './config.container';
 import { Button, } from '../components';
 import {
   flex,
-  flexCol,
-  flexNoWrap,
   verticalUiClass,
 } from '../../styles';
 
 import { ROUTES } from '../../constants';
 
 @Component({
-  directives: [
-    Button,
-    Game,
-    GameConfig,
-    ROUTER_DIRECTIVES,
-  ],
   selector: 'bd-angular',
   template: `
     <div class="${flex} ${verticalUiClass}">
@@ -33,23 +25,34 @@ import { ROUTES } from '../../constants';
     <router-outlet></router-outlet>
 `,
 })
-export class App {
+export class App implements OnDestroy, OnInit {
   styles = { };
   routes = ROUTES;
+  private unsubscribe: Function;
 
   constructor(private ngRedux: NgRedux<IState>,
               private ngReduxRouter: NgReduxRouter,
               private router: Router) {
     this.ngRedux.provideStore(store);
-    this.ngReduxRouter.initialize(state => state.routing.angular);
-    ngRedux.subscribe(() => {
-      const game = ngRedux.getState().game;
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe();
+    if ((<any>this.ngReduxRouter).destroy) {
+      (<any>this.ngReduxRouter).destroy();
+    }
+  }
+
+  ngOnInit() {
+    this.unsubscribe = this.ngRedux.subscribe(() => {
+      const game = this.ngRedux.getState().game;
       if (game.currentGameViewportDimensions.direction === 'row') {
         this.styles['flex-direction'] = 'row';
       } else {
         this.styles['flex-direction'] = 'column';
       }
     });
+    this.ngReduxRouter.initialize(state => state.routing.angular);
   }
 
   changeScreen(path: string) {

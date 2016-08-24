@@ -14,7 +14,6 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  directives: [Block],
   selector: 'bd-next-pieces',
   template: `
     <h3>Next:</h3>

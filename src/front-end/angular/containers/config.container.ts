@@ -21,11 +21,6 @@ import { EngineStore } from '../../store/store';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  directives: [
-    Button,
-    Number,
-    Select,
-  ],
   selector: 'bd-config',
   template: `
     <div *ngFor="let i of configInterfaces">
@@ -41,10 +36,10 @@ import { EngineStore } from '../../store/store';
           (update)="updateSelection($event, i.prop)"
           [min]="(config$ | async)[i.min]"
           [max]="(config$ | async)[i.max]"></bd-number> 
-          <bd-number *ngSwitchCase="'string'"
+          <bd-string *ngSwitchCase="'string'"
           [model]="(config$ | async)[i.prop]"
           (update)="updateSelection($event, i.prop)"
-          [sanitizer]="i.sanitizer || identity"></bd-number> 
+          [sanitizer]="i.sanitizer || identity"></bd-string> 
       </div>  
     </div>
     <button [onClick]="createGame" value="New Game"></button> 

@@ -5,7 +5,6 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { FORM_DIRECTIVES } from '@angular/forms';
 
 import {
   identity,
@@ -13,8 +12,7 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  directives: [FORM_DIRECTIVES],
-  selector: 'bd-number',
+  selector: 'bd-string',
   template: `
     <input 
       type='string' 
