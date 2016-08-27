@@ -3,13 +3,11 @@ import { connect } from 'react-redux';
 import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';
 import { boardToArray } from '../../../util';
-import { bindResizeToWindow, resize } from '../../aspect-resizer';
 import {
   flex,
   flexNoWrap,
   previewDebug,
 } from '../../styles';
-import { store } from '../../store/store';
 import {
   Board,
   Debug,
@@ -49,10 +47,10 @@ export const Game = connect(
 )(React.createClass({
   deRegister: [],
   componentDidMount: function() {
-    resize();
-    this.deRegister.push(bindResizeToWindow());
+    this.props.resizer.resize();
+    this.deRegister.push(this.props.resizer.bind());
 
-    const controls = store.game.controls();
+    const controls = this.props.store.game.controls();
 
     this.deRegister.push(registerKeyControls({
       37: controls.moveLeft,

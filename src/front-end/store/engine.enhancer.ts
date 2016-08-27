@@ -3,7 +3,7 @@
  * this application
  */
 import { Reducer, Store, StoreCreator } from 'redux';
-import { IState } from '../reducers/root.reducer';
+import { IState } from '../reducers/root.reducer.shared';
 import { create1 } from '../../engine/engine';
 import { partial } from '../../util';
 import {

@@ -2,11 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgReduxRouter } from 'ng2-redux-router';
 import { NgRedux, select } from 'ng2-redux';
-import { store } from '../../store/store';
-import { IState } from '../../reducers/root.reducer';
-import { Game } from './game.container';
-import { GameConfig } from './config.container';
-import { Button, } from '../components';
+import { IState } from '../../reducers/root.reducer.shared';
 import {
   flex,
   verticalUiClass,
@@ -33,7 +29,6 @@ export class App implements OnDestroy, OnInit {
   constructor(private ngRedux: NgRedux<IState>,
               private ngReduxRouter: NgReduxRouter,
               private router: Router) {
-    this.ngRedux.provideStore(store);
   }
 
   ngOnDestroy() {

@@ -6,16 +6,7 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { bindResizeToWindow, resize } from '../../aspect-resizer';
-import {
-  ActivePiece,
-  Board,
-  Button,
-  Debug,
-  InputDevice,
-  NextPieces,
-  Select,
-}  from '../components';
+import { select } from 'ng2-redux';
 import { boardToArray } from '../../../util';
 import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';
@@ -27,9 +18,9 @@ import {
   flexShrink,
   previewDebug,
 } from '../../styles';
-import { Store } from '../opaque-tokens';
+import { Store, Viewport } from '../opaque-tokens';
 import { EngineStore } from '../../store/store';
-import { select } from 'ng2-redux';
+import { Resizer } from '../../aspect-resizer';
 
 @Component({
   selector: 'bd-game',
@@ -57,10 +48,11 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   preview: { name: string, cols: number[][]}[] = [];
   styles = {};
   constructor(@Inject(Store) private store: EngineStore,
+              @Inject(Viewport) private viewport: Resizer,
               private cdRef: ChangeDetectorRef) { }
 
   ngAfterViewInit() {
-    resize();
+    this.viewport.resize();
   }
 
   ngOnInit() {
@@ -71,7 +63,7 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
       this.styles['max-width'] = game.currentGameViewportDimensions.x + 'px';
       this.styles['max-height'] = game.currentGameViewportDimensions.y + 'px';
     }));
-    this.deRegister.push(bindResizeToWindow());
+    this.deRegister.push(this.viewport.bind());
     // our events happen "outside" of angular.  Account for that:
     this.deRegister.push(
       this.store.game.on('redraw', this.cdRef.detectChanges.bind(this.cdRef)));

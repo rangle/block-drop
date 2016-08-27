@@ -3,17 +3,17 @@ import 'zone.js/dist/zone';
 import 'ts-helpers';
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AppModule } from './app.module';
+import { getAppModule } from './app.module';
 import { partial } from '../../util';
+import { EngineStore } from '../store/store';
+import { Resizer } from '../aspect-resizer';
 import '../../license';
-import '../aspect-resizer';
 // Global styles
 import '../styles/index.css';
 
 
 // Production mode
 declare const __PRODUCTION__: boolean;
-declare const __STAND_ALONE__: boolean;
 
 if (__PRODUCTION__) {
   enableProdMode();
@@ -26,15 +26,13 @@ let appRef = null;
 let isStarting = false;
 let timeOut = null;
 
-if (__STAND_ALONE__) {
-  mount();
-}
-
-export function mount() {
+export function mount(store: EngineStore, resizer: Resizer) {
   if (appRef || isStarting) {
     return;
   }
   isStarting = true;
+
+  const AppModule = getAppModule(store, resizer);
 
   return platformBrowserDynamic().bootstrapModule(AppModule)
     .then((ref) => {

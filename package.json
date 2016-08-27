@@ -6,10 +6,10 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "npm run build:angular && npm run build:complete && npm run build:engine && npm run build:react",
-    "build:angular": "cross-env NODE_ENV=production STAND_ALONE=true webpack --config ./webpack/webpack.angular.config.js",
+    "build:angular": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.angular.config.js",
     "build:complete": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.complete.config.js",
     "build:engine": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.engine.config.js",
-    "build:react": "cross-env NODE_ENV=production STAND_ALONE=true webpack --config ./webpack/webpack.react.config.js",
+    "build:react": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.react.config.js",
     "clean": "rimraf ./coverage && rimraf ./dist && rimraf ./lib",
     "dev": "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback",
     "lint": "tslint ./src/**/*.ts",

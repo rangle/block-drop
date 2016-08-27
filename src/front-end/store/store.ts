@@ -1,4 +1,4 @@
-import { IState, root } from '../reducers/root.reducer';
+import { IState } from '../reducers/root.reducer.shared';
 import { compose, createStore } from 'redux';
 import {
   blockDropEngine,
@@ -15,9 +15,10 @@ const engineEnhancer = partial(blockDropEngine, references);
 const devTools =
   (<any>window).devToolsExtension && (<any>window).devToolsExtension();
 
-export const store: GEngineStore<IState> =
-  <GEngineStore<IState>>createStore<IState>(
-    root, devTools ?
-      compose(engineEnhancer, devTools) :
-      engineEnhancer
-  );
+export function create(root) {
+ return <GEngineStore<IState>>createStore<IState>(
+      root, devTools ?
+        compose(engineEnhancer, devTools) :
+        engineEnhancer
+    );
+}

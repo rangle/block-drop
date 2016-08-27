@@ -10,7 +10,6 @@ import {
 } from '../components';
 import { flex, flexCol } from '../../styles';
 import { configInterfaces } from '../../../engine/configs/config-interfaces';
-import { store } from '../../store/store';
 
 const configStyle = `${flex} ${flexCol}`;
 
@@ -38,7 +37,8 @@ export const Config = connect(
           partial(this.props.changeConfig, i.prop),
           key
         ))
-      }<Button onClick={ store.game.create } value='New Game' /></div>);
+      }<Button onClick={ this.props.store.game.create } value='New Game' />
+    </div>);
   },
 }));
 

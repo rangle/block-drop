@@ -7,7 +7,8 @@ const plugins = shared.plugins.concat([
 module.exports = {
   entry: {
     'block-drop-react': path
-      .join(__dirname, '..', 'src', 'front-end', 'react', 'react.tsx'),
+      .join(__dirname, '..', 'src', 'front-end', 'react',
+        'stand-alone.react.ts'),
   },
   stats: shared.stats,
   module: shared.module,

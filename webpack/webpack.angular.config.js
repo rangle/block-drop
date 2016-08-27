@@ -7,7 +7,8 @@ const plugins = shared.plugins.concat([
 module.exports = {
   entry: {
     'block-drop-angular': path
-      .join(__dirname, '..', 'src', 'front-end', 'angular', 'angular.ts'),
+      .join(__dirname, '..', 'src', 'front-end', 'angular',
+        'stand-alone.angular.ts'),
   },
   stats: shared.stats,
   module: shared.module,

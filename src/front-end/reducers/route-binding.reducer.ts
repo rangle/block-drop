@@ -1,7 +1,18 @@
 // synchronizes redux-routing solutions for angular/react
-import { UPDATE_LOCATION } from 'ng2-redux-router';
-import { LOCATION_CHANGE } from 'react-router-redux';
 import { ROUTE_BINDING_BOOTSTRAP } from '../constants';
+/**
+ *  Normally we would import our third party constants like so:
+ *
+ * import { UPDATE_LOCATION } from 'ng2-redux-router';
+ * import { LOCATION_CHANGE } from 'react-router-redux';
+ *
+ * *HOWEVER* this would break the builds in the sense that irrelevant
+ * frameworks would end up being included in framework specific builds.
+ *
+ * Instead we'll hard code them here and do manual updates.
+ */
+const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
+const UPDATE_LOCATION = 'ng2-redux-router::UPDATE_LOCATION';
 
 export const routerActions = {};
 

@@ -5,6 +5,8 @@ import {
   noop,
   partial,
 } from '../util';
+import { create } from './store/store';
+import { root as rootReducer } from './reducers/root.reducer.complete';
 import { show, hide } from './elements';
 import * as angular from './angular/angular';
 import * as react from './react/react';
@@ -13,13 +15,16 @@ import {
   changeFramework as changeFrameworkA,
   changeMultiFramework,
 } from './actions/app.actions';
-import { store } from './store/store';
 import {
   EL_ROOT,
   EL_SPLASH,
   FRAMEWORK_DESCRIPTIONS,
   VERSION,
 } from './constants';
+import { init } from './aspect-resizer';
+
+const store = create(rootReducer);
+const resizer = init(store);
 
 (<any>store).dispatch(bootstrapRoutes(window.location.pathname));
 
@@ -30,8 +35,8 @@ import {
 const changeFramework = (offset: number) => (<any>store)
   .dispatch(changeFrameworkA(offset));
 
-const splash = document.getElementById(EL_SPLASH);
-const root = document.getElementById(EL_ROOT);
+const splashEl = document.getElementById(EL_SPLASH);
+const rootEl = document.getElementById(EL_ROOT);
 
 const frameWorks = deepFreeze({
   'bd-root-angular': angular,
@@ -48,7 +53,7 @@ const elements = FRAMEWORK_DESCRIPTIONS.reduce(
 
 let listeners: Function[] = [];
 let unmountCurrent = noop;
-hide(root);
+hide(rootEl);
 hideAll();
 
 if ((<any>window).BLOCK_DROP) {
@@ -68,7 +73,7 @@ function hideAll() {
 }
 
 function mount() {
-  root.innerHTML = '';
+  rootEl.innerHTML = '';
   FRAMEWORK_DESCRIPTIONS.forEach((fwDesc, i) => {
     const button = document.createElement('input');
     button.type = 'button';
@@ -80,7 +85,7 @@ function mount() {
       const fw = frameWorks[fwDesc.id];
       hideAll();
       unmountCurrent();
-      fw.mount();
+      fw.mount(store, resizer);
       show(el);
       unmountCurrent = partial(fw.unmount, el);
       changeFramework(i);
@@ -90,17 +95,17 @@ function mount() {
       button.removeEventListener('click', onClick);
     });
 
-    root.appendChild(button);
+    rootEl.appendChild(button);
   });
-  hide(splash);
-  show(root);
+  hide(splashEl);
+  show(rootEl);
 }
 
 function unmount() {
-  hide(root);
+  hide(rootEl);
   hideAll();
   listeners.forEach((unsubscribe) => unsubscribe());
   listeners = [];
-  root.innerHTML = '';
-  show(splash);
+  rootEl.innerHTML = '';
+  show(splashEl);
 }

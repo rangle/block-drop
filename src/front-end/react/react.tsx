@@ -1,28 +1,20 @@
 import '../../license';
-import '../aspect-resizer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-
-import { store } from '../store/store';
-
 import { Routes } from './routes-react';
+import { EngineStore } from '../store/store';
+import { Resizer } from '../aspect-resizer';
 
 // Global styles
 import '../styles/index.css';
 
 const REACT = 'bd-root-react';
 
-declare const __STAND_ALONE__: boolean;
-
-if (__STAND_ALONE__) {
-  mount();
-}
-
-export function mount() {
+export function mount(store: EngineStore, resizer: Resizer) {
   ReactDOM.render(
     <Provider store={ store }>
-      <Routes></Routes>
+      <Routes store={ store } resizer={ resizer }></Routes>
     </Provider>,
     document.getElementById(REACT)
   );
