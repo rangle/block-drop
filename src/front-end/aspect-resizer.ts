@@ -105,7 +105,8 @@ export function init(store): Resizer {
         document.body.offsetHeight,
         document.documentElement.clientHeight,
         document.documentElement.offsetHeight
-      ) - verticalUiSize;
+      );
+
     const gameX = gameState.config.width - Math.abs(gameState.trimCols);
     const gameY = gameState.config.height - Math.abs(gameState.trimRows);
 

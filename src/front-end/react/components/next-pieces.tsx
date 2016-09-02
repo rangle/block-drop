@@ -8,7 +8,7 @@ import {
 export function NextPieces({ preview }) {
 
   return (<div className={ `${flexGrowShrink} ${flexCol}` }>
-    <h2>Next:</h2>
+    <h3>Next:</h3>
     { preview.map((block, i) => (
       <Block key={i} block={ block } />
     )) }

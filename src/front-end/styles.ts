@@ -33,8 +33,7 @@ export const flexNoWrap = `bd-flex-nowrap`;
 export const flexGrowRow = `${flex} ${flexRow} ${flex11auto} ${flexNoWrap}`;
 export const flexGrowCol = `${flex} ${flexCol} ${flex11auto} ${flexNoWrap}`;
 
-export const flexColIfPortrait = 'bd-flex-col-if-portrait';
-export const flexRowIfPortrait = 'bd-flex-row-if-portrait';
+export const gameViewportClass = `${flex} ${flexNoWrap}`;
 
 export const justifyAround = 'bd-flex-justify-around';
 export const flexShrink = `${flex} ${flex01auto} ${flexNoWrap} ` +
@@ -47,9 +46,6 @@ export const flexGrowShrink31 = `${flex} ${flex31auto} ${flexNoWrap} ` +
 export const tileBase = `${border} ${flex11auto}`;
 export const activeTile = `${tileBase}`;
 export const emptyTile = `${tileBase} ${colours.black} ${colours.borderBlack}`;
-
-export const windowApp = `${flexGrowShrink}`;
-export const windowApplet = `${flexGrowShrink}`;
 
 export const tileRed = `${activeTile} ${colours.bgRed} ${colours.red} ` +
   `${colours.borderRed}`;

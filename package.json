@@ -11,7 +11,7 @@
     "build:engine": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.engine.config.js",
     "build:react": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.react.config.js",
     "clean": "rimraf ./coverage && rimraf ./dist && rimraf ./lib",
-    "dev": "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback",
+    "dev": "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback --host 0.0.0.0",
     "lint": "tslint ./src/**/*.ts",
     "test": "npm run lint && karma start --singleRun true",
     "test:watch": "karma start --singleRun false --restartOnFileChange true",

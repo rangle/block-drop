@@ -1,8 +1,4 @@
 import {
-  Block,
-} from './block.component';
-
-import {
   ChangeDetectionStrategy,
   Component,
   Input,
