@@ -14,8 +14,6 @@ import {
 
 import { Store } from '../opaque-tokens';
 import { EngineStore } from '../../store/store';
-import { ActivePiece } from './active-piece.component';
-import { InputDevice } from './input-device.component';
 import { O_EMPTY_BLOCK } from '../../constants';
 
 @Component({

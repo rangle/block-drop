@@ -11,8 +11,6 @@ import {
 import { flex, flexCol } from '../../styles';
 import { configInterfaces } from '../../../engine/configs/config-interfaces';
 
-const configStyle = `${flex} ${flexCol}`;
-
 function mapStateToProps(state) {
   return {
     config: state.nextConfig,
@@ -30,7 +28,7 @@ export const Config = connect(
   mapDispatchToProps,
 )(React.createClass({
   render() {
-    return (<div className={ configStyle }>
+    return (<div>
       { configInterfaces
         .map((i, key) => makeInterface(i,
           this.props.config[i.prop],
@@ -68,5 +66,5 @@ function makeInterface(i, value, onChange, key) {
                       onChange={ onChange } />);
       break;
   }
-  return (<div key={ key }><strong>{ i.label }</strong>{ input }</div>);
+  return (<div key={ key }><strong>{ i.label }</strong>&nbsp;{ input }</div>);
 }

@@ -4,8 +4,6 @@ import {
   Input,
 } from '@angular/core';
 
-import { Tile } from './tile.component';
-
 import {
   flexGrowRow,
   tileByNumber,
