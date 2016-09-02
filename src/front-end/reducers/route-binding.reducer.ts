@@ -1,5 +1,7 @@
 // synchronizes redux-routing solutions for angular/react
 import { ROUTE_BINDING_BOOTSTRAP } from '../constants';
+import { Dictionary } from '../../interfaces';
+import { deepFreeze } from '../../util';
 /**
  *  Normally we would import our third party constants like so:
  *
@@ -11,10 +13,23 @@ import { ROUTE_BINDING_BOOTSTRAP } from '../constants';
  *
  * Instead we'll hard code them here and do manual updates.
  */
-const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
-const UPDATE_LOCATION = 'ng2-redux-router::UPDATE_LOCATION';
+export const THIRD_PARTY_TYPES = deepFreeze([
+  '@@router/LOCATION_CHANGE',
+  'ng2-redux-router::UPDATE_LOCATION',
+]);
 
-export const routerActions = {};
+export const BD_ROUTE_UDPATE = 'bd-route-update';
+
+const LOCATION_CHANGE = THIRD_PARTY_TYPES[0];
+const UPDATE_LOCATION = THIRD_PARTY_TYPES[1];
+
+export interface RouterAction<S, P> {
+  newState(path: string, state: S): S; // calculates new route state based on
+                                       // pathname
+  fromPayload(payload: P): string;     // gets pathname from payload
+}
+
+export const routerActions: Dictionary<RouterAction<any, any>> = {};
 
 Object.defineProperty(routerActions, LOCATION_CHANGE, {
   configurable: false,
@@ -67,17 +82,15 @@ export function routeBinding(reducer) {
   return (state, action) => {
 
     let newState = state;
-
     if (routerActions[action.type]) {
+      const path = routerActions[action.type].fromPayload(action.payload);
       Object.keys(routerActions)
         .forEach((type) => {
           if (type === action.type) {
             return;
           }
 
-          newState = routerActions[type]
-            .newState(routerActions[action.type]
-              .fromPayload(action.payload), state);
+          newState = routerActions[type].newState(path, state);
         });
     }
 

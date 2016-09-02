@@ -8,8 +8,6 @@ import {
   flexGrowRow,
   tileByNumber,
 } from '../../styles';
-import { Tile } from './tile.component';
-
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

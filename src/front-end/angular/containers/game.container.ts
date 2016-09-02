@@ -2,11 +2,12 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  HostBinding,
   Inject,
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { select } from 'ng2-redux';
+import { NgRedux, select } from 'ng2-redux';
 import { boardToArray } from '../../../util';
 import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';
@@ -15,11 +16,13 @@ import {
   board,
   flexCol,
   flexGrowShrink,
+  flexRow,
   flexShrink,
+  gameViewportClass,
   previewDebug,
 } from '../../styles';
 import { Store, Viewport } from '../opaque-tokens';
-import { EngineStore } from '../../store/store';
+import { EngineStore, IState } from '../../store/store';
 import { Resizer } from '../../aspect-resizer';
 
 @Component({
@@ -28,7 +31,7 @@ import { Resizer } from '../../aspect-resizer';
     <board class="${board}" 
     [board]="(board$ | async)"
     [width]="boardWidth$ | async"
-    [ngStyle]="styles"
+    [ngStyle]="styles ? styles : styles"
     ></board> 
     <div class="${previewDebug}">
       <bd-next-pieces class="${flexShrink} ${flexCol}" 
@@ -40,33 +43,43 @@ import { Resizer } from '../../aspect-resizer';
 `,
 })
 export class Game implements AfterViewInit, OnInit, OnDestroy {
+  @HostBinding('class') private gameViewportClass = gameViewportClass;
   @select(
     (s) => recomputeBoard(s.game.buffer, s.game.config.width)) board$;
   @select((s) => s.game.lastEvent) lastEvent$;
-  boardWidth$: number;
-  deRegister: Function[] = [];
-  preview: { name: string, cols: number[][]}[] = [];
-  styles = {};
+  private boardWidth$: number;
+  private deRegister: Function[] = [];
+  private preview: { name: string, cols: number[][]}[] = [];
+  private styles = {};
+
   constructor(@Inject(Store) private store: EngineStore,
               @Inject(Viewport) private viewport: Resizer,
+              private ngRedux: NgRedux<IState>,
               private cdRef: ChangeDetectorRef) { }
 
   ngAfterViewInit() {
     this.viewport.resize();
   }
 
+  private onStateChange(game) {
+    this.styles['min-width'] = game.currentGameViewportDimensions.x + 'px';
+    this.styles['min-height'] = game.currentGameViewportDimensions.y + 'px';
+    this.styles['max-width'] = game.currentGameViewportDimensions.x + 'px';
+    this.styles['max-height'] = game.currentGameViewportDimensions.y + 'px';
+    this.gameViewportClass = gameViewportClass + ' ' + (game
+        .currentGameViewportDimensions.direction === 'row' ?
+        flexRow :
+        flexCol);
+  }
+
   ngOnInit() {
-    this.deRegister.push(this.store.subscribe(() => {
-      const game = this.store.getState().game;
-      this.styles['min-width'] = game.currentGameViewportDimensions.x + 'px';
-      this.styles['min-height'] = game.currentGameViewportDimensions.y + 'px';
-      this.styles['max-width'] = game.currentGameViewportDimensions.x + 'px';
-      this.styles['max-height'] = game.currentGameViewportDimensions.y + 'px';
-    }));
+    const obsStateChange = this.ngRedux.select('game')
+      .subscribe(this.onStateChange.bind(this));
+    this.deRegister.push(obsStateChange.unsubscribe.bind(obsStateChange));
     this.deRegister.push(this.viewport.bind());
     // our events happen "outside" of angular.  Account for that:
-    this.deRegister.push(
-      this.store.game.on('redraw', this.cdRef.detectChanges.bind(this.cdRef)));
+    // this.deRegister.push(
+    // this.store.game.on('redraw', this.cdRef.detectChanges.bind(this.cdRef)));
 
     const controls = this.store.game.controls();
 
@@ -89,7 +102,7 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
       name: el.name,
       cols: columnsFromBlock(el),
     }));
-    this.cdRef.detectChanges();
+    // this.cdRef.detectChanges();
   }
 
   ngOnDestroy() {

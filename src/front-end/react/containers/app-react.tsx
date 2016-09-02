@@ -4,12 +4,12 @@ import { withRouter } from 'react-router';
 import { Button } from '../components';
 import { partial } from '../../../util';
 import { verticalUiClass } from '../../styles';
-import { ROUTES } from '../../constants';
 
 function mapStateToProps(state, ownProps) {
   return {
     currentScreen: state.app.currentScreen,
     path: ownProps.location.pathname,
+    routes: state.app.routes,
   };
 }
 
@@ -25,23 +25,20 @@ export const App = withRouter(connect(
     return (<div>
       <div className={ verticalUiClass }>
         {
-          ROUTES.map((route, i) => {
-            if (this.props.path === route.path) {
-              return null;
-            }
-            return (<Button key = {i}
-                            value={ route.name }
-                            onClick={
+          this.props.routes
+            .map((route, i) => (<Button key = {i}
+                                        value={ route.name }
+                                        onClick={
                             partial(() => this.props.router.push(route.path),
                             route.id)
-                          }/>);
-          })
+                          }/>))
+
         }
       </div>
       <div>
         { this.props.children }
       </div>
-      </div>);
+    </div>);
   },
 })));
 

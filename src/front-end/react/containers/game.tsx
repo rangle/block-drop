@@ -4,8 +4,7 @@ import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';
 import { boardToArray } from '../../../util';
 import {
-  flex,
-  flexNoWrap,
+  gameViewportClass,
   previewDebug,
 } from '../../styles';
 import {
@@ -14,7 +13,6 @@ import {
   NextPieces,
 } from '../components';
 
-const gameViewportClass = `${flex} ${flexNoWrap}`;
 
 function mapStateToProps(state) {
   return {
