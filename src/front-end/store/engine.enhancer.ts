@@ -29,6 +29,7 @@ export interface EngineStore<T> extends Store<T> {
   game: StoreGameExtensions;
 }
 
+// this is not super permanent
 export function createGame(references: EngineReferences,
                            store: Store<IState>) {
   references.engine =
@@ -51,6 +52,9 @@ export function createGame(references: EngineReferences,
   }
 }
 
+/**
+ * The enhancer
+ */
 export function blockDropEngine(references: EngineReferences,
                                 createStore: StoreCreator) {
 

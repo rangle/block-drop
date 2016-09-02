@@ -1,4 +1,5 @@
 import 'ts-helpers';
+import 'reflect-metadata';
 
 declare function require(args: any[]): any;
 

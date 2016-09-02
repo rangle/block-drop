@@ -14,9 +14,16 @@ import {
   DEFAULT_CONFIG_1,
 } from '../../engine/configs/default-config';
 
-import * as aTypes from '../constants';
+import {
+  EVENT_KEYPRESS,
+  EVENT_RESIZE,
+  REPLACE_CONFIG,
+  UPDATE_ACTIVE_PIECE,
+  UPDATE_PREVIEW,
+  UPDATE_BUFFER,
+} from '../constants';
 import { O_EMPTY_BLOCK } from '../constants';
-
+import { mergeProp, partial } from '../../util';
 
 /**
  *  0 <= boardLandscapeLimits <= 1
@@ -49,39 +56,27 @@ const INIT: IGameState = deepFreeze({
   trimRows: 0,
 });
 
-export function game(state = INIT, action) {
+export function game(state = INIT, { payload, type }) {
+  const bMergeProp: (prop: string) => any = partial(mergeProp, state, payload);
 
-  switch (action.type) {
-    case aTypes.EVENT_KEYPRESS:
-      return Object.assign({}, state, {
-        lastEvent: action.payload,
-      });
+  switch (type) {
+    case EVENT_KEYPRESS:
+      return bMergeProp('lastEvent');
 
-    case aTypes.REPLACE_CONFIG:
-      return Object.assign({}, state, { config: action.payload });
+    case REPLACE_CONFIG:
+      return bMergeProp('config');
 
-    case aTypes.REPLACE_CONFIG:
-      return Object.assign({}, state, { config: action.payload });
+    case EVENT_RESIZE:
+      return bMergeProp('currentGameViewportDimensions');
 
-    case aTypes.EVENT_RESIZE:
-      return Object.assign({}, state, {
-        currentGameViewportDimensions: action.payload,
-      });
+    case UPDATE_ACTIVE_PIECE:
+      return bMergeProp('activePiece');
 
-    case aTypes.UPDATE_ACTIVE_PIECE:
-      return Object.assign({}, state, {
-        activePiece: action.payload,
-      });
+    case UPDATE_BUFFER:
+      return bMergeProp('buffer');
 
-    case aTypes.UPDATE_BUFFER:
-      return Object.assign({}, state, {
-        buffer: action.payload,
-      });
-
-    case aTypes.UPDATE_PREVIEW:
-      return Object.assign({}, state, {
-        preview: action.payload,
-      });
+    case UPDATE_PREVIEW:
+      return bMergeProp('preview');
 
     default:
       return state;
