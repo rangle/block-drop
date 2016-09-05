@@ -14,9 +14,11 @@ import {
   invertBoolean,
   isBoard1,
   isObject,
+  mergeProp,
   noop,
   numberFromString,
   partial,
+  pluck,
   pipe,
   safeCall,
   throttle,
@@ -348,6 +350,27 @@ describe('utility functions', () => {
     });
   });
 
+  describe('mergeProp', () => {
+    it('should merge a property into an object', () => {
+      const obj = {};
+      const newObj = mergeProp(obj, 'me', 'test');
+      expect(newObj.test).toBe('me');
+    });
+
+    it('should return a new object', () => {
+      const obj = {};
+      const newObj = mergeProp(obj, 'me', 'test');
+      expect(newObj).not.toBe(obj);
+    });
+
+    it('should return a new object that has the original properties other ' +
+      'than the prop merged in', () => {
+      const obj = { test2: 'word' };
+      const newObj = mergeProp(obj, 'me', 'test');
+      expect(newObj.test2).toBe('word');
+    });
+  });
+
   describe('noop function', () => {
     it('should do nothing', () => {
       expect(() => noop()).not.toThrowError();
@@ -392,6 +415,12 @@ describe('utility functions', () => {
     
     it('should work for three arguments', () => {
       expect(partial<() => number>(addThreeArgs, 3, 2, 3)()).toBe(9);
+    });
+  });
+
+  describe('pluck function', () => {
+    it('should return a property from and object', () => {
+      expect(pluck('value', { value: 5 })).toBe(5);
     });
   });
 

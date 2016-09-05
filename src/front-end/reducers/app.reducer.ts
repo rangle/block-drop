@@ -2,9 +2,8 @@ import {
   CHANGE_FRAMEWORK,
   CHANGE_MULTI_FRAMEWORK,
 } from '../constants';
-import { deepFreeze } from '../../util';
-import { ROUTES } from '../constants';
-import { BD_ROUTE_UDPATE } from '../reducers/route-binding.reducer';
+import { deepFreeze, mergeProp, partial } from '../../util';
+import { BD_ROUTE_UPDATE, ROUTES } from '../constants';
 
 export interface IAppState {
   boardLandscapeLimits: { x: number, y: number };
@@ -23,26 +22,27 @@ const INIT: IAppState = deepFreeze({
   useMultiFrameworks: false,
 });
 
-export function app(state = INIT, action) {
-  switch (action.type) {
-    case BD_ROUTE_UDPATE:
+export function app(state = INIT, { payload, type }) {
+  const bMergeProp: (prop: string) => any = partial(mergeProp, state, payload);
+
+  switch (type) {
+    case BD_ROUTE_UPDATE:
       return Object.assign({}, state, {
         routes: ROUTES
-          .filter((el) => el.path !== action.payload &&
-          `/${el.path}` !== action.payload),
+          .filter(partial(routesFilter, payload)),
       });
 
     case CHANGE_FRAMEWORK:
-      return Object.assign({}, state, {
-        currentFramework: action.payload,
-      });
+      return bMergeProp('currentFramework');
 
     case CHANGE_MULTI_FRAMEWORK:
-      return Object.assign({}, state, {
-        useMultiFrameworks: action.payload,
-      });
+      return bMergeProp('useMultiFrameworks');
 
     default:
       return state;
   }
+}
+
+export function routesFilter(payload, el) {
+  return el.path !== payload && `/${el.path}` !== payload;
 }

@@ -13,8 +13,10 @@
   },
   "globalDependencies": {
     "node": "registry:dt/node#6.0.0+20160709114037",
+    "q": "registry:dt/q#0.0.0+20160613154756",
     "react-router": "registry:dt/react-router#2.0.0+20160813233016",
     "react-router-redux": "registry:dt/react-router-redux#4.0.0+20160724070902",
-    "seedrandom": "registry:dt/seedrandom#2.4.2+20160316155526"
+    "seedrandom": "registry:dt/seedrandom#2.4.2+20160316155526",
+    "webdriverio": "registry:dt/webdriverio#4.0.4+20160724073345"
   }
 }

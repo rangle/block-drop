@@ -38,3 +38,8 @@ legacy/
 
 # docs-generated
 docs-generated
+
+# e2e diffs and run caps
+specs/screenshots/diff
+specs/screenshots/screen
+

@@ -1,6 +1,7 @@
 import {
   Board1, 
   BooleanFunction,
+  Dictionary,
   TypedArray,
 } from './interfaces';
 
@@ -237,6 +238,16 @@ export function isString(val: any): val is string {
 }
 
 /**
+ * merges a new value into an object property returning a new object
+ */
+export function mergeProp(obj: Object, newValue, prop: string) {
+  const newObj = {};
+  newObj[prop] = newValue;
+  return Object.assign({}, obj, newObj);
+}
+
+
+/**
  * Sometimes a no operation is useful
  */
 export function noop() {
@@ -268,6 +279,10 @@ export function numberFromString(string: string): number {
  */
 export function partial<T>(f: Function, ...args) {
   return <T>(...extra) => f.apply(null, [...args, ...extra])
+}
+
+export function pluck<T>(prop: string, dict: Dictionary<T>) {
+  return dict[prop];
 }
 
 export function pipe<T extends (arg: A) => R, A, R>(...args: Function[]) {
