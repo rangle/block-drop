@@ -70,6 +70,8 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
         .currentGameViewportDimensions.direction === 'row' ?
         flexRow :
         flexCol);
+
+    this.cdRef.detectChanges();
   }
 
   ngOnInit() {

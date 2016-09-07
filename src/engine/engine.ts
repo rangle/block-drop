@@ -72,7 +72,9 @@ export function create1(config: GameConfig = {}) {
       createGame1(nextBlock),  
     ],
     gameOvers: 0,
+    history: [],
     rowsCleared: 0,
+    tick: 0,
     timer: null,
   };
   const state = createReadOnlyApiTo(writableState);
@@ -136,60 +138,67 @@ export function create1(config: GameConfig = {}) {
           configurable: false,
           writable: false,
           value: partial<() => void>(tryFnRedraw,
-              bCanMoveDown,
-              partial(updateActiveBlock, moveDown),
-              events.emit
-            ),
+            bCanMoveDown,
+            partial(updateActiveBlock, moveDown),
+            events.emit,
+            writableState,
+            'moveDown'
+          ),
         },
         moveLeft: {
           configurable: false,
           writable: false,
           value: partial<() => void>(tryFnRedraw,
-              bCanMoveLeft,
-              partial(updateActiveBlock, moveLeft),
-              events.emit
-            ),
+            bCanMoveLeft,
+            partial(updateActiveBlock, moveLeft),
+            events.emit,
+            writableState,
+            'moveLeft'
+          ),
         },
         moveRight: {
           configurable: false,
           writable: false,
           value: partial<() => void>(tryFnRedraw,
-              bCanMoveRight,
-              partial(updateActiveBlock, moveRight),
-              events.emit
-            ),
+            bCanMoveRight,
+            partial(updateActiveBlock, moveRight),
+            events.emit,
+            writableState,
+            'moveRight'
+          ),
         },
         moveUp: {
           configurable: false,
           writable: false,
           value: partial<() => void>(tryFnRedraw,
-              bCanMoveUp,
-              partial(updateActiveBlock, moveUp),
-              events.emit
-            ),
+            bCanMoveUp,
+            partial(updateActiveBlock, moveUp),
+            events.emit,
+            writableState,
+            'moveUp'
+          ),
         },
         rotateLeft: {
           configurable: false,
           writable: false,
           value: partial<() => void>(tryFnRedraw,
-              bCanRotateLeft, partial(updateActiveBlock, bRotateLeft),
-              events.emit
-            ),
+            bCanRotateLeft, partial(updateActiveBlock, bRotateLeft),
+            events.emit,
+            writableState,
+            'rotateLeft'
+          ),
         },
         rotateRight: {
           configurable: false,
           writable: false,
           value: partial<() => void>(tryFnRedraw,
-              bCanRotateRight,
-              partial(updateActiveBlock, bRotateRight),
-              events.emit
-            ),
+            bCanRotateRight,
+            partial(updateActiveBlock, bRotateRight),
+            events.emit,
+            writableState,
+            'rotateRight'
+          ),
         },
-        state: {
-          configurable: false,
-          writable: false,
-          value: state,
-        }
       }),
     },
     gameOver: {
@@ -223,6 +232,11 @@ export function create1(config: GameConfig = {}) {
       get: () => writableState.games[0].rowsCleared,
       set: noop,
     },
+    state: {
+      configurable: false,
+      writable: false,
+      value: state,
+    },
   });
   
   // go
@@ -247,7 +261,7 @@ export function create1(config: GameConfig = {}) {
   const checkForLoss = boardBlockFn<() => void>(c.checkForLoss);
 
   writableState.timer = setInterval(() => {
-    c.tick(engine, 
+    c.tick(engine,
       board, 
       (axis: 'x' | 'y', quantity: number) => { 
         updateActiveBlock(() => bMove(axis, quantity));
@@ -257,6 +271,7 @@ export function create1(config: GameConfig = {}) {
       commitBlock,
       checkForLoss, 
       c.gameOver);
+    writableState.tick += 1;
   }, c.speed);
 
   return engine;
@@ -311,7 +326,12 @@ export function clearCheck(engine: { rowsCleared: number, buffer: Uint8Array },
 export function gameOver(isDebug: boolean,
                          getBoard: () => Board,
                          getBuffer: () => Uint8Array,
-                         writableState: { games: any[], gameOvers: number },
+                         writableState: {
+                           games: any[],
+                           gameOvers: number,
+                           history: any[],
+                           tick: number,
+                         },
                          nextBlock: () => Block,
                          emit: (message: string) => any) {
   const board = getBoard();
@@ -334,6 +354,11 @@ export function gameOver(isDebug: boolean,
     buffer[i] = 0;
   });
 
+  writableState.history.push({
+    tick: writableState.tick,
+    control: 'gameOver',
+  });
+
   emit('game-over');
 }
 
@@ -351,9 +376,14 @@ export function updateBlock(getBoard: () => Board,
 
 export function tryFnRedraw(canFn: () => boolean,
                             fn: () => any,
-                            emit: (msg: string) => any) {
+                            emit: (msg: string) => any,
+                            state,
+                            control) {
   if (canFn()) {
     fn();
+    if (state) {
+      state.history.push({ tick: state.tick, control })
+    }
     emit('redraw');
   } else {
     emit('invalid-move');

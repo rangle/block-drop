@@ -15,6 +15,7 @@ import {
 } from '../actions/game.actions';
 
 export interface EngineReferences {
+  _int?: any;
   engine?: any;
   engines?: any[];
 }
@@ -32,6 +33,7 @@ export interface EngineStore<T> extends Store<T> {
 // this is not super permanent
 export function createGame(references: EngineReferences,
                            store: Store<IState>) {
+
   references.engine =
     create1(Object.assign({}, store.getState().nextConfig));
 
