@@ -11,9 +11,9 @@ import {
   selector: 'bd-angular',
   template: `
     <div class="${verticalUiClass}">
-      <button *ngFor="let route of (routes$ | async)"
+      <bd-button *ngFor="let route of (routes$ | async)"
          [onClick]="changeScreen(route.path)"
-         [value]="route.name"></button>
+         [value]="route.name"></bd-button>
     </div>
     <router-outlet></router-outlet>
 `,
@@ -49,10 +49,3 @@ export class App implements OnDestroy, OnInit {
     return () => this.router.navigate([`/${path}`]);
   }
 }
-
-/**
-<!--<bd-game class="${flex} ${flexNoWrap}" -->
-<!--[ngStyle]="styles" *ngSwitchCase="'game'"></bd-game>-->
-  <!--<bd-config class="${flex} ${flexCol}" *ngSwitchCase="'config'">-->
-  <!--</bd-config>-->
-**/

@@ -17,7 +17,9 @@ import {
 import {
   EVENT_KEYPRESS,
   EVENT_RESIZE,
+  PAUSE,
   REPLACE_CONFIG,
+  RESUME,
   UPDATE_ACTIVE_PIECE,
   UPDATE_PREVIEW,
   UPDATE_BUFFER,
@@ -37,6 +39,7 @@ export interface IGameState {
   currentGameViewportDimensions: {
     x: number, y: number, direction: 'row' | 'column'
   };
+  isPaused: boolean;
   lastEvent: { keyCode: number };
   preview: Block[];
   trimCols: number;
@@ -50,6 +53,7 @@ const INIT: IGameState = deepFreeze({
     debug: true,
   }),
   currentGameViewportDimensions: { x: 0, y: 0, direction: 'row' },
+  isPaused: false,
   lastEvent: { keyCode: 0 },
   preview: [],
   trimCols: 2,
@@ -68,6 +72,12 @@ export function game(state = INIT, { payload, type }) {
 
     case EVENT_RESIZE:
       return bMergeProp('currentGameViewportDimensions');
+
+    case PAUSE:
+      return bMergeProp('isPaused');
+
+    case RESUME:
+      return bMergeProp('isPaused');
 
     case UPDATE_ACTIVE_PIECE:
       return bMergeProp('activePiece');

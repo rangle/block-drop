@@ -5,10 +5,12 @@
 import { Reducer, Store, StoreCreator } from 'redux';
 import { IState } from '../reducers/root.reducer.shared';
 import { create1 } from '../../engine/engine';
-import { partial } from '../../util';
+import { noop, partial } from '../../util';
 import {
+  pause,
   replaceConfig,
   replaceNextConfig,
+  resume,
   updateBuffer,
   updateActivePiece,
   updatePreview,
@@ -24,6 +26,8 @@ export interface StoreGameExtensions {
   controls(): any;
   create(): void;
   on(event: string, cb: Function);
+  pause: () => void;
+  resume: () => void;
 }
 
 export interface EngineStore<T> extends Store<T> {
@@ -66,11 +70,30 @@ export function blockDropEngine(references: EngineReferences,
     // start default game
     createGame(references, vanillaStore);
 
+    let resumeGame = noop;
+
+    function pauseGame() {
+      if (resumeGame === noop) {
+        const resumeRef = references.engine.pause();
+        (<any>vanillaStore).dispatch(pause());
+
+        resumeGame = () => {
+          (<any>vanillaStore).dispatch(resume());
+          resumeRef();
+        };
+      }
+    }
+
     return Object.assign({}, vanillaStore, {
       game: {
         controls: () => references.engine.controls,
         create:  partial(createGame, references, vanillaStore),
         on: (event: string, cb: Function) => references.engine.on(event, cb),
+        pause: pauseGame,
+        resume: () => {
+          resumeGame();
+          resumeGame = noop;
+        },
       },
     });
   };

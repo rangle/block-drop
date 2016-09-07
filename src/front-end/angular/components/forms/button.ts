@@ -6,7 +6,7 @@ import {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'button',
+  selector: 'bd-button',
   template: `<input type="button" [value]="value" (click)="onClick($event)" />`,
 })
 export class Button {

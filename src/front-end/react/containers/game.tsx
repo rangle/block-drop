@@ -9,6 +9,7 @@ import {
 } from '../../styles';
 import {
   Board,
+  Button,
   Debug,
   NextPieces,
 } from '../components';
@@ -19,6 +20,7 @@ function mapStateToProps(state) {
     activePiece: state.game.activePiece,
     board: boardToArray(state.game.buffer, state.game.config.width),
     lastEvent: state.game.lastEvent,
+    isPaused: state.game.isPaused,
     preview: state.game.preview,
     styles: {
       flexDirection: state.game.currentGameViewportDimensions.direction,
@@ -66,12 +68,28 @@ export const Game = connect(
   },
 
   render() {
+    const { pause, resume } = this.props.store.game;
     return (<div className={ gameViewportClass } style={ this.props.styles }>
-      <Board board={ this.props.board }
-             width={ this.props.width }
-             styles={ this.props.subStyles } />
+      {
+        this.props.isPaused ?
+          null :
+          <Board board={ this.props.board }
+                 width={ this.props.width }
+                 styles={ this.props.subStyles } />
+      }
       <div className={ previewDebug }>
-        <NextPieces preview={ this.props.preview } />
+        <div>
+        {
+          this.props.isPaused ?
+            <Button value='Resume' onClick={ resume } /> :
+            <Button value='Pause' onClick={ pause } />
+        }
+        </div>
+        {
+          this.props.isPaused ?
+            null :
+            <NextPieces preview={ this.props.preview }/>
+        }
         <Debug activePiece={ this.props.activePiece }
                lastEvent={ this.props.lastEvent } />
       </div>

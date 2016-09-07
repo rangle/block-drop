@@ -73,6 +73,7 @@ export function create1(config: GameConfig = {}) {
     ],
     gameOvers: 0,
     history: [],
+    pauses: [],
     rowsCleared: 0,
     tick: 0,
     timer: null,
@@ -101,6 +102,9 @@ export function create1(config: GameConfig = {}) {
   const moveLeft = partial(bMove, 'x', -1);
   const moveUp = partial(bMove, 'y', -1);
   const moveRight = partial(bMove, 'x', 1);
+  const commitBlock = boardBlockFn<() => void>(addBlock);
+  const checkForLoss = boardBlockFn<() => void>(c.checkForLoss);
+
 
   Object.defineProperties(engine, {
     activePieceHistory: {
@@ -222,6 +226,27 @@ export function create1(config: GameConfig = {}) {
       writable: false,
       value: events.emit,
     },
+    pause: {
+      configurable: false,
+      writable: false,
+      value: () => {
+        const pause = {
+          start: Date.now(),
+          end: NaN,
+        };
+        clearInterval(writableState.timer);
+        writableState.pauses.push(pause);
+        writableState.timer = null;
+
+        return () => {
+          if (pause.end) {
+            return;
+          }
+          pause.end = Date.now();
+          return startTick();
+        };
+      },
+    },
     preview: {
       configurable: false,
       writable: false,
@@ -239,9 +264,6 @@ export function create1(config: GameConfig = {}) {
     },
   });
   
-  // go
-  addBlock(board, getActivePiece(), buffer);
-  
   function newBlock() {
     writableState.games[0].activePieceHistory.unshift(getActivePiece());
     writableState.games[0].activePiece = nextBlock();
@@ -256,23 +278,30 @@ export function create1(config: GameConfig = {}) {
       clearCheck(engine, board, partial(detectAndClear, board),
         c.forceBufferUpdateOnClear);
   }
-  
-  const commitBlock = boardBlockFn<() => void>(addBlock);
-  const checkForLoss = boardBlockFn<() => void>(c.checkForLoss);
 
-  writableState.timer = setInterval(() => {
-    c.tick(engine,
-      board, 
-      (axis: 'x' | 'y', quantity: number) => { 
-        updateActiveBlock(() => bMove(axis, quantity));
-      },
-      newBlock, 
-      bClearCheck, 
-      commitBlock,
-      checkForLoss, 
-      c.gameOver);
-    writableState.tick += 1;
-  }, c.speed);
+  function startTick() {
+    if (writableState.timer) {
+      console.warn('startTick called and timer exists!');
+      return;
+    }
+    writableState.timer = setInterval(() => {
+      c.tick(engine,
+        board,
+        (axis: 'x' | 'y', quantity: number) => {
+          updateActiveBlock(() => bMove(axis, quantity));
+        },
+        newBlock,
+        bClearCheck,
+        commitBlock,
+        checkForLoss,
+        c.gameOver);
+      writableState.tick += 1;
+    }, c.speed);
+  }
+
+  // go
+  addBlock(board, getActivePiece(), buffer);
+  startTick();
 
   return engine;
 }
@@ -380,6 +409,9 @@ export function tryFnRedraw(canFn: () => boolean,
                             state,
                             control) {
   if (canFn()) {
+    if (!state.timer) {
+      return;
+    }
     fn();
     if (state) {
       state.history.push({ tick: state.tick, control })
