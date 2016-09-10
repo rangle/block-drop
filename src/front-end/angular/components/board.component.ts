@@ -22,6 +22,7 @@ import {
 export class Board {
   @Input() board: number[][];
   @Input() width: number;
+  @Input() isPaused: boolean;
 
   cols: number[][];
   emptyTile: string = emptyTile;

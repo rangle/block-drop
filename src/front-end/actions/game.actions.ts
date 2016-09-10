@@ -1,8 +1,10 @@
 import { Block, GameConfig, TypedArray } from '../../interfaces';
 import {
   CHANGE_NEXT_CONFIG,
+  PAUSE,
   REPLACE_CONFIG,
   REPLACE_NEXT_CONFIG,
+  RESUME,
   UPDATE_ACTIVE_PIECE,
   UPDATE_BUFFER,
   UPDATE_PREVIEW,
@@ -23,10 +25,24 @@ export function nextConfigProp(prop: string, value: number | string) {
   };
 }
 
+export function pause() {
+  return {
+    type: PAUSE,
+    payload: true,
+  };
+}
+
 export function replaceNextConfig(config: GameConfig) {
   return {
     type: REPLACE_NEXT_CONFIG,
     payload: config,
+  };
+}
+
+export function resume() {
+  return {
+    type: RESUME,
+    payload: false,
   };
 }
 

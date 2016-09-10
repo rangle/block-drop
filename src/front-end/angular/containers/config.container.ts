@@ -42,7 +42,7 @@ import { EngineStore } from '../../store/store';
           [sanitizer]="i.sanitizer || identity"></bd-string> 
       </div>  
     </div>
-    <button [onClick]="createGame" value="New Game"></button> 
+    <bd-button [onClick]="createGame" value="New Game"></bd-button> 
 `,
 })
 export class GameConfig {

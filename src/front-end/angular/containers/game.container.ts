@@ -28,17 +28,31 @@ import { Resizer } from '../../aspect-resizer';
 @Component({
   selector: 'bd-game',
   template: `
-    <board class="${board}" 
+    <board *ngIf="!(isPaused$ | async)"
+    class="${board}" 
     [board]="(board$ | async)"
     [width]="boardWidth$ | async"
     [ngStyle]="styles ? styles : styles"
     ></board> 
     <div class="${previewDebug}">
-      <bd-next-pieces class="${flexShrink} ${flexCol}" 
-      [preview]="preview"></bd-next-pieces>
+      <bd-button 
+      *ngIf="(isPaused$ | async)" 
+      [value]="resumeLabel"
+      [onClick]="resume">
+      </bd-button>
+      <bd-button 
+      *ngIf="!(isPaused$ | async)" 
+      [value]="pauseLabel"
+      [onClick]="pause">
+      </bd-button>
+      <bd-next-pieces *ngIf="!(isPaused$ | async)"
+      class="${flexShrink} ${flexCol}" 
+      [preview]="preview">
+      </bd-next-pieces>
       <bd-debug 
       class="${flexGrowShrink}" 
-      [keyCode]="(lastEvent$ | async).keyCode"></bd-debug>
+      [keyCode]="(lastEvent$ | async).keyCode">
+      </bd-debug>
     </div>
 `,
 })
@@ -47,15 +61,23 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   @select(
     (s) => recomputeBoard(s.game.buffer, s.game.config.width)) board$;
   @select((s) => s.game.lastEvent) lastEvent$;
+  @select((s) => s.game.isPaused) isPaused$;
   private boardWidth$: number;
   private deRegister: Function[] = [];
+  private pause: Function;
+  private pauseLabel = 'Pause';
   private preview: { name: string, cols: number[][]}[] = [];
+  private resume: Function;
+  private resumeLabel = 'Resume';
   private styles = {};
 
   constructor(@Inject(Store) private store: EngineStore,
               @Inject(Viewport) private viewport: Resizer,
               private ngRedux: NgRedux<IState>,
-              private cdRef: ChangeDetectorRef) { }
+              private cdRef: ChangeDetectorRef) {
+    this.pause = this.store.game.pause;
+    this.resume = this.store.game.resume;
+  }
 
   ngAfterViewInit() {
     this.viewport.resize();
@@ -70,6 +92,8 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
         .currentGameViewportDimensions.direction === 'row' ?
         flexRow :
         flexCol);
+
+    this.cdRef.detectChanges();
   }
 
   ngOnInit() {
