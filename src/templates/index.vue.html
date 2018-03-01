@@ -29,20 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <title>Block Drop</title>
   </head>
   <body>
-    <div id="bd-splash">
-      <input type="button" value="Welcome..."
-             onclick="window.BLOCK_DROP.mount()" />
-    </div>
-    <div id="bd-root" class="bd-vert-ui"></div>
-    <div id="bd-root-react"></div>
     <div id="bd-root-vue"></div>
-    <div id="bd-root-angular">
-      <!--
-       Angular is in its own box because when Angular 2 is unmounted it destroys
-       its root element.  By wrapping it in a div we can re-mount it with less
-       JavaScript
-      -->
-      <bd-angular></bd-angular>
-    </div>
   </body>
 </html>

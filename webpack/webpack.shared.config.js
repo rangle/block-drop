@@ -56,6 +56,9 @@ const stats = {
 
 const resolve = {
   extensions: ['', '.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.jsx'],
+  alias: {
+    vue: 'vue/dist/vue.js',
+  },
 };
 
 function loadTs(loader, inTest) {

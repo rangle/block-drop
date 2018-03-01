@@ -10,6 +10,7 @@ import { root as rootReducer } from './reducers/root.reducer.complete';
 import { show, hide } from './elements';
 import * as angular from './angular/angular';
 import * as react from './react/react';
+import * as vue from './vue/vue';
 import {
   bootstrapRoutes,
   changeFramework as changeFrameworkA,
@@ -41,6 +42,7 @@ const rootEl = document.getElementById(EL_ROOT);
 const frameWorks = deepFreeze({
   'bd-root-angular': angular,
   'bd-root-react': react,
+  'bd-root-vue': vue,
 });
 
 const elements = FRAMEWORK_DESCRIPTIONS.reduce(
