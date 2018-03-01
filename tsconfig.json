@@ -12,7 +12,8 @@
     "sourceMap": false,
     "inlineSourceMap": true,
     "jsx": "react",
-    "noEmitHelpers": true
+    "noEmitHelpers": true,
+    "typingOptions": { "enableAutoDiscovery": false, "include": [], "exclude": [] }
   },
   "awesomeTypescriptLoaderOptions": {
     "useBabel": true,
