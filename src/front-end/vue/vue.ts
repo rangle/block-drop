@@ -3,6 +3,9 @@ import { EngineStore } from '../store/store';
 import { Resizer } from '../aspect-resizer';
 import '../../license';
 import { routes } from './routes';
+import { verticalUiClass, } from '../styles';
+import { Nav } from './components';
+import { VUE_LOCATION_CHANGE } from './router-reducer';
 // Global styles
 import '../styles/index.css';
 
@@ -19,8 +22,10 @@ export function mount(store: EngineStore, resizer: Resizer) {
   const data = {
     currentRoute: window.location.pathname,
     routes: routes(),
-    state: {},
+    state: store.getState(),
   };
+
+  const nav = Nav();
 
   const app = new Vue({
     data,
@@ -39,13 +44,22 @@ export function mount(store: EngineStore, resizer: Resizer) {
         'div',
         {
           class: {
-            'bd-app': true,
+            [verticalUiClass]: true,
           },
         },
         [
-          // h(components['svb-nav'], { props: {
-          //   routes: state.routes, redraw, sideEffects, state,
-          // }}),
+          h(nav, {
+            on: {
+              nav(path: string) {
+                store.dispatch({ type: VUE_LOCATION_CHANGE, payload: path });
+                window.history.pushState(null, name, '/' + path);
+                redraw();
+              },
+            },
+            props: {
+              routes: this.state.app.routes,
+            }
+          }),
           /** @todo determine why computed props are not in the generic --v */
           h(routeTo, {
             // class: {
