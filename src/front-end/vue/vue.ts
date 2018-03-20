@@ -68,7 +68,13 @@ export function mount(store: EngineStore, resizer: Resizer) {
             // class: {
             //   'svb-main': true,
             // },
-            props: { resizer, state: this.state },
+            props: { 
+              dispatch: store.dispatch.bind(store), 
+              pause: store.game.pause,
+              resizer, 
+              resume: store.game.resume,
+              state: this.state,
+            },
           }),
         ],
       );
