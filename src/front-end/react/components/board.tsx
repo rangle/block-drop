@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Tile } from './';
-import { board, flexGrowRow } from '../../styles';
 import {
+  board,
   flex,
+  flexGrowRow,
   flexNoWrap,
 } from '../../styles';
 

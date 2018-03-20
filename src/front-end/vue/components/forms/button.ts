@@ -4,6 +4,11 @@ export const Button = () => ({
       this.$emit('click');
     }
   },
-  props: ['value'],
+  props: {
+    value: {
+      required: true,
+      type: String,
+    },
+  },
   template: '<input type="button" v-model="value" v-on:click="onClick" />',
 });

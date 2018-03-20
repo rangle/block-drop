@@ -11,7 +11,7 @@ export const Nav = () => ({
   },
   props: ['routes'],
   template: `<span><bd-button v-for="route in routes"
-         key="route.id"
+         v-bind:key="route.id"
          v-on:click="onClick(route.path)"
          v-model="route.name"></bd-button></span>`,
 });

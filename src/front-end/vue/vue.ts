@@ -33,6 +33,9 @@ export function mount(store: EngineStore, resizer: Resizer) {
       redraw() {
         this.$forceUpdate();
       },
+      resize() {
+        resizer.resize();
+      },
     },
     render(h) {
       const currentRoute = window.location.pathname;
@@ -65,7 +68,7 @@ export function mount(store: EngineStore, resizer: Resizer) {
             // class: {
             //   'svb-main': true,
             // },
-            props: { redraw, state: this.state },
+            props: { resizer, state: this.state },
           }),
         ],
       );
