@@ -1,4 +1,5 @@
 import { Button } from './forms';
+import { verticalUiClass, } from '../../styles';
 
 export const Nav = () => ({
   components: {
@@ -10,8 +11,11 @@ export const Nav = () => ({
     },
   },
   props: ['routes'],
-  template: `<span><bd-button v-for="route in routes"
+  template: `<div class=${verticalUiClass}>
+      <bd-button v-for="route in routes"
          v-bind:key="route.id"
          v-on:click="onClick(route.path)"
-         v-model="route.name"></bd-button></span>`,
+         v-model="route.name">
+      </bd-button>
+    </div>`,
 });

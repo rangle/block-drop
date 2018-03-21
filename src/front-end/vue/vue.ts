@@ -3,7 +3,6 @@ import { EngineStore } from '../store/store';
 import { Resizer } from '../aspect-resizer';
 import '../../license';
 import { routes } from './routes';
-import { verticalUiClass, } from '../styles';
 import { Nav } from './components';
 import { VUE_LOCATION_CHANGE } from './router-reducer';
 // Global styles
@@ -46,9 +45,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
       return h(
         'div',
         {
-          class: {
-            [verticalUiClass]: true,
-          },
         },
         [
           h(nav, {
@@ -69,6 +65,7 @@ export function mount(store: EngineStore, resizer: Resizer) {
             //   'svb-main': true,
             // },
             props: { 
+              createGame: store.game.create,
               dispatch: store.dispatch.bind(store), 
               pause: store.game.pause,
               resizer, 
@@ -83,10 +80,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
 
   store.subscribe(() => {
     data.state = store.getState();
-    // (data.state as any).routing = state.app;
-    // (data.state as any).routing = state.game;
-    // (data.state as any).routing = state.nextConfig;
-    // (data.state as any).routing = (state as any).routing;
   });
 }
 
