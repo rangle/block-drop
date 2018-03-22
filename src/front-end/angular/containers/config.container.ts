@@ -14,7 +14,7 @@ import {
   Select,
 } from '../components';
 
-import { select } from 'ng2-redux';
+import { select } from '@angular-redux/store';
 import { Observable } from 'rxjs/Rx';
 import { identity, isObject } from '../../../util';
 import { EngineStore } from '../../store/store';

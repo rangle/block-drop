@@ -2,12 +2,16 @@ const path = require('path');
 const shared = require('./webpack/webpack.shared.config.js');
 const plugins = shared.plugins.concat([ shared.pluginIndex('index.html') ]);
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = {
-  devtool: 'source-map',
+  devtool: isProd ? 
+    'source-map' :
+    'cheap-module-eval-source-map',
   entry: {
     'block-drop': './src/index.ts',
   },
-  stats: shared.stats,
+  mode: isProd ? 'production' : 'development',
   module: shared.module,
   output: {
     chunkFilename: '[id].chunk.js',
@@ -17,9 +21,4 @@ module.exports = {
   },
   plugins,
   resolve: shared.resolve,
-  devServer: {
-    inline: true,
-    colors: true,
-  },
-  loaders: shared.loaders,
 };

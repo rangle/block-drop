@@ -191,7 +191,7 @@ describe('engine functions', () => {
     });
     
     it('should zero the board and the buffer', () => {
-      gameOver(false, () => board, () => buffer, { games, gameOvers: 0, }, 
+      gameOver(false, () => board, () => buffer, { games, gameOvers: 0, } as any, 
         createBlock.bind(null, [[2]]), noop);
       expect(board.desc[0]).toBe(0);
       expect(board.desc[3]).toBe(0);
@@ -200,7 +200,7 @@ describe('engine functions', () => {
     });
     
     it('should zero the board and the buffer in debug mode', () => {
-      gameOver(true, () => board, () => buffer, { games, gameOvers: 0 },
+      gameOver(true, () => board, () => buffer, { games, gameOvers: 0 } as any,
         createBlock.bind(null, [[2]]), noop);
       expect(board.desc[0]).toBe(0);
       expect(board.desc[3]).toBe(0);
@@ -209,7 +209,7 @@ describe('engine functions', () => {
     });
     
     it('should add a new game', () => {
-      const state = { games, gameOvers: 0 };
+      const state: any = { games, gameOvers: 0 };
       gameOver(true, () => board, () => buffer, state, 
         createBlock.bind(null, [[2]]), noop);
     expect(board.desc[0]).toBe(0);
@@ -219,7 +219,7 @@ describe('engine functions', () => {
   });
 
     it('should add a new game', () => {
-      const state = { games, gameOvers: 0 };
+      const state: any = { games, gameOvers: 0 };
       gameOver(true, () => board, () => buffer, state, 
         createBlock.bind(null, [[2]]), noop);
       expect(state.games.length).toBe(2);
@@ -227,7 +227,7 @@ describe('engine functions', () => {
     
     it('should emit a game-over notification', () => {
       let result = null;
-      const state = { games, gameOvers: 0 };
+      const state: any = { games, gameOvers: 0 };
       gameOver(true, () => board, () => buffer, state, 
         createBlock.bind(null, [[2]]), 
         (msg) => result = msg);
@@ -241,7 +241,7 @@ describe('engine functions', () => {
       const can = () => true;
       const fn = () => result = 1;
       
-      tryFnRedraw(can, fn, noop);
+      tryFnRedraw(can, fn, noop, {}, {});
       
       expect(result).toBe(1);
     });
@@ -251,7 +251,7 @@ describe('engine functions', () => {
       const can = () => false;
       const fn = () => result = 1;
 
-      tryFnRedraw(can, fn, noop);
+      tryFnRedraw(can, fn, noop, {}, {});
 
       expect(result).toBe(0);
     });

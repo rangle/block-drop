@@ -3,8 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
-import { NgRedux } from 'ng2-redux';
-import { NgReduxRouter } from 'ng2-redux-router';
+import { NgReduxRouterModule, NgReduxRouter } from '@angular-redux/router';
+import { NgReduxModule, NgRedux, select } from '@angular-redux/store';
 import { LOCATION_STRATEGY } from '../constants';
 import { EngineStore } from '../store/store';
 import { Store, Viewport } from './opaque-tokens';
@@ -36,10 +36,11 @@ export function getAppModule(store: EngineStore, resizer: Resizer) {
       BrowserModule,
       CommonModule,
       FormsModule,
+      NgReduxModule,
+      NgReduxRouterModule,
       RouterModule.forRoot(routes, {useHash: LOCATION_STRATEGY === 'hash'}),
     ],
     providers: [
-      NgRedux,
       NgReduxRouter,
       {provide: APP_BASE_HREF, useValue: '/'},
       {provide: Viewport, useValue: resizer },

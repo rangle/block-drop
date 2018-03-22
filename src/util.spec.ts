@@ -353,7 +353,7 @@ describe('utility functions', () => {
   describe('mergeProp', () => {
     it('should merge a property into an object', () => {
       const obj = {};
-      const newObj = mergeProp(obj, 'me', 'test');
+      const newObj: any = mergeProp(obj, 'me', 'test');
       expect(newObj.test).toBe('me');
     });
 
@@ -366,7 +366,7 @@ describe('utility functions', () => {
     it('should return a new object that has the original properties other ' +
       'than the prop merged in', () => {
       const obj = { test2: 'word' };
-      const newObj = mergeProp(obj, 'me', 'test');
+      const newObj: any = mergeProp(obj, 'me', 'test');
       expect(newObj.test2).toBe('word');
     });
   });

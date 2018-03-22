@@ -1,4 +1,6 @@
-import { OpaqueToken } from '@angular/core';
-
-export const Store = new OpaqueToken('EngineStore');
-export const Viewport = new OpaqueToken('Viewport');
+/**
+ * DEPRECATED
+ * FORMERLY OPAQUE TOKENS
+ */
+export const Store = 'BD_EngineStore';
+export const Viewport = 'BD_Viewport';

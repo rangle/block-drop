@@ -46,7 +46,7 @@ describe('function collection functions', () => {
     it('should add a function to a collection', () => {
       const collection = { test: false };
       registerTo(collection, 'test', <() => number>noop);
-      expect(collection.test).toBe(noop);
+      expect(collection.test).toBe(noop as any);
     });
   });
 });

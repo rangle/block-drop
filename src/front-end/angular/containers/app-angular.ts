@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgReduxRouter } from 'ng2-redux-router';
-import { NgRedux, select } from 'ng2-redux';
+import { NgReduxRouter } from '@angular-redux/router';
+import { NgRedux, select } from '@angular-redux/store';
 import { IState } from '../../reducers/root.reducer.shared';
 import {
   verticalUiClass,

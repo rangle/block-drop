@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "buildOnSave": false,
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es2015",
     "moduleResolution": "node",
     "target": "es6",
     "emitDecoratorMetadata": true,
@@ -11,14 +11,7 @@
     "removeComments": false,
     "sourceMap": false,
     "inlineSourceMap": true,
-    "jsx": "react",
-    "noEmitHelpers": true,
-    "typingOptions": { "enableAutoDiscovery": false, "include": [], "exclude": [] }
-  },
-  "awesomeTypescriptLoaderOptions": {
-    "useBabel": true,
-    "useCache": false,
-    "emitRequireType": false
+    "jsx": "react"
   },
   "exclude": [
     "coverage",

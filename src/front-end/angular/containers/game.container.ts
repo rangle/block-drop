@@ -7,7 +7,7 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { NgRedux, select } from 'ng2-redux';
+import { NgRedux, select } from '@angular-redux/store';
 import { boardToArray, recomputeBoard } from '../../../util';
 import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';

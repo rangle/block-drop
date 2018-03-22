@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { routerReducer as angularRouterReducer} from 'ng2-redux-router';
+import { routerReducer as angularRouterReducer} from '@angular-redux/router';
 import { IState, rootObject } from './root.reducer.shared';
 
 
