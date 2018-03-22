@@ -1,3 +1,5 @@
+import { registerKeyControls } from '../../controls';
+import { keyPress } from '../../actions/events.actions';
 import {
   gameViewportClass,
   previewDebug,
@@ -7,10 +9,11 @@ import { Board, Button, Debug, NextPieces } from '../components';
 import { columnsFromBlock } from '../../../engine/block';
 
 export const Game = () => {
-  let umount = noop;
+  let deRegister = [];
   return {
     beforeDestroy() {
-      umount();
+      deRegister.forEach((fn) => fn());
+      deRegister = [];
     },
     components: {
       'bd-board': Board(),
@@ -40,11 +43,24 @@ export const Game = () => {
       },
     },
     mounted() {
+      const controls = this.gameControls();
       this.resizer.resize();
-      umount = this.resizer.bind();
+      deRegister.push(this.resizer.bind());
+      deRegister.push(registerKeyControls({
+        37: controls.moveLeft,
+        38: controls.moveUp,
+        39: controls.moveRight,
+        40: controls.moveDown,
+        81: controls.rotateLeft,
+        87: controls.rotateRight,
+      }, (e) => this.dispatch(keyPress(e))));
     },
     props: {
       dispatch: {
+        required: true,
+        type: Function,
+      },
+      gameControls: {
         required: true,
         type: Function,
       },

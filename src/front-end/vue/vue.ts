@@ -67,6 +67,7 @@ export function mount(store: EngineStore, resizer: Resizer) {
             props: { 
               createGame: store.game.create,
               dispatch: store.dispatch.bind(store), 
+              gameControls: store.game.controls.bind(store.game),
               pause: store.game.pause,
               resizer, 
               resume: store.game.resume,
