@@ -43,7 +43,8 @@ const memoPromise = (promiser) => {
     p = promiser();
     return p;
   };
-}
+};
+
 const angular = memoPromise(() =>
   import(/* webpackChunkName: "angular" */ './angular/angular')
 );

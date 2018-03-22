@@ -1,7 +1,9 @@
 import { routeBindingMiddleware } from './route-binding.middleware';
 import { noop } from '../../util';
+import { THIRD_PARTY_TYPES } from '../reducers/route-binding.reducer';
 
 describe('route binding middleware', () => {
+  const actionType = THIRD_PARTY_TYPES[1];
   describe('routeBindingMiddleware function', () => {
     let store;
 
@@ -23,11 +25,11 @@ describe('route binding middleware', () => {
       expect(called).toBe(true);
     });
 
-    it('should dispatch if the action is ng2-redux-router::UPDATE_LOCATION',
+    it('should dispatch if the action is ' + actionType,
       () => {
         let dispatchedAlso;
         store.dispatch = (a) => dispatchedAlso = a;
-        const action = { type: 'ng2-redux-router::UPDATE_LOCATION' };
+        const action = { type: actionType };
         const mw = routeBindingMiddleware(store);
         mw(noop)(action);
         expect(dispatchedAlso).toBeTruthy();
@@ -35,7 +37,7 @@ describe('route binding middleware', () => {
 
     it('should call next if the action is ng2-redux-router::UPDATE_LOCATION',
       () => {
-        const action = { type: 'ng2-redux-router::UPDATE_LOCATION' };
+        const action = { type: actionType };
         let called = false;
         const mw = routeBindingMiddleware(store);
         const next = (arg) => {

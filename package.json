@@ -16,8 +16,8 @@
     "pree2e": "echo \"Make sure Block Drop Is Running !!!\"",
     "e2e": "wdio ./wdio.conf.js",
     "lint": "tslint ./src/**/*.ts",
-    "test": "yarn lint && karma start --singleRun true",
-    "test:watch": "karma start --singleRun false --restartOnFileChange true",
+    "test": "yarn lint && jest",
+    "test:watch": "jest --watch",
     "tsc": "tsc -p ./tsconfig.build.json",
     "webpack": "webpack"
   },
@@ -54,6 +54,7 @@
     "@angular/platform-browser-dynamic": "^5.2.9",
     "@angular/router": "^5.2.9",
     "@types/jasmine": "^2.8.6",
+    "@types/jest": "^22.2.0",
     "@types/seedrandom": "^2.4.27",
     "@types/webdriverio": "^4.10.0",
     "babel-loader": "^7.1.4",
@@ -68,18 +69,7 @@
     "html-webpack-plugin": "^3.0.7",
     "istanbul": "^0.4.4",
     "istanbul-instrumenter-loader": "^0.2.0",
-    "jasmine": "^2.4.1",
-    "jasmine-core": "^2.4.1",
-    "jasmine-node": "~1.14.2",
-    "karma": "^1.2.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-coverage": "^1.0.0",
-    "karma-jasmine": "^1.0.2",
-    "karma-phantomjs-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-sourcemap-writer": "^0.1.2",
-    "karma-spec-reporter": "0.0.26",
-    "karma-webpack": "^1.7.0",
+    "jest": "^22.4.3",
     "react": "15.2.1",
     "react-dom": "15.2.1",
     "react-redux": "4.4.5",
@@ -91,6 +81,7 @@
     "seedrandom": "^2.4.2",
     "selenium-standalone": "^5.6.2",
     "style-loader": "^0.20.3",
+    "ts-jest": "^22.4.2",
     "ts-loader": "^4.1.0",
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
@@ -109,5 +100,41 @@
     "webpack-cli": "^2.0.12",
     "webpack-dev-server": "^3.1.1",
     "zone.js": "^0.8.20"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}",
+      "!**/node_modules/**",
+      "!**/coverage/**",
+      "!**/dist/**",
+      "!**/*.d.ts",
+      "!**/interfaces.ts",
+      "!**/handler.ts"
+    ],
+    "coverageDirectory": "coverage/",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/coverage/",
+      "/dist/"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "html"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

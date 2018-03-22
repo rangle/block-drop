@@ -47,7 +47,6 @@ const plugins = [
   new webpack.DefinePlugin({
     __DEV__: !isProd,
     __PRODUCTION__: isProd,
-    __TEST__: JSON.stringify(process.env.TEST || false),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
   new webpack.ContextReplacementPlugin(
@@ -84,7 +83,7 @@ function loadTs(loader, inTest) {
       }
     ] : 'ts-loader',
     exclude: inTest ? /node_modules/ :
-      /(node_modules\/|\.test\.ts$|tests\.\w+\.ts$)/,
+      /(node_modules\/|\.spec\.ts$|\.test\.ts$|tests\.\w+\.ts$)/,
   };
 }
 
