@@ -16,7 +16,7 @@ import { deepFreeze, identity, partial, pluck } from '../../util';
  */
 export const THIRD_PARTY_TYPES = deepFreeze([
   '@@router/LOCATION_CHANGE',
-  'ng2-redux-router::UPDATE_LOCATION',
+  '@angular-redux/router::UPDATE_LOCATION',
   VUE_LOCATION_CHANGE,
 ]);
 
