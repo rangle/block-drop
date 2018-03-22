@@ -4,7 +4,7 @@ import { CHANGE_NEXT_CONFIG, REPLACE_NEXT_CONFIG } from '../constants';
 describe('next config reducer', () => {
   describe('CHANGE_NEXT_CONFIG', () => {
     it('should assign a new payload to state[meta]', () => {
-      const state = { test: 5 };
+      const state: any = { test: 5 };
       const newState = nextConfig(
         state, { type: CHANGE_NEXT_CONFIG, payload: 7, meta: 'test' });
 
@@ -12,7 +12,7 @@ describe('next config reducer', () => {
     });
 
     it('should return a new object', () => {
-      const state = { test: 5 };
+      const state: any = { test: 5 };
       const newState = nextConfig(
         state, { type: CHANGE_NEXT_CONFIG, payload: 7, meta: 'test' });
 

@@ -1,6 +1,6 @@
-import 'reflect-metadata';
+import 'core-js/es6/reflect';
+import 'core-js/es7/reflect';
 import 'zone.js/dist/zone';
-import 'ts-helpers';
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { getAppModule } from './app.module';
@@ -17,9 +17,7 @@ declare const __PRODUCTION__: boolean;
 
 if (__PRODUCTION__) {
   enableProdMode();
-} else {
-  require('zone.js/dist/long-stack-trace-zone');
-}
+} 
 
 const UNMOUNT_RETRY = 50;
 let appRef = null;

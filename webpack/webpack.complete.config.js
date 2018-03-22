@@ -3,11 +3,12 @@ const shared = require('./webpack.shared.config.js');
 const plugins = shared.plugins.concat([ shared.pluginIndex('index.html') ]);
 
 module.exports = {
+  devtool: 'source-map',
   entry: {
     'block-drop': path.join(__dirname, '..', 'src', 'index.ts'),
   },
-  stats: shared.stats,
   module: shared.module,
+  mode: 'production',
   output: {
     chunkFilename: '[id].chunk.js',
     filename: '[name].[hash].js',
@@ -16,9 +17,4 @@ module.exports = {
   },
   plugins,
   resolve: shared.resolve,
-  devServer: {
-    inline: true,
-    colors: true,
-  },
-  loaders: shared.loaders,
 };

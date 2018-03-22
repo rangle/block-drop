@@ -53,7 +53,7 @@ export { configInterfaces } from './configs/config-interfaces';
  * Trailing arguments are honored. 
  */
 export function paramsToFn<T>(params: Function[], fn: Function) {
-  return <T>(...args) => {
+  return (...args) => {
     return fn(...params.map(f => f()), ...args); 
   };
 }
@@ -414,7 +414,7 @@ export function tryFnRedraw(canFn: () => boolean,
     }
     fn();
     if (state) {
-      state.history.push({ tick: state.tick, control })
+      state.history.push({ tick: state.tick, control });
     }
     emit('redraw');
   } else {

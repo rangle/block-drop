@@ -7,8 +7,8 @@ import {
   OnInit,
   OnDestroy,
 } from '@angular/core';
-import { NgRedux, select } from 'ng2-redux';
-import { boardToArray } from '../../../util';
+import { NgRedux, select } from '@angular-redux/store';
+import { boardToArray, recomputeBoard } from '../../../util';
 import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';
 import { columnsFromBlock } from '../../../engine/block';
@@ -135,23 +135,3 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   }
 
 }
-
-function recomputeBoard(buffer, width) {
-  const newBoard = [];
-  const board = boardToArray(buffer, width);
-
-  let rows;
-
-  board.forEach((el, i) => {
-    if (i % width === 0) {
-      rows = [];
-    }
-    rows.push(el);
-    if (rows.length === width) {
-      newBoard.push(rows);
-    }
-  });
-
-  return newBoard;
-}
-

@@ -21,7 +21,7 @@ export function create(root) {
  return <GEngineStore<IState>>createStore<IState>(
       root, devTools ?
         compose(
-          engineEnhancer, applyMiddleware(routeBindingMiddleware), devTools) :
-        compose(engineEnhancer, applyMiddleware(routeBindingMiddleware))
+          engineEnhancer, applyMiddleware(routeBindingMiddleware as any), devTools) :
+        compose(engineEnhancer, applyMiddleware(routeBindingMiddleware as any))
     );
 }

@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "buildOnSave": false,
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "target": "es6",
     "emitDecoratorMetadata": true,
@@ -11,13 +11,7 @@
     "removeComments": false,
     "sourceMap": false,
     "inlineSourceMap": true,
-    "jsx": "react",
-    "noEmitHelpers": true
-  },
-  "awesomeTypescriptLoaderOptions": {
-    "useBabel": true,
-    "useCache": false,
-    "emitRequireType": false
+    "jsx": "react"
   },
   "exclude": [
     "coverage",

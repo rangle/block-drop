@@ -1,17 +1,35 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const SplitByPathPlugin = require('webpack-split-by-path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+const isProd = process.env.NODE_ENV === 'production';
+console.log('Webpack building for', isProd ? 'prod' : 'dev', 'mode');
+
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    cacheDirectory: true,
+    presets: [
+      "react",
+      [
+        "es2015",
+        {
+          "modules": false,
+        },
+      ],
+      "es2016",
+    ],
+  },
+};
 
 const loaders = {
-  tslint: {
-    test: /\.tsx?$/,
-    loader: 'tslint',
-    exclude: /node_modules/,
-  },
   css: {
     test: /\.css$/,
-    loader: 'style-loader!css?-minimize',
+    use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' },
+        ],
   },
   tsTest: loadTs(null, true),
   istanbulInstrumenter: loadTs('istanbul-instrumenter'),
@@ -26,57 +44,55 @@ function pluginIndex(file) {
 }
 
 const plugins = [
-  /** ensure splitBypath is first to work with testing hack */
-  new SplitByPathPlugin([
-    { name: 'vendor', path: [path.join(__dirname, '..', 'node_modules')] },
-  ]),
   new webpack.DefinePlugin({
-    __DEV__: process.env.NODE_ENV !== 'production',
-    __PRODUCTION__: process.env.NODE_ENV === 'production',
-    __TEST__: JSON.stringify(process.env.TEST || false),
+    __DEV__: !isProd,
+    __PRODUCTION__: isProd,
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
+  new webpack.ContextReplacementPlugin(
+    /angular(\\|\/)core(\\|\/)/,
+    './src'
+  ),
+  new webpack.ContextReplacementPlugin(
+    /\@angular(\\|\/)core(\\|\/)esm5/,
+    './src'
+  ),
 ];
 
 if (process.env.NODE_ENV === 'production') {
-  plugins.unshift(
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false,
-      },
-    })
-  );
-  plugins.unshift(new webpack.optimize.DedupePlugin());
+  plugins.unshift(new BundleAnalyzerPlugin({
+    analyzerMode: 'static',
+    openAnalyzer: false,
+  }));
 }
 
-const stats = {
-  colors: true,
-  reasons: true,
-};
-
 const resolve = {
-  extensions: ['', '.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.jsx'],
+  extensions: ['.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.jsx'],
+  alias: {
+    vue: 'vue/dist/vue.js',
+  },
 };
 
 function loadTs(loader, inTest) {
   return {
     test: /\.tsx?$/,
-    loader: loader || 'awesome-typescript-loader',
+    use: loader || isProd ? [
+      babelLoader,
+      {
+        loader: 'ts-loader'
+      }
+    ] : 'ts-loader',
     exclude: inTest ? /node_modules/ :
-      /(node_modules\/|\.test\.ts$|tests\.\w+\.ts$)/,
+      /(node_modules\/|\.spec\.ts$|\.test\.ts$|tests\.\w+\.ts$)/,
   };
 }
 
 module.exports = {
-  loaders,
   module: {
-    preLoaders: [
-      { test: /\.js$/, loader: 'eslint-loader' },
-    ],
-    loaders: [ loaders.ts, loaders.css ],
+    rules: [ loaders.ts, loaders.css ],
   },
   pluginIndex,
   plugins,
   resolve,
-  stats,
+  isProd,
 };

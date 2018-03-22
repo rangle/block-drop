@@ -1,5 +1,3 @@
-import './angular/angular';
-import './react/react';
 import {
   deepFreeze,
   noop,
@@ -8,8 +6,6 @@ import {
 import { create } from './store/store';
 import { root as rootReducer } from './reducers/root.reducer.complete';
 import { show, hide } from './elements';
-import * as angular from './angular/angular';
-import * as react from './react/react';
 import {
   bootstrapRoutes,
   changeFramework as changeFrameworkA,
@@ -38,9 +34,31 @@ const changeFramework = (offset: number) => (<any>store)
 const splashEl = document.getElementById(EL_SPLASH);
 const rootEl = document.getElementById(EL_ROOT);
 
+const memoPromise = (promiser) => {
+  let p;
+  return () => {
+    if (p) {
+      return p;
+    }
+    p = promiser();
+    return p;
+  };
+};
+
+const angular = memoPromise(() =>
+  import(/* webpackChunkName: "angular" */ './angular/angular')
+);
+const react = memoPromise(() =>
+  import(/* webpackChunkName: "react" */ './react/react')
+);
+const vue = memoPromise(() =>
+  import(/* webpackChunkName: "vue" */ './vue/vue')
+);
+
 const frameWorks = deepFreeze({
   'bd-root-angular': angular,
   'bd-root-react': react,
+  'bd-root-vue': vue,
 });
 
 const elements = FRAMEWORK_DESCRIPTIONS.reduce(
@@ -82,13 +100,14 @@ function mount() {
 
     function onClick() {
       const el = elements[fwDesc.id];
-      const fw = frameWorks[fwDesc.id];
-      hideAll();
-      unmountCurrent();
-      fw.mount(store, resizer);
-      show(el);
-      unmountCurrent = partial(fw.unmount, el);
-      changeFramework(i);
+      frameWorks[fwDesc.id]().then((fw) => {
+        hideAll();
+        unmountCurrent();
+        fw.mount(store, resizer);
+        show(el);
+        unmountCurrent = partial(fw.unmount, el);
+        changeFramework(i);
+      });
     }
 
     listeners.push(() => {

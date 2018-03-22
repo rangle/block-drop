@@ -1,5 +1,6 @@
 // synchronizes redux-routing solutions for angular/react
 import { ROUTE_BINDING_BOOTSTRAP } from '../constants';
+import { VUE_LOCATION_CHANGE } from '../vue/router-reducer';
 import { Dictionary } from '../../interfaces';
 import { deepFreeze, identity, partial, pluck } from '../../util';
 /**
@@ -15,11 +16,12 @@ import { deepFreeze, identity, partial, pluck } from '../../util';
  */
 export const THIRD_PARTY_TYPES = deepFreeze([
   '@@router/LOCATION_CHANGE',
-  'ng2-redux-router::UPDATE_LOCATION',
+  '@angular-redux/router::UPDATE_LOCATION',
+  VUE_LOCATION_CHANGE,
 ]);
 
-const LOCATION_CHANGE = THIRD_PARTY_TYPES[0];
-const UPDATE_LOCATION = THIRD_PARTY_TYPES[1];
+const R_LOCATION_CHANGE = THIRD_PARTY_TYPES[0];
+const NG_UPDATE_LOCATION = THIRD_PARTY_TYPES[1];
 
 export interface RouterAction<S, P> {
   newState(path: string, state: S): S; // calculates new route state based on
@@ -31,7 +33,7 @@ export type RouterActions = Dictionary<RouterAction<any, any>>;
 
 export const routerActions: RouterActions = {};
 
-Object.defineProperty(routerActions, LOCATION_CHANGE, {
+Object.defineProperty(routerActions, R_LOCATION_CHANGE, {
   configurable: false,
   enumerable: true,
   value: {
@@ -41,11 +43,21 @@ Object.defineProperty(routerActions, LOCATION_CHANGE, {
   writable: false,
 });
 
-Object.defineProperty(routerActions, UPDATE_LOCATION, {
+Object.defineProperty(routerActions, NG_UPDATE_LOCATION, {
   configurable: false,
   enumerable: true,
   value: {
     newState: newState_UPDATE_LOCATION,
+    fromPayload: identity,
+  },
+  writable: false,
+});
+
+Object.defineProperty(routerActions, VUE_LOCATION_CHANGE, {
+  configurable: false,
+  enumerable: true,
+  value: {
+    newState: newState_VUE_LOCATION_CHANGE,
     fromPayload: identity,
   },
   writable: false,
@@ -63,6 +75,10 @@ Object.defineProperty(routerActions, ROUTE_BINDING_BOOTSTRAP, {
 
 export function newState_UPDATE_LOCATION(path, state) {
   return Object.assign({}, state, { angular: path });
+}
+
+export function newState_VUE_LOCATION_CHANGE(path, state) {
+  return Object.assign({}, state, { vue: path });
 }
 
 export function newState_LOCATION_CHANGE(path, state) {

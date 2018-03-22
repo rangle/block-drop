@@ -4,10 +4,10 @@ import { IState } from './store';
 import { noop } from '../../util';
 
 describe('Engine\'s Redux Enhancer', () => {
-  let store;
+  let store: any;
 
   beforeEach(() => {
-    store = <Store<IState>>{
+    store = {
       dispatch: () => null,
       getState: () => ({
         nextConfig: {
@@ -29,13 +29,13 @@ describe('Engine\'s Redux Enhancer', () => {
 
   describe('blockDropEngine function', () => {
     it('should return a function', () => {
-      const result = blockDropEngine({}, noop);
+      const result = blockDropEngine({}, noop as any);
       expect(typeof result).toBe('function');
     });
 
     it('the returned function should return a new "store"', () => {
       const enhancer = blockDropEngine({}, () => store);
-      const result = enhancer(noop);
+      const result = enhancer(noop as any);
       expect(typeof result).toBe('object');
     });
   });

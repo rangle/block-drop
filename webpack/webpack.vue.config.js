@@ -1,19 +1,23 @@
 const path = require('path');
 const shared = require('./webpack.shared.config.js');
+const plugins = shared.plugins.concat([
+  shared.pluginIndex('index.vue.html'),
+]);
 
 module.exports = {
   entry: {
-    'block-drop-engine': path
-      .join(__dirname, '..', 'src', 'engine', 'engine.ts'),
+    'block-drop-vue': path
+      .join(__dirname, '..', 'src', 'front-end', 'vue',
+        'stand-alone.vue.ts'),
   },
   module: shared.module,
   mode: 'production',
   output: {
     chunkFilename: '[id].chunk.js',
     filename: '[name].[hash].js',
-    path: path.join(__dirname, '..', 'dist', 'engine'),
+    path: path.join(__dirname, '..', 'dist', 'vue'),
     sourceMapFilename: '[name].[hash].js.map',
   },
-  plugins: shared.plugins,
+  plugins,
   resolve: shared.resolve,
 };

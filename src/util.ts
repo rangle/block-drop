@@ -12,6 +12,26 @@ export function boardToArray(b, width) {
   return Array.from(b.slice(width * 2));
 }
 
+export function recomputeBoard(buffer, width) {
+  const newBoard = [];
+  const board = boardToArray(buffer, width);
+
+  let rows;
+
+  board.forEach((el, i) => {
+    if (i % width === 0) {
+      rows = [];
+    }
+    rows.push(el);
+    if (rows.length === width) {
+      newBoard.push(rows);
+    }
+  });
+
+  return newBoard;
+}
+
+
 export function camelToKebab(string: string) {
   return string.replace(/([A-Z])/g, (s) => '-' + s.toLowerCase());
 }

@@ -19,7 +19,7 @@ describe('routeBinding reducer', () => {
       testAction: {
         newState: noop,
         fromPayload: noop,
-      }
+      } as any
     }, reducerA);
     expect(reducerB({}, {
       type: 'something else',
@@ -45,7 +45,7 @@ describe('routeBinding reducer', () => {
           .assign({}, state, { other: path + ' ' + state.sValue }),
         fromPayload: noop,
       }
-    }, reducerA);
+    } as any, reducerA);
 
     const newState = reducerB({
       sValue: 'hello',
