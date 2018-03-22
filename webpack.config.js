@@ -2,7 +2,7 @@ const path = require('path');
 const shared = require('./webpack/webpack.shared.config.js');
 const plugins = shared.plugins.concat([ shared.pluginIndex('index.html') ]);
 
-const isProd = process.env.NODE_ENV === 'production';
+const { isProd } = shared;
 
 module.exports = {
   devtool: isProd ? 

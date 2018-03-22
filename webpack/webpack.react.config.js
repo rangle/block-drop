@@ -10,8 +10,8 @@ module.exports = {
       .join(__dirname, '..', 'src', 'front-end', 'react',
         'stand-alone.react.ts'),
   },
-  stats: shared.stats,
   module: shared.module,
+  mode: 'production',
   output: {
     chunkFilename: '[id].chunk.js',
     filename: '[name].[hash].js',
@@ -20,9 +20,4 @@ module.exports = {
   },
   plugins,
   resolve: shared.resolve,
-  devServer: {
-    inline: true,
-    colors: true,
-  },
-  loaders: shared.loaders,
 };

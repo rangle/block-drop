@@ -5,10 +5,10 @@ import '../../license';
 import { routes } from './routes';
 import { Nav } from './components';
 import { VUE_LOCATION_CHANGE } from './router-reducer';
+import Vue from 'vue';
 // Global styles
 import '../styles/index.css';
 
-const Vue = require('vue') as any;
 const VUE = 'bd-root-vue';
 
 export function mount(store: EngineStore, resizer: Resizer) {

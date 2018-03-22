@@ -1,8 +1,27 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-console.log('Webpack building for', process.env.NODE_ENV || 'dev', 'mode');
+const isProd = process.env.NODE_ENV === 'production';
+console.log('Webpack building for', isProd ? 'prod' : 'dev', 'mode');
+
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    cacheDirectory: true,
+    presets: [
+      "react",
+      [
+        "es2015",
+        {
+          "modules": false,
+        },
+      ],
+      "es2016",
+    ],
+  },
+};
 
 const loaders = {
   css: {
@@ -26,8 +45,8 @@ function pluginIndex(file) {
 
 const plugins = [
   new webpack.DefinePlugin({
-    __DEV__: process.env.NODE_ENV !== 'production',
-    __PRODUCTION__: process.env.NODE_ENV === 'production',
+    __DEV__: !isProd,
+    __PRODUCTION__: isProd,
     __TEST__: JSON.stringify(process.env.TEST || false),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
@@ -42,14 +61,10 @@ const plugins = [
 ];
 
 if (process.env.NODE_ENV === 'production') {
-  console.log('ADD UGLIFY');
-  plugins.unshift(
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false,
-      },
-    })
-  );
+  plugins.unshift(new BundleAnalyzerPlugin({
+    analyzerMode: 'static',
+    openAnalyzer: false,
+  }));
 }
 
 const resolve = {
@@ -62,7 +77,12 @@ const resolve = {
 function loadTs(loader, inTest) {
   return {
     test: /\.tsx?$/,
-    use: loader || 'ts-loader',
+    use: loader || isProd ? [
+      babelLoader,
+      {
+        loader: 'ts-loader'
+      }
+    ] : 'ts-loader',
     exclude: inTest ? /node_modules/ :
       /(node_modules\/|\.test\.ts$|tests\.\w+\.ts$)/,
   };
@@ -75,4 +95,5 @@ module.exports = {
   pluginIndex,
   plugins,
   resolve,
+  isProd,
 };
