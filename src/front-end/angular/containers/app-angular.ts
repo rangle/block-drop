@@ -10,11 +10,6 @@ import {
 @Component({
   selector: 'bd-angular',
   template: `
-    <div class="${verticalUiClass}">
-      <bd-button *ngFor="let route of (routes$ | async)"
-         [onClick]="changeScreen(route.path)"
-         [value]="route.name"></bd-button>
-    </div>
     <router-outlet></router-outlet>
 `,
 })

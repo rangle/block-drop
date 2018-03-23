@@ -3,7 +3,6 @@ import { EngineStore } from '../store/store';
 import { Resizer } from '../aspect-resizer';
 import '../../license';
 import { routes } from './routes';
-import { Nav } from './components';
 import { VUE_LOCATION_CHANGE } from './router-reducer';
 import Vue from 'vue';
 // Global styles
@@ -24,7 +23,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
     state: store.getState(),
   };
 
-  const nav = Nav();
 
   const app = new Vue({
     data,
@@ -44,21 +42,8 @@ export function mount(store: EngineStore, resizer: Resizer) {
       const redraw = (this as any).redraw.bind(this);
       return h(
         'div',
-        {
-        },
+        {},
         [
-          h(nav, {
-            on: {
-              nav(path: string) {
-                store.dispatch({ type: VUE_LOCATION_CHANGE, payload: path });
-                window.history.pushState(null, name, '/' + path);
-                redraw();
-              },
-            },
-            props: {
-              routes: this.state.app.routes,
-            }
-          }),
           /** @todo determine why computed props are not in the generic --v */
           h(routeTo, {
             // class: {
