@@ -1,27 +1,42 @@
+defaults:
+  docker: &ref_0
+    - image: 'circleci/node:8-browsers'
 version: 2
 jobs:
-  build:
-    docker:
-      - image: circleci/node:8-browsers
+  install:
+    docker: *ref_0
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install
+          key: 'dependency-cache-{{ checksum "yarn.lock" }}'
+      - run: yarn install
       - save_cache:
-          name: Save Node Modules Cache
-          key: dependency-cache-{{ checksum "yarn.lock" }}
+          key: 'dependency-cache-{{ checksum "yarn.lock" }}'
           paths:
             - ./node_modules
-      - run:
-          name: lint
-          command: yarn lint
-      - run:
-          name: test
-          command: yarn test:ci
-      - run:
-          name: build
-          command: yarn build:ci
-
+  lint:
+    docker: *ref_0
+    steps:
+      - run: yarn lint
+  test:
+    docker: *ref_0
+    steps:
+      - run: 'yarn test:ci'
+  build:
+    docker: *ref_0
+    steps:
+      - run: 'yarn build:ci'
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - install
+      - lint:
+          requires:
+            - install
+      - test:
+          requires:
+            - install
+      - build:
+          requires:
+            - install
