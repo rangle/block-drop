@@ -1,9 +1,9 @@
 import { deepFreeze } from '../../util';
 
 export const FRAMEWORK_DESCRIPTIONS = deepFreeze([
-  { id: 'bd-root-angular', name: 'Industrial' },
-  { id: 'bd-root-react', name: 'DX' },
   { id: 'bd-root-vue', name: 'Vue' },
+  { id: 'bd-root-angular', name: 'Angular' },
+  { id: 'bd-root-react', name: 'React' },
 ]);
 
 export const ROUTES = deepFreeze([{

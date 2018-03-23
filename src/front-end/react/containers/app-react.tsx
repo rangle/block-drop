@@ -23,18 +23,6 @@ export const App = withRouter(connect(
 )(React.createClass({
   render() {
     return (<div>
-      <div className={ verticalUiClass }>
-        {
-          this.props.routes
-            .map((route, i) => (<Button key = {i}
-                                        value={ route.name }
-                                        onClick={
-                            partial(() => this.props.router.push(route.path),
-                            route.id)
-                          }/>))
-
-        }
-      </div>
       <div>
         { this.props.children }
       </div>
