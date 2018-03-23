@@ -10,7 +10,6 @@ import {
 import {
   Board,
   Button,
-  Debug,
   NextPieces,
 } from '../components';
 
@@ -90,8 +89,6 @@ export const Game = connect(
             null :
             <NextPieces preview={ this.props.preview }/>
         }
-        <Debug activePiece={ this.props.activePiece }
-               lastEvent={ this.props.lastEvent } />
       </div>
     </div>);
   },

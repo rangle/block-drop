@@ -5,7 +5,7 @@ import {
   previewDebug,
 } from '../../styles';
 import { recomputeBoard, noop } from '../../../util';
-import { Board, Button, Debug, NextPieces } from '../components';
+import { Board, Button, NextPieces } from '../components';
 import { columnsFromBlock } from '../../../engine/block';
 
 export const Game = () => {
@@ -18,7 +18,6 @@ export const Game = () => {
     components: {
       'bd-board': Board(),
       'bd-button': Button(),
-      'bd-debug': Debug(),
       'bd-next-pieces': NextPieces(),
     },
     computed: {
@@ -107,11 +106,6 @@ export const Game = () => {
         v-if="!(state.game.isPaused)"
         v-bind:preview="state.game.preview">
       </bd-next-pieces>
-      <bd-debug 
-        v-bind:keyCode="state.game.lastEvent.keyCode"
-        v-bind:activePiece="state.game.activePiece"
-      >
-      </bd-debug>
     </div>
   </div>`,
   };

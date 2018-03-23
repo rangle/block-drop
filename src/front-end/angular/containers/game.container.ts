@@ -49,10 +49,6 @@ import { Resizer } from '../../aspect-resizer';
       class="${flexShrink} ${flexCol}" 
       [preview]="preview">
       </bd-next-pieces>
-      <bd-debug 
-      class="${flexGrowShrink}" 
-      [keyCode]="(lastEvent$ | async).keyCode">
-      </bd-debug>
     </div>
 `,
 })
