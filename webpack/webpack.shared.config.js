@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 console.log('Webpack building for', isProd ? 'prod' : 'dev', 'mode');
@@ -57,6 +58,7 @@ const plugins = [
     /\@angular(\\|\/)core(\\|\/)esm5/,
     './src'
   ),
+  new CopyWebpackPlugin([{ from: 'src/assets', to: 'assets' }])
 ];
 
 if (process.env.NODE_ENV === 'production') {
