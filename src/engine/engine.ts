@@ -74,6 +74,7 @@ export function create1(config: GameConfig = {}) {
     ],
     gameOvers: 0,
     history: [],
+    isEnded: false,
     pauses: [],
     rowsCleared: 0,
     tick: 0,
@@ -96,6 +97,14 @@ export function create1(config: GameConfig = {}) {
   const bCanMoveRight = boardBlockFn<() => boolean>(c.canMoveRight);
   const bCanRotateLeft = boardBlockFn<() => boolean>(c.canRotateLeft);
   const bCanRotateRight = boardBlockFn<() => boolean>(c.canRotateRight);
+  const bGameOver = () => {
+    gameOver(c.debug, getBoard, getBuffer,
+      writableState, nextBlock, events.emit);
+    clearInterval(writableState.timer);
+    writableState.timer = setInterval(interval, deriveMultiple(
+      writableState.games[0].level, c.speedMultiplier, c.speed
+    ));
+  };
   const bRotateLeft = blockFn(rotateLeft);
   const bRotateRight = blockFn(rotateRight);
   const bMove: (axis: 'x' | 'y', quantity?: number) => any = blockFn(move);
@@ -206,15 +215,32 @@ export function create1(config: GameConfig = {}) {
         },
       }),
     },
+    // ends the game, stateful, only happens if there is an active game
+    endGame: {
+      configurable: false,
+      writable: false,
+      value: () => {
+        if (writableState.isEnded) {
+          return;
+        }
+        clearInterval(writableState.timer);
+        writableState.isEnded = true;
+      },
+    },
+    // resets the game
     gameOver: {
       configurable: false,
       writable: false,
-      value: partial(gameOver, c.debug, getBoard, getBuffer, writableState, 
-        nextBlock, events.emit),
+      value: bGameOver,
     },
     gamesOvers: {
       configurable: false,
       get: () => writableState.gameOvers,
+      set: noop,
+    },
+    isStopped: {
+      configurable: false,
+      get: () => writableState.isEnded,
       set: noop,
     },
     on: {
@@ -271,6 +297,18 @@ export function create1(config: GameConfig = {}) {
       configurable: false,
       get: () => writableState.games[0].score,
       set: noop,
+    },
+    startGame: {
+      configurable: false,
+      value: () => {
+        if (writableState.isEnded) {
+          writableState.isEnded = false;
+          bGameOver();
+          writableState.timer = setInterval(interval, deriveMultiple(
+            writableState.games[0].level, c.speedMultiplier, c.speed
+          ));
+        }
+      },
     },
     level: {
       configurable: false,

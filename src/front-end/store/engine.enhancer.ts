@@ -17,6 +17,7 @@ import {
   updateLevel,
   updateScore,
   updateLevelProgress,
+  updateGameStatus,
 } from '../actions/game.actions';
 
 export interface EngineReferences {
@@ -31,6 +32,8 @@ export interface StoreGameExtensions {
   on(event: string, cb: Function);
   pause: () => void;
   resume: () => void;
+  stop: () => void;
+  start: () => void;
 }
 
 export interface EngineStore<T> extends Store<T> {
@@ -77,6 +80,7 @@ export function blockDropEngine(references: EngineReferences,
     createGame(references, vanillaStore);
 
     let resumeGame = noop;
+    let startGame = noop;
 
     function pauseGame() {
       if (resumeGame === noop) {
@@ -90,6 +94,18 @@ export function blockDropEngine(references: EngineReferences,
       }
     }
 
+    function stopGame() {
+      if (startGame === noop) {
+        references.engine.endGame();
+        (<any>vanillaStore).dispatch(updateGameStatus(true));
+
+        startGame = () => {
+          (<any>vanillaStore).dispatch(updateGameStatus(false));
+          references.engine.startGame();
+        };
+      }
+    }
+
     return Object.assign({}, vanillaStore, {
       game: {
         controls: () => references.engine.controls,
@@ -99,6 +115,11 @@ export function blockDropEngine(references: EngineReferences,
         resume: () => {
           resumeGame();
           resumeGame = noop;
+        },
+        stop: stopGame,
+        start: () => {
+          startGame();
+          startGame = noop;
         },
       },
     });

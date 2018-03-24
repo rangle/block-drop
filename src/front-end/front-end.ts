@@ -12,6 +12,9 @@ import {
   changeMultiFramework,
 } from './actions/app.actions';
 import {
+  updateGameStatus,
+} from './actions/game.actions';
+import {
   EL_ROOT,
   EL_SPLASH,
   FRAMEWORK_DESCRIPTIONS,
@@ -69,6 +72,7 @@ const elements = FRAMEWORK_DESCRIPTIONS.reduce(
   Object.create(null)
 );
 
+let storeSub: Function = noop;
 let listeners: Function[] = [];
 let unmountCurrent = noop;
 hide(rootEl);
@@ -91,6 +95,17 @@ function hideAll() {
 }
 
 function mount() {
+  storeSub = store.subscribe(() => {
+    const state = store.getState();
+    if (state.game.isStopped) {
+      hideAll();
+      unmountCurrent();
+      unmountCurrent = noop;
+      unmount();
+      store.dispatch(updateGameStatus(false));
+    }
+  });
+
   rootEl.innerHTML = '';
   FRAMEWORK_DESCRIPTIONS.forEach((fwDesc, i) => {
     const button = document.createElement('input');
@@ -101,6 +116,7 @@ function mount() {
     function onClick() {
       const el = elements[fwDesc.id];
       frameWorks[fwDesc.id]().then((fw) => {
+        store.game.start();
         hideAll();
         unmountCurrent();
         fw.mount(store, resizer);
@@ -127,4 +143,6 @@ function unmount() {
   listeners = [];
   rootEl.innerHTML = '';
   show(splashEl);
+  storeSub();
+  storeSub = noop;
 }
