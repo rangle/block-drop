@@ -59,6 +59,10 @@ export const Game = () => {
         required: true,
         type: Function,
       },
+      done: {
+        required: true,
+        type: Function,
+      },
       gameControls: {
         required: true,
         type: Function,
@@ -106,6 +110,10 @@ export const Game = () => {
         v-if="!(state.game.isPaused)"
         v-bind:preview="state.game.preview">
       </bd-next-pieces>
+      <bd-button
+        value="Done"
+        v-on:click="done">
+      </bd-button>
     </div>
   </div>`,
   };

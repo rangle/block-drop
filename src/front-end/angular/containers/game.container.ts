@@ -49,6 +49,10 @@ import { Resizer } from '../../aspect-resizer';
       class="${flexShrink} ${flexCol}" 
       [preview]="preview">
       </bd-next-pieces>
+      <bd-button
+       value="Done"
+       [onClick]="done"
+      ></bd-button>
     </div>
 `,
 })
@@ -61,6 +65,7 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   private boardWidth$: number;
   private deRegister: Function[] = [];
   private pause: Function;
+  private done: Function;
   private pauseLabel = 'Pause';
   private preview: { name: string, cols: number[][]}[] = [];
   private resume: Function;
@@ -73,6 +78,7 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
               private cdRef: ChangeDetectorRef) {
     this.pause = this.store.game.pause;
     this.resume = this.store.game.resume;
+    this.done = this.store.game.stop;
   }
 
   ngAfterViewInit() {

@@ -52,10 +52,12 @@ export function mount(store: EngineStore, resizer: Resizer) {
             props: { 
               createGame: store.game.create,
               dispatch: store.dispatch.bind(store), 
+              done: store.game.stop.bind(store.game),
               gameControls: store.game.controls.bind(store.game),
               pause: store.game.pause,
               resizer, 
               resume: store.game.resume,
+              start: store.game.start.bind(store.game),
               state: this.state,
             },
           }),

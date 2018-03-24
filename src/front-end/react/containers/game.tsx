@@ -67,7 +67,7 @@ export const Game = connect(
   },
 
   render() {
-    const { pause, resume } = this.props.store.game;
+    const { stop, pause, resume } = this.props.store.game;
     return (<div className={ gameViewportClass } style={ this.props.styles }>
       {
         this.props.isPaused ?
@@ -89,6 +89,7 @@ export const Game = connect(
             null :
             <NextPieces preview={ this.props.preview }/>
         }
+        <Button value='Done' onClick={ stop } />
       </div>
     </div>);
   },

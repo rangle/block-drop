@@ -14,3 +14,4 @@ export const UPDATE_PREVIEW = 'update-preview';
 export const UPDATE_SCORE = 'update-score';
 export const UPDATE_LEVEL = 'update-level';
 export const UPDATE_LEVEL_PROGRESS = 'update-level-progress';
+export const UPDATE_GAME_STATUS = 'update-game-status';

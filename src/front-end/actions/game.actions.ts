@@ -11,6 +11,7 @@ import {
   UPDATE_SCORE,
   UPDATE_LEVEL,
   UPDATE_LEVEL_PROGRESS,
+  UPDATE_GAME_STATUS,
 } from '../constants';
 
 export function replaceConfig(config: GameConfig) {
@@ -88,5 +89,12 @@ export function updateLevelProgress(progress: number) {
   return {
     type: UPDATE_LEVEL_PROGRESS,
     payload: progress,
+  };
+}
+
+export function updateGameStatus(isStopped: boolean) {
+  return {
+    type: UPDATE_GAME_STATUS,
+    payload: isStopped,
   };
 }
