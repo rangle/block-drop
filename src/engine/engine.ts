@@ -14,6 +14,7 @@ import {
   canMoveUp,
   canMoveLeft,
   canMoveRight,
+  DC2MAX,
   functionsDetectClear,
   removeBlock,
 } from './board';
@@ -252,9 +253,28 @@ export function create1(config: GameConfig = {}) {
       writable: false,
       value: preview,
     },
+    progress: {
+      configurable: false,
+      get: () => {
+        const game = writableState.games[0];
+        const total = game.tilesCleared - game.tilesClearedPrev;
+        return total / game.nextLevelThreshold;
+      },
+      set: noop,
+    },
     rowsCleared: {
       configurable: false,
       get: () => writableState.games[0].rowsCleared,
+      set: noop,
+    },
+    score: {
+      configurable: false,
+      get: () => writableState.games[0].score,
+      set: noop,
+    },
+    level: {
+      configurable: false,
+      get: () => writableState.games[0].level,
       set: noop,
     },
     state: {
@@ -274,9 +294,41 @@ export function create1(config: GameConfig = {}) {
   }
   
   function bClearCheck() {
-    writableState.games[0].rowsCleared +=
-      clearCheck(engine, board, partial(detectAndClear, board),
+    const cleared = clearCheck(engine, board, partial(detectAndClear, board),
         c.forceBufferUpdateOnClear);
+
+    writableState.games[0].rowsCleared += cleared;
+    writableState.games[0].tilesCleared += cleared;
+    if (cleared) {
+      const overflow = cleared - DC2MAX;
+      writableState.games[0].score += overflow * writableState.games[0].level *
+        c.tileScoreMultiplier;
+    }
+  }
+
+  function interval() {
+    const game = writableState.games[0];
+
+    if (game.levelPrev !== game.level) {
+      game.rowsClearedPrev = game.rowsCleared;
+      game.tilesClearedPrev = game.tilesClearedPrev;
+      game.levelPrev = game.level;
+    }
+
+    c.tick(engine,
+      board,
+      (axis: 'x' | 'y', quantity: number) => {
+        updateActiveBlock(() => bMove(axis, quantity));
+      },
+      newBlock,
+      bClearCheck,
+      commitBlock,
+      checkForLoss,
+      c.gameOver);
+
+    score();
+
+    writableState.tick += 1;
   }
 
   function startTick() {
@@ -284,19 +336,28 @@ export function create1(config: GameConfig = {}) {
       console.warn('startTick called and timer exists!');
       return;
     }
-    writableState.timer = setInterval(() => {
-      c.tick(engine,
-        board,
-        (axis: 'x' | 'y', quantity: number) => {
-          updateActiveBlock(() => bMove(axis, quantity));
-        },
-        newBlock,
-        bClearCheck,
-        commitBlock,
-        checkForLoss,
-        c.gameOver);
-      writableState.tick += 1;
-    }, c.speed);
+
+    writableState.timer = setInterval(interval, deriveMultiple(
+      writableState.games[0].level, c.speedMultiplier, c.speed
+    ));
+  }
+
+  /** Dirty side effect for demo, putting it here to not clutter above */
+  function score() {
+    const game = writableState.games[0];
+    const tilesClearedSinceLevel = game.tilesCleared - game.tilesClearedPrev;
+
+    if (tilesClearedSinceLevel > game.nextLevelThreshold) {
+      game.score += c.baseLevelScore;
+      game.level += 1;
+      game.score += (tilesClearedSinceLevel - game.level) * 
+        c.tileScoreMultiplier * game.level;
+      game.nextLevelThreshold *= c.nextLevelMultiplier;
+      clearInterval(writableState.timer);
+      writableState.timer = setInterval(interval, deriveMultiple(
+        game.level, c.speedMultiplier, c.speed
+      ));
+    }
   }
 
   // go
@@ -310,8 +371,14 @@ function createGame1(nextBlock) {
   return {
     activePieceHistory: [],
     activePiece: nextBlock(), 
+    level: 1,
+    levelPrev: 1,
+    nextLevelThreshold: 45,
     rowsCleared: 0,
+    rowsClearedPrev: 0,
+    score: 0,
     tilesCleared: 0, 
+    tilesClearedPrev: 0,
   }; 
 }
 
@@ -347,8 +414,9 @@ export function clearCheck(engine: { rowsCleared: number, buffer: Uint8Array },
                            detectAndClear: () => number,
                            forceBufferCopy: boolean) {
   const cleared = detectAndClear();
-  engine.rowsCleared += cleared;
+
   if (cleared || forceBufferCopy) { copyBuffer(board.desc, engine.buffer); }
+
   return cleared;
 }
 
@@ -431,4 +499,11 @@ export function forceValidateConfig(defaults: GameConfig,
   config.seed = config.seed || Date.now();
   
   return config;
+}
+
+function deriveMultiple(level: number, multiplier: number, value: number) {
+  if (level <= 1) {
+    return value * multiplier;
+  }
+  return deriveMultiple(level - 1, multiplier, value) * multiplier;
 }

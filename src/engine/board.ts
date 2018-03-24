@@ -19,6 +19,8 @@ import {
   throwOutOfBounds,
 } from '../util';
 
+export const DC2MAX = 9;
+
 export const functionsDetectClear = makeCollection({
   detectAndClear1,
   detectAndClear2,
@@ -340,7 +342,7 @@ export function detectAndClear2Sweeper(board: Board, max: number) {
   return clearedTiles;
 }
 
-export function detectAndClear2(board: Board, max = 9): number {
+export function detectAndClear2(board: Board, max = DC2MAX): number {
   let total = 0;
   let current = 1;
 
