@@ -89,10 +89,10 @@ export function create1(config: GameConfig = {}) {
     [getBoard, getActivePiece]);
   const updateActiveBlock = partial<(fn: Function) => void>(updateBlock,
     getBoard, getActivePiece, getBuffer);
-  const bCanMoveDown = boardBlockFn<() => boolean>(canMoveDown);
-  const bCanMoveUp = boardBlockFn<() => boolean>(canMoveUp);
-  const bCanMoveLeft = boardBlockFn<() => boolean>(canMoveLeft);
-  const bCanMoveRight = boardBlockFn<() => boolean>(canMoveRight);
+  const bCanMoveDown = boardBlockFn<() => boolean>(c.canMoveDown);
+  const bCanMoveUp = boardBlockFn<() => boolean>(c.canMoveUp);
+  const bCanMoveLeft = boardBlockFn<() => boolean>(c.canMoveLeft);
+  const bCanMoveRight = boardBlockFn<() => boolean>(c.canMoveRight);
   const bCanRotateLeft = boardBlockFn<() => boolean>(c.canRotateLeft);
   const bCanRotateRight = boardBlockFn<() => boolean>(c.canRotateRight);
   const bRotateLeft = blockFn(rotateLeft);

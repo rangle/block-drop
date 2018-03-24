@@ -7,6 +7,10 @@ import {
 } from '../block';
 
 import {
+  canMoveDown,
+  canMoveUp,
+  canMoveLeft,
+  canMoveRight,
   canRotateLeft1,
   canRotateRight1,
   createBoard1,
@@ -44,6 +48,10 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   width: 11,
   height: 25,
   blockDescriptions,
+  canMoveUp: () => false,
+  canMoveDown,
+  canMoveLeft,
+  canMoveRight,
   canRotateLeft: canRotateLeft1,
   canRotateRight: canRotateRight1,
   checkForLoss: checkForLoss1,

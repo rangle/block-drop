@@ -75,6 +75,10 @@ export interface NextBlockConfig extends MapBaseConfig {
 export interface GameConfig extends NextBlockConfig {
   board?: Uint8Array;
   debug?: boolean;
+  canMoveUp?: (board: Board, block: Block) => boolean;
+  canMoveDown?: (board: Board, block: Block) => boolean;
+  canMoveLeft?: (board: Board, block: Block) => boolean;
+  canMoveRight?: (board: Board, block: Block) => boolean;
   canRotateLeft?: (board: Board, block: Block) => boolean;
   canRotateRight?: (board: Board, block: Block) => boolean;
   checkForLoss?: (board: Board, block: Block) => boolean;
