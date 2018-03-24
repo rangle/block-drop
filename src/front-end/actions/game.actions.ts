@@ -8,6 +8,9 @@ import {
   UPDATE_ACTIVE_PIECE,
   UPDATE_BUFFER,
   UPDATE_PREVIEW,
+  UPDATE_SCORE,
+  UPDATE_LEVEL,
+  UPDATE_LEVEL_PROGRESS,
 } from '../constants';
 
 export function replaceConfig(config: GameConfig) {
@@ -64,5 +67,26 @@ export function updatePreview(preview: Block[]) {
   return {
     type: UPDATE_PREVIEW,
     payload: preview,
+  };
+}
+
+export function updateScore(score: number) {
+  return {
+    type: UPDATE_SCORE,
+    payload: score,
+  };
+}
+
+export function updateLevel(level: number) {
+  return {
+    type: UPDATE_LEVEL,
+    payload: level,
+  };
+}
+
+export function updateLevelProgress(progress: number) {
+  return {
+    type: UPDATE_LEVEL_PROGRESS,
+    payload: progress,
   };
 }

@@ -14,6 +14,9 @@ import {
   updateBuffer,
   updateActivePiece,
   updatePreview,
+  updateLevel,
+  updateScore,
+  updateLevelProgress,
 } from '../actions/game.actions';
 
 export interface EngineReferences {
@@ -55,6 +58,9 @@ export function createGame(references: EngineReferences,
     (<any>store).dispatch(updateActivePiece(references.engine.activePiece()));
     (<any>store).dispatch(updateBuffer(references.engine.buffer));
     (<any>store).dispatch(updatePreview(references.engine.preview));
+    (<any>store).dispatch(updateLevel(references.engine.level));
+    (<any>store).dispatch(updateLevelProgress(references.engine.progress));
+    (<any>store).dispatch(updateScore(references.engine.score));
   }
 }
 

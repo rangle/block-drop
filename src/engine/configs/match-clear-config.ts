@@ -64,7 +64,11 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   randomMethod: 'randomFromSet',
   seedRandom: 'xor4096',
   spawn: spawn1,
-  speed: 1000,
+  baseLevelScore: 1000,
+  tileScoreMultiplier: 10,
+  nextLevelMultiplier: 1.61803398875,
+  speed: 618,
+  speedMultiplier: 0.61803398875,
   tick: tick1,
 });
 

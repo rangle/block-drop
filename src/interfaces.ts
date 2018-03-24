@@ -86,7 +86,11 @@ export interface GameConfig extends NextBlockConfig {
   detectAndClear?: string;
   forceBufferUpdateOnClear?: boolean;
   name?: string;
+  baseLevelScore?: number;
+  tileScoreMultiplier?: number;
+  nextLevelMultiplier?: number;
   speed?: number;
+  speedMultiplier?: number;
   tick?: (engine, 
           board: Board, 
           moveBlock: (axis: 'x' | 'y', magnitude: number) => any,
