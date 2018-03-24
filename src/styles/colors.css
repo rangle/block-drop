@@ -1,0 +1,40 @@
+@import './variables';
+
+.angular-red {
+  color: var(--angular-red);
+}
+.blue-black {
+  color: var(--blue-black);
+}
+.react-blue {
+  color: var(--react-blue);
+}
+.vue-green {
+  color: var(--vue-green);
+}
+
+.bg-angular-red {
+  background-color: var(--angular-red);
+}
+.bg-blue-black {
+  background-color: var(--blue-black);
+}
+.bg-react-blue {
+  background-color: var(--react-blue);
+}
+.bg-vue-green {
+  background-color: var(--vue-green);
+}
+
+.b--angular-red {
+  border-color: var(--angular-red);
+}
+.b--blue-black {
+  border-color: var(--blue-black);
+}
+.b--react-blue {
+  border-color: var(--react-blue);
+}
+.b--vue-green {
+  border-color: var(--vue-green);
+}

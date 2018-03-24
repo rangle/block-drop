@@ -1,0 +1,42 @@
+@import './variables';
+
+@font-face {
+  font-family: 'Calibre';
+  src: url('../assets/fonts/Calibre-Thin.otf');
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'Calibre';
+  src: url('../assets/fonts/Calibre-Light.otf');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Calibre';
+  src: url('../assets/fonts/Calibre-Regular.otf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Calibre';
+  src: url('../assets/fonts/Calibre-Medium.otf');
+  font-weight: 700;
+}
+
+.calibre-thin {
+  font-family: var(--font-family);
+  font-weight: 200;
+}
+.calibre-light {
+  font-family: var(--font-family);
+  font-weight: 300;
+}
+.calibre {
+  font-family: var(--font-family);
+  font-weight: 400;
+}
+.calibre-medium {
+  font-family: var(--font-family);
+  font-weight: 700;
+}

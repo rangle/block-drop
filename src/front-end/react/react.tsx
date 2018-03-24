@@ -6,9 +6,6 @@ import { Routes } from './routes-react';
 import { EngineStore } from '../store/store';
 import { Resizer } from '../aspect-resizer';
 
-// Global styles
-import '../styles/index.css';
-
 const REACT = 'bd-root-react';
 
 export function mount(store: EngineStore, resizer: Resizer) {

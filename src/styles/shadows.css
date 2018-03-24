@@ -1,0 +1,11 @@
+@import './variables';
+
+.shadow-angular-red {
+  box-shadow: 0px 0px 20px var(--angular-red);
+}
+.shadow-react-blue {
+  box-shadow: 0px 0px 20px var(--react-blue);
+}
+.shadow-vue-green {
+  box-shadow: 0px 0px 20px var(--vue-green);
+}

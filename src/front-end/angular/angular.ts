@@ -8,9 +8,6 @@ import { partial } from '../../util';
 import { EngineStore } from '../store/store';
 import { Resizer } from '../aspect-resizer';
 import '../../license';
-// Global styles
-import '../styles/index.css';
-
 
 // Production mode
 declare const __PRODUCTION__: boolean;

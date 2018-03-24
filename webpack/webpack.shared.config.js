@@ -1,8 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProd = process.env.NODE_ENV === 'production';
 console.log('Webpack building for', isProd ? 'prod' : 'dev', 'mode');
@@ -12,29 +13,42 @@ const babelLoader = {
   options: {
     cacheDirectory: true,
     presets: [
-      "react",
+      'react',
       [
-        "es2015",
+        'es2015',
         {
-          "modules": false,
+          modules: false,
         },
       ],
-      "es2016",
+      'es2016',
     ],
   },
+};
+
+const cssLoader = {
+  loader: 'css-loader',
+  options: { importLoaders: 1 },
 };
 
 const loaders = {
   css: {
     test: /\.css$/,
-    use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
-        ],
+    use: [MiniCssExtractPlugin.loader, cssLoader, 'postcss-loader'],
   },
   tsTest: loadTs(null, true),
   istanbulInstrumenter: loadTs('istanbul-instrumenter'),
   ts: loadTs(),
+  files: {
+    test: /\.(eot|woff|woff2|ttf|otf|)$/,
+    use: [
+      {
+        loader: 'url-loader',
+        options: {
+          limit: 10000,
+        },
+      },
+    ],
+  },
 };
 
 function pluginIndex(file) {
@@ -50,22 +64,22 @@ const plugins = [
     __PRODUCTION__: isProd,
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
-  new webpack.ContextReplacementPlugin(
-    /angular(\\|\/)core(\\|\/)/,
-    './src'
-  ),
+  new webpack.ContextReplacementPlugin(/angular(\\|\/)core(\\|\/)/, './src'),
   new webpack.ContextReplacementPlugin(
     /\@angular(\\|\/)core(\\|\/)esm5/,
-    './src'
+    './src',
   ),
-  new CopyWebpackPlugin([{ from: 'src/assets', to: 'assets' }])
+  new CopyWebpackPlugin([{ from: 'src/assets', to: 'assets' }]),
+  new MiniCssExtractPlugin({ filename: 'styles.css' }),
 ];
 
-if (process.env.NODE_ENV === 'production') {
-  plugins.unshift(new BundleAnalyzerPlugin({
-    analyzerMode: 'static',
-    openAnalyzer: false,
-  }));
+if (isProd) {
+  plugins.unshift(
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: false,
+    }),
+  );
 }
 
 const resolve = {
@@ -78,20 +92,24 @@ const resolve = {
 function loadTs(loader, inTest) {
   return {
     test: /\.tsx?$/,
-    use: loader || isProd ? [
-      babelLoader,
-      {
-        loader: 'ts-loader'
-      }
-    ] : 'ts-loader',
-    exclude: inTest ? /node_modules/ :
-      /(node_modules\/|\.spec\.ts$|\.test\.ts$|tests\.\w+\.ts$)/,
+    use:
+      loader || isProd
+        ? [
+            babelLoader,
+            {
+              loader: 'ts-loader',
+            },
+          ]
+        : 'ts-loader',
+    exclude: inTest
+      ? /node_modules/
+      : /(node_modules\/|\.spec\.ts$|\.test\.ts$|tests\.\w+\.ts$)/,
   };
 }
 
 module.exports = {
   module: {
-    rules: [ loaders.ts, loaders.css ],
+    rules: [loaders.ts, loaders.css, loaders.files],
   },
   pluginIndex,
   plugins,

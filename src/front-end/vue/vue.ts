@@ -5,8 +5,6 @@ import '../../license';
 import { routes } from './routes';
 import { VUE_LOCATION_CHANGE } from './router-reducer';
 import Vue from 'vue';
-// Global styles
-import '../styles/index.css';
 
 const VUE = 'bd-root-vue';
 
