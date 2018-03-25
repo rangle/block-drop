@@ -110,7 +110,15 @@ export function create1(config: GameConfig = {}) {
   const bMove: (axis: 'x' | 'y', quantity?: number) => any = blockFn(move);
   const moveDown = partial(bMove, 'y', 1);
   const moveLeft = partial(bMove, 'x', -1);
-  const moveUp = partial(bMove, 'y', -1);
+  const moveUp = () => {
+    while (c.canMoveDown(getBoard(), getActivePiece())) {
+      moveDown();
+    }
+    if (state) {
+      writableState.history.push({ tick: state.tick, control: 'move-up' });
+    }
+    events.emit('redraw');
+  };
   const moveRight = partial(bMove, 'x', 1);
   const commitBlock = boardBlockFn<() => void>(addBlock);
   const checkForLoss = boardBlockFn<() => void>(c.checkForLoss);
@@ -184,13 +192,7 @@ export function create1(config: GameConfig = {}) {
         moveUp: {
           configurable: false,
           writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanMoveUp,
-            partial(updateActiveBlock, moveUp),
-            events.emit,
-            writableState,
-            'moveUp'
-          ),
+          value: moveUp,
         },
         rotateLeft: {
           configurable: false,

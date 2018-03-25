@@ -48,7 +48,7 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   width: 11,
   height: 25,
   blockDescriptions,
-  canMoveUp: () => false,
+  canMoveUp: () => true,
   canMoveDown,
   canMoveLeft,
   canMoveRight,
