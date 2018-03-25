@@ -5,7 +5,7 @@ import {
   previewDebug,
 } from '../../styles';
 import { recomputeBoard, noop } from '../../../util';
-import { Board, Button, NextPieces } from '../components';
+import { Board, Button, NextPieces, Score } from '../components';
 import { columnsFromBlock } from '../../../engine/block';
 
 export const Game = () => {
@@ -19,6 +19,7 @@ export const Game = () => {
       'bd-board': Board(),
       'bd-button': Button(),
       'bd-next-pieces': NextPieces(),
+      'bd-score': Score(),
     },
     computed: {
       board() {
@@ -90,26 +91,29 @@ export const Game = () => {
     >
     <bd-board v-if="!(state.game.isPaused)"
       v-bind:board="board"
+      v-bind:level="state.game.level"
       v-bind:width="state.game.config.width"
       v-bind:styles="subStyles"
-    ></bd-board> 
-    <div class="${previewDebug}">
+    >
+    </bd-board> 
+    <div>
+      <bd-score v-bind:score="state.game.score" />
+      <bd-next-pieces
+        v-if="!(state.game.isPaused)"
+        v-bind:preview="state.game.preview"
+      />
       <div>
-        <bd-button 
+        <bd-button
           v-if="state.game.isPaused" 
           value="Resume"
           v-on:click="resume">
         </bd-button>
-        <bd-button 
+        <bd-button
           v-if="!(state.game.isPaused)" 
           value="Pause"
           v-on:click="pause">
         </bd-button>
       </div>
-      <bd-next-pieces 
-        v-if="!(state.game.isPaused)"
-        v-bind:preview="state.game.preview">
-      </bd-next-pieces>
       <bd-button
         value="Done"
         v-on:click="done">

@@ -54,7 +54,7 @@ export const tileGreen = `${activeTile} ${colours.bgGreen} ${colours.green} ` +
 export const tileBlue = `${activeTile} ${colours.bgBlue} ${colours.blue} ` +
   `${colours.borderBlue}`;
 
-export const board = `${border} ${colours.borderWhite} ${monoFont} ` +
+export const board = `${monoFont} ` +
   `${flexGrowShrink31} ${flexCol}`;
 
 export const previewDebug = `${flexGrowShrink} ${flexCol}`;
