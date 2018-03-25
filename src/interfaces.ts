@@ -84,6 +84,8 @@ export interface GameConfig extends NextBlockConfig {
   checkForLoss?: (board: Board, block: Block) => boolean;
   createBoard?: (width: number, height: number) => Board;
   detectAndClear?: string;
+  dropOnUp?: boolean;
+  enableShadow?: boolean;
   forceBufferUpdateOnClear?: boolean;
   name?: string;
   baseLevelScore?: number;

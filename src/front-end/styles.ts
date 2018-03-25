@@ -13,6 +13,7 @@ const colours = deepFreeze({
   borderGreen: 'bd-border-green',
   borderRed: 'bd-border-red',
   borderWhite: 'bd-border-white',
+  bgShadow: 'bd-bg-shadow',
 });
 
 
@@ -53,6 +54,8 @@ export const tileGreen = `${activeTile} ${colours.bgGreen} ${colours.green} ` +
   `${colours.borderGreen}`;
 export const tileBlue = `${activeTile} ${colours.bgBlue} ${colours.blue} ` +
   `${colours.borderBlue}`;
+export const tileShadow = `${activeTile} ${colours.bgShadow} ` + 
+`${colours.shadow} ${colours.borderShadow}`;
 
 export const board = `${monoFont} ` +
   `${flexGrowShrink31} ${flexCol}`;
@@ -67,6 +70,8 @@ export function tileByNumber(val: number) {
       return tileRed;
     case 3:
       return tileBlue;
+    case 9:
+      return tileShadow;
     default:
       return tileGreen;
   }

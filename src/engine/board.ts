@@ -19,6 +19,7 @@ import {
   throwOutOfBounds,
 } from '../util';
 
+export const SHADOW_VALUE = 9;
 export const DC2MAX = 9;
 
 export const functionsDetectClear = makeCollection({
@@ -28,7 +29,27 @@ export const functionsDetectClear = makeCollection({
 
 export function addBlock(board: Board,
                          block: Block,
-                         buffer: Uint8Array = board.desc) {
+                         buffer: Uint8Array = board.desc,
+                         addShadow: boolean = false,
+                        ) {
+
+  if (addShadow) {
+    forEach(block, (el, x, y, i, j) => {
+      const index = indexFromPoint(board.width, x, y);
+      if (block.desc[i][j] === 0) {
+        return;
+      }
+      buffer[index] = SHADOW_VALUE;
+    });
+    gravityDrop({ 
+      desc: buffer,
+      width: board.width,
+      height: board.height,
+    });
+  } else {
+    clearShadow(buffer);
+  }
+
   forEach(block, (el, x, y, i, j) => {
     const index = indexFromPoint(board.width, x, y);
     if (block.desc[i][j] === 0) {
@@ -417,7 +438,9 @@ export function isOverlapping(board: Board,
 
 export function removeBlock(board: Board,
                            block: Block,
-                           buffer: Uint8Array = board.desc) {
+                           buffer: Uint8Array = board.desc,
+                           hasShadow: boolean = false,
+                          ) {
 
   forEach(block, (el, x, y, i, j) => {
     const index = indexFromPoint(board.width, x, y);
@@ -426,4 +449,16 @@ export function removeBlock(board: Board,
     }
     buffer[index] = 0;
   });
+
+  if (hasShadow) {
+    clearShadow(buffer);
+  }
+}
+
+export function clearShadow(buffer: Uint8Array) {
+  for (let i = 0; i < buffer.length; i += 1) {
+    if (buffer[i] === SHADOW_VALUE) {
+      buffer[i] = 0;
+    }
+  }
 }

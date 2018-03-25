@@ -90,7 +90,7 @@ export function create1(config: GameConfig = {}) {
   const boardBlockFn = partial<(f: Function) => Function>(paramsToFn,
     [getBoard, getActivePiece]);
   const updateActiveBlock = partial<(fn: Function) => void>(updateBlock,
-    getBoard, getActivePiece, getBuffer);
+    getBoard, getActivePiece, getBuffer, c.enableShadow);
   const bCanMoveDown = boardBlockFn<() => boolean>(c.canMoveDown);
   const bCanMoveUp = boardBlockFn<() => boolean>(c.canMoveUp);
   const bCanMoveLeft = boardBlockFn<() => boolean>(c.canMoveLeft);
@@ -110,7 +110,15 @@ export function create1(config: GameConfig = {}) {
   const bMove: (axis: 'x' | 'y', quantity?: number) => any = blockFn(move);
   const moveDown = partial(bMove, 'y', 1);
   const moveLeft = partial(bMove, 'x', -1);
-  const moveUp = partial(bMove, 'y', -1);
+  const moveUp = () => {
+    while (c.canMoveDown(getBoard(), getActivePiece())) {
+      moveDown();
+    }
+    if (state) {
+      writableState.history.push({ tick: state.tick, control: 'move-up' });
+    }
+    events.emit('redraw');
+  };
   const moveRight = partial(bMove, 'x', 1);
   const commitBlock = boardBlockFn<() => void>(addBlock);
   const checkForLoss = boardBlockFn<() => void>(c.checkForLoss);
@@ -184,13 +192,7 @@ export function create1(config: GameConfig = {}) {
         moveUp: {
           configurable: false,
           writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanMoveUp,
-            partial(updateActiveBlock, moveUp),
-            events.emit,
-            writableState,
-            'moveUp'
-          ),
+          value: moveUp,
         },
         rotateLeft: {
           configurable: false,
@@ -328,7 +330,7 @@ export function create1(config: GameConfig = {}) {
     if (c.debug) {
       debugBlock('New Piece:', getActivePiece());
     }
-    addBlock(board, getActivePiece(), buffer);
+    addBlock(board, getActivePiece(), buffer, c.enableShadow);
   }
   
   function bClearCheck() {
@@ -399,7 +401,7 @@ export function create1(config: GameConfig = {}) {
   }
 
   // go
-  addBlock(board, getActivePiece(), buffer);
+  addBlock(board, getActivePiece(), buffer, c.enableShadow);
   startTick();
 
   return engine;
@@ -500,13 +502,15 @@ export function gameOver(isDebug: boolean,
 export function updateBlock(getBoard: () => Board,
                             getBlock: () => Block,
                             getBuffer: () => Uint8Array,
-                            fn: () => any) {
+                            enableShadow: boolean,
+                            fn: () => any,
+                          ) {
   const block = getBlock();
   const board = getBoard();
   const buffer = getBuffer();
-  removeBlock(board, block, buffer);
+  removeBlock(board, block, buffer, enableShadow);
   fn();
-  addBlock(board, block, buffer);
+  addBlock(board, block, buffer, enableShadow);
 }
 
 export function tryFnRedraw(canFn: () => boolean,
