@@ -110,6 +110,10 @@
   background-color: cornflowerblue;
 }
 
+.bd-bg-shadow {
+  background-color: rgba(150, 150, 150, 0.5);
+}
+
 /** Dimension Specific stuff */
 
 @media screen and (orientation: portrait) {
