@@ -7,10 +7,17 @@ import {
 
 export function NextPieces({ preview }) {
 
-  return (<div className={ `${flexGrowShrink} ${flexCol}` }>
-    <h3>Next:</h3>
-    { preview.map((block, i) => (
-      <Block key={i} block={ block } />
-    )) }
-  </div>);
+  return (
+    <div className="ba bw2 b--react-blue mb4 shadow-react-blue">
+      <h3 className="black bg-react-blue f3 mb0 mt0 tc">NEXT</h3>
+      <div className="ph3 pv3">
+        {
+          preview.map((block, i) => (
+            <Block key={i} block={ block } />
+            )
+          )
+        }
+      </div>
+    </div>
+  );
 }

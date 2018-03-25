@@ -10,6 +10,7 @@ import {
 import {
   Board,
   Button,
+  Score,
   NextPieces,
 } from '../components';
 
@@ -18,6 +19,8 @@ function mapStateToProps(state) {
   return {
     activePiece: state.game.activePiece,
     board: boardToArray(state.game.buffer, state.game.config.width),
+    level: state.game.level,
+    score: state.game.score,
     lastEvent: state.game.lastEvent,
     isPaused: state.game.isPaused,
     preview: state.game.preview,
@@ -68,29 +71,33 @@ export const Game = connect(
 
   render() {
     const { stop, pause, resume } = this.props.store.game;
-    return (<div className={ gameViewportClass } style={ this.props.styles }>
-      {
-        this.props.isPaused ?
-          null :
-          <Board board={ this.props.board }
-                 width={ this.props.width }
-                 styles={ this.props.subStyles } />
-      }
-      <div className={ previewDebug }>
-        <div>
-        {
-          this.props.isPaused ?
-            <Button value='Resume' onClick={ resume } /> :
-            <Button value='Pause' onClick={ pause } />
-        }
-        </div>
+    return (
+      <div className={ gameViewportClass } style={ this.props.styles }>
         {
           this.props.isPaused ?
             null :
-            <NextPieces preview={ this.props.preview }/>
+            <Board board={ this.props.board }
+                  level={ this.props.level }
+                  width={ this.props.width }
+                  styles={ this.props.subStyles } />
         }
-        <Button value='Done' onClick={ stop } />
+        <div>
+          <Score score={ this.props.score } />
+          {
+            this.props.isPaused ?
+              null :
+              <NextPieces preview={ this.props.preview }/>
+          }
+          <div>
+          {
+            this.props.isPaused ?
+              <Button value='Resume' onClick={ resume } /> :
+              <Button value='Pause' onClick={ pause } />
+          }
+          </div>
+          <Button value='Done' onClick={ stop } />
+        </div>
       </div>
-    </div>);
+    );
   },
 }));
