@@ -1,0 +1,70 @@
+.w2-5 {
+  width: 2.5rem;
+}
+.w3-5 {
+  width: 6rem;
+}
+.w-45 {
+  width: 45%;
+}
+
+.h2-5 {
+  height: 2.5rem;
+}
+.h3-5 {
+  height: 6rem;
+}
+
+@media (--breakpoint-not-small) {
+  .w2-5-ns {
+    width: 2.5rem;
+  }
+  .w3-5-ns {
+    width: 6rem;
+  }
+  .w-45-ns {
+    width: 45%;
+  }
+  .h2-5-ns {
+    height: 2.5rem;
+  }
+  .h3-5-ns {
+    height: 6rem;
+  }
+}
+
+@media (--breakpoint-medium) {
+  .w2-5-m {
+    width: 2.5rem;
+  }
+  .w3-5-m {
+    width: 6rem;
+  }
+  .w-45-m {
+    width: 45%;
+  }
+  .h2-5-m {
+    height: 2.5rem;
+  }
+  .h3-5-m {
+    height: 6rem;
+  }
+}
+
+@media (--breakpoint-large) {
+  .w2-5-l {
+    width: 2.5rem;
+  }
+  .w3-5-l {
+    width: 6rem;
+  }
+  .w-45-l {
+    width: 45%;
+  }
+  .h2-5-l {
+    height: 2.5rem;
+  }
+  .h3-5-l {
+    height: 6rem;
+  }
+}

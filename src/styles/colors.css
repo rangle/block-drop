@@ -1,5 +1,3 @@
-@import './variables';
-
 .angular-red {
   color: var(--angular-red);
 }

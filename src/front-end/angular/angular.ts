@@ -16,6 +16,7 @@ if (__PRODUCTION__) {
   enableProdMode();
 } 
 
+const ANGULAR = 'bd-root-angular';
 const UNMOUNT_RETRY = 50;
 let appRef = null;
 let isStarting = false;
@@ -40,12 +41,13 @@ export function mount(store: EngineStore, resizer: Resizer) {
     });
 }
 
-export function unmount(element: HTMLElement) {
+export function unmount() {
   if (appRef) {
     appRef.destroy();
     appRef = null;
+    const rootElement = window.document.getElementById(ANGULAR);
     const el = document.createElement('bd-angular');
-    element.appendChild(el);
+    rootElement.appendChild(el);
     if (timeOut) {
       clearTimeout(timeOut);
       timeOut = null;
@@ -54,6 +56,6 @@ export function unmount(element: HTMLElement) {
     if (timeOut) {
       clearTimeout(timeOut);
     }
-    timeOut = setTimeout(partial(unmount, element), UNMOUNT_RETRY);
+    timeOut = setTimeout(partial(unmount), UNMOUNT_RETRY);
   }
 }

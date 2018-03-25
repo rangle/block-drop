@@ -33,7 +33,9 @@ const cssLoader = {
 const loaders = {
   css: {
     test: /\.css$/,
-    use: [MiniCssExtractPlugin.loader, cssLoader, 'postcss-loader'],
+    use: isProd
+      ? [MiniCssExtractPlugin.loader, cssLoader, 'postcss-loader']
+      : ['style-loader', cssLoader, 'postcss-loader'],
   },
   tsTest: loadTs(null, true),
   istanbulInstrumenter: loadTs('istanbul-instrumenter'),
