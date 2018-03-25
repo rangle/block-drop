@@ -9,6 +9,7 @@ module.exports = {
     'block-drop-react': path
       .join(__dirname, '..', 'src', 'front-end', 'react',
         'stand-alone.react.ts'),
+    'service-worker': path.join(__dirname, '..', 'src', 'front-end', 'service-worker'),
   },
   module: shared.module,
   mode: 'production',

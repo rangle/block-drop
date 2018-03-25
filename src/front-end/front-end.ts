@@ -21,6 +21,7 @@ import {
   VERSION,
 } from './constants';
 import { init } from './aspect-resizer';
+import './register-service-worker';
 
 const store = create(rootReducer);
 const resizer = init(store);
