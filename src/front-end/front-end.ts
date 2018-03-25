@@ -67,7 +67,11 @@ const frameWorks = deepFreeze({
 
 const elements = FRAMEWORK_DESCRIPTIONS.reduce(
   (state, { id }) => {
-    state[id] = document.getElementById(id);
+    const el = document.getElementById(id);
+    if (!el) {
+      throw new Error('block drop: no element found for ' + id);
+    }
+    state[id] = el;
     return state;
   },
   Object.create(null)
