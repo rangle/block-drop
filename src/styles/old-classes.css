@@ -110,8 +110,25 @@
   background-color: cornflowerblue;
 }
 
-.bd-bg-shadow {
-  background-color: rgba(150, 150, 150, 0.5);
+.bd-shadow {
+   color: #AAAAAA;
+}
+
+.bd-bg-border-shadow {
+  border-color: #AAAAAA;
+  border-style: dashed;
+}
+
+.bd-bg-shadow-green {
+  background-color: rgba(34, 139, 34, 0.5);
+}
+
+.bd-bg-shadow-red {
+  background-color: rgba(205, 92, 92, 0.5);
+}
+
+.bd-bg-shadow-blue {
+  background-color: rgba(100, 149, 237, 0.5);
 }
 
 /** Dimension Specific stuff */

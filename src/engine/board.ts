@@ -19,7 +19,7 @@ import {
   throwOutOfBounds,
 } from '../util';
 
-export const SHADOW_VALUE = 9;
+export const SHADOW_OFFSET = 6;
 export const DC2MAX = 9;
 
 export const functionsDetectClear = makeCollection({
@@ -39,7 +39,7 @@ export function addBlock(board: Board,
       if (block.desc[i][j] === 0) {
         return;
       }
-      buffer[index] = SHADOW_VALUE;
+      buffer[index] = block.desc[i][j] + SHADOW_OFFSET;
     });
     gravityDrop({ 
       desc: buffer,
@@ -457,7 +457,11 @@ export function removeBlock(board: Board,
 
 export function clearShadow(buffer: Uint8Array) {
   for (let i = 0; i < buffer.length; i += 1) {
-    if (buffer[i] === SHADOW_VALUE) {
+    if (
+      buffer[i] === (SHADOW_OFFSET + 1) ||
+      buffer[i] === (SHADOW_OFFSET + 2) ||
+      buffer[i] === (SHADOW_OFFSET + 3)
+    ) {
       buffer[i] = 0;
     }
   }

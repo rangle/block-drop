@@ -1,4 +1,5 @@
 import { deepFreeze } from '../util';
+import { SHADOW_OFFSET } from '../engine/board';
 
 const colours = deepFreeze({
   black: 'bd-black',
@@ -13,7 +14,11 @@ const colours = deepFreeze({
   borderGreen: 'bd-border-green',
   borderRed: 'bd-border-red',
   borderWhite: 'bd-border-white',
-  bgShadow: 'bd-bg-shadow',
+  shadow: 'bd-shadow',
+  borderShadow: 'bd-bg-border-shadow',
+  bgShadowGreen: 'bd-bg-shadow-green',
+  bgShadowRed: 'bd-bg-shadow-red',
+  bgShadowBlue: 'bd-bg-shadow-blue',
 });
 
 export const verticalUiClass = 'bd-vert-ui';
@@ -54,8 +59,11 @@ export const tileGreen =
   `${colours.borderGreen}`;
 export const tileBlue = `${activeTile} ${colours.bgBlue} ${colours.blue} ` +
   `${colours.borderBlue}`;
-export const tileShadow = `${activeTile} ${colours.bgShadow} ` + 
-`${colours.shadow} ${colours.borderShadow}`;
+export const shadowBase = `${activeTile} ${colours.shadow} ` +
+  `${colours.borderShadow}`;
+export const tileShadowGreen = `${shadowBase} ${colours.bgShadowGreen}`;
+export const tileShadowRed = `${shadowBase} ${colours.bgShadowRed}`;
+export const tileShadowBlue = `${shadowBase} ${colours.bgShadowBlue}`;
 
 export const board = `${monoFont} ` + `${flexGrowShrink31} ${flexCol}`;
 
@@ -69,8 +77,12 @@ export function tileByNumber(val: number) {
       return tileRed;
     case 3:
       return tileBlue;
-    case 9:
-      return tileShadow;
+    case 1 + SHADOW_OFFSET:
+      return tileShadowGreen;
+    case 2 + SHADOW_OFFSET:
+      return tileShadowRed;
+    case 3 + SHADOW_OFFSET:
+      return tileShadowBlue;
     default:
       return tileGreen;
   }
