@@ -1,4 +1,3 @@
-import { flexGrowShrink, flexCol } from '../../styles';
 import { Block } from './block';
 
 export const NextPieces = () => ({
@@ -12,14 +11,15 @@ export const NextPieces = () => ({
     },
   },
   template: `
-  <div class="${flexGrowShrink} ${flexCol}">
-    <h3>Next:</h3>
-    <bd-block 
-      v-for="(block, i) in preview" 
-      v-bind:block="block"
-      v-bind:key="i"
-    >
-    </bd-block>
+  <div class="ba bw2 b--vue-green mb4 shadow-vue-green">
+    <h3 class="black bg-vue-green f3 mb0 mt0 tc">NEXT</h3>
+    <div class="ph3 pv3">
+      <bd-block 
+        v-for="(block, i) in preview" 
+        v-bind:block="block"
+        v-bind:key="i"
+      />
+    </div>
   </div>
   `,
 });

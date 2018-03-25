@@ -29,12 +29,16 @@ import { Resizer } from '../../aspect-resizer';
   selector: 'bd-game',
   template: `
     <board *ngIf="!(isPaused$ | async)"
-    class="${board}" 
-    [board]="(board$ | async)"
-    [width]="boardWidth$ | async"
-    [ngStyle]="styles ? styles : styles"
+      [board]="(board$ | async)"
+      [level]="level$ | async"
+      [width]="boardWidth$ | async"
+      [styles]="styles"
     ></board> 
-    <div class="${previewDebug}">
+    <div>
+      <score [score]="score$ | async"></score>
+      <bd-next-pieces *ngIf="!(isPaused$ | async)"
+      [preview]="preview">
+      </bd-next-pieces>
       <bd-button 
       *ngIf="(isPaused$ | async)" 
       [value]="resumeLabel"
@@ -45,10 +49,6 @@ import { Resizer } from '../../aspect-resizer';
       [value]="pauseLabel"
       [onClick]="pause">
       </bd-button>
-      <bd-next-pieces *ngIf="!(isPaused$ | async)"
-      class="${flexShrink} ${flexCol}" 
-      [preview]="preview">
-      </bd-next-pieces>
       <bd-button
        value="Done"
        [onClick]="done"
@@ -62,6 +62,8 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
     (s) => recomputeBoard(s.game.buffer, s.game.config.width)) board$;
   @select((s) => s.game.lastEvent) lastEvent$;
   @select((s) => s.game.isPaused) isPaused$;
+  @select((s) => s.game.score) score$;
+  @select((s) => s.game.level) level$;
   private boardWidth$: number;
   private deRegister: Function[] = [];
   private pause: Function;
