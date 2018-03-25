@@ -12,7 +12,9 @@
 .vue-green {
   color: var(--vue-green);
 }
-
+.brand-purple {
+  color: var(--brand-purple);
+}
 .bg-angular-red {
   background-color: var(--angular-red);
 }
@@ -25,7 +27,9 @@
 .bg-vue-green {
   background-color: var(--vue-green);
 }
-
+.bg-brand-purple {
+  background-color: var(--brand-purple);
+}
 .b--angular-red {
   border-color: var(--angular-red);
 }

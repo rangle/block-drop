@@ -23,14 +23,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Block Drop</title>
   </head>
-  <body class="w-100 h-100 calibre-medium white bg-blue-black">
+  <body class="w-100 h-100 calibre-medium white bg-brand-purple">
     <div id="bd-splash">
-      <button onclick="window.BLOCK_DROP.mount()" class="calibre-medium bg-white blue-black">Play</button>
+      <div class="flex-column justify-center pt6">
+        <div class="flex flex-column justify-center items-center">
+          <h1 class="calibre f2 f-subheadline-ns mb2">Block Drop</h1>
+          <button onclick="window.BLOCK_DROP.mount()" class="calibre-medium bg-angular-red white br-pill pt2 ph3 b--white f3 mb3 dim">Play</button>
+          <a href="https://rangle.io/" class="dib h-10 w-10 mt3 grow">
+            <img src="././assets/rangle-logo.png" alt="Rangle lolo"> 
+          </a>
+        </div>
+      </div>
     </div>
     <div id="bd-root" class="bd-vert-ui"></div>
     <div id="bd-root-react" class="justify-center"></div>
     <div id="bd-root-vue" class="justify-center"></div>
-    <div id="bd-root-angular" class="justify-center">
+    <div id="" class="justify-center">
       <!--
        Angular is in its own box because when Angular 2 is unmounted it destroys
        its root element.  By wrapping it in a div we can re-mount it with less
