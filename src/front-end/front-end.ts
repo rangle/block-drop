@@ -110,7 +110,10 @@ function mount() {
   hide(splashEl);
   makeVisible(nav);
   const initialFramework = 'bd-root-vue';
-  loadFramework(initialFramework);
+  loadFramework(
+    document.getElementById('vue-toggle') as HTMLButtonElement,
+    initialFramework,
+  );
 }
 
 function unmount() {
@@ -121,8 +124,9 @@ function unmount() {
   storeSub = noop;
 }
 
-function loadFramework(anchorId: string) {
+function loadFramework(button: HTMLButtonElement, anchorId: string) {
   disableAll(navButtons);
+  setAllInactive(navButtons);
   frameWorks[anchorId]().then(framework => {
     store.game.start();
     hideGame();
@@ -132,6 +136,7 @@ function loadFramework(anchorId: string) {
     unmountCurrent = partial(framework.unmount);
     changeFramework(FRAMEWORK_DESCRIPTIONS.findIndex(fw => fw.id === anchorId));
     enableAll(navButtons);
+    setActive(button);
   });
 }
 
@@ -145,4 +150,12 @@ function disableAll(buttons: NodeListOf<HTMLButtonElement>) {
   buttons.forEach(el => {
     el.disabled = true;
   });
+}
+
+function setActive(element: HTMLElement) {
+  element.classList.add('ba');
+}
+
+function setAllInactive(buttons: NodeListOf<HTMLButtonElement>) {
+  buttons.forEach(element => element.classList.remove('ba'));
 }
