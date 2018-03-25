@@ -107,7 +107,8 @@ function mount() {
   });
 
   rootEl.innerHTML = '';
-  FRAMEWORK_DESCRIPTIONS.forEach((fwDesc, i) => {
+  const buttons = FRAMEWORK_DESCRIPTIONS
+  .map((fwDesc, i) => {
     const button = document.createElement('input');
     button.type = 'button';
     button.value = fwDesc.name;
@@ -115,6 +116,7 @@ function mount() {
 
     function onClick() {
       const el = elements[fwDesc.id];
+      disableAllFwButtons(buttons);
       frameWorks[fwDesc.id]().then((fw) => {
         store.game.start();
         hideAll();
@@ -123,6 +125,7 @@ function mount() {
         show(el);
         unmountCurrent = partial(fw.unmount, el);
         changeFramework(i);
+        enableAllFwButtons(buttons);
       });
     }
 
@@ -131,6 +134,7 @@ function mount() {
     });
 
     rootEl.appendChild(button);
+    return button;
   });
   hide(splashEl);
   show(rootEl);
@@ -145,4 +149,16 @@ function unmount() {
   show(splashEl);
   storeSub();
   storeSub = noop;
+}
+
+function enableAllFwButtons(buttons: HTMLInputElement[]) {
+  buttons.forEach((el) => {
+    el.disabled = false;
+  });
+}
+
+function disableAllFwButtons(buttons: HTMLInputElement[]) {
+  buttons.forEach((el) => {
+    el.disabled = true;
+  });
 }

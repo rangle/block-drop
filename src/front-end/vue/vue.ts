@@ -7,8 +7,12 @@ import { VUE_LOCATION_CHANGE } from './router-reducer';
 import Vue from 'vue';
 
 const VUE = 'bd-root-vue';
+let appRef;
 
 export function mount(store: EngineStore, resizer: Resizer) {
+  if (appRef) {
+    return;
+  }
   const id = 'rando-' + Date.now().toString(32) + 
     Math.floor(Math.random() * 1000).toString(32);
   const el = window.document.createElement('div');
@@ -22,7 +26,7 @@ export function mount(store: EngineStore, resizer: Resizer) {
   };
 
 
-  const app = new Vue({
+  appRef = new Vue({
     data,
     methods: {
       redraw() {
@@ -70,6 +74,11 @@ export function mount(store: EngineStore, resizer: Resizer) {
 }
 
 export function unmount() {
+  if (!appRef) {
+    return;
+  }
+  appRef.$destroy();
   const el = window.document.getElementById(VUE);
   el.innerHTML = '';
+  appRef = null;
 }
