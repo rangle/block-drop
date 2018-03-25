@@ -57,6 +57,8 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   checkForLoss: checkForLoss1,
   createBoard: createBoard1,
   createBlock: createBlock,
+  dropOnUp: true,
+  enableShadow: true,
   forceBufferUpdateOnClear: true,
   gameOver: gameOver1,
   detectAndClear: 'detectAndClear2',

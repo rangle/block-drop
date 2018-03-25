@@ -278,7 +278,7 @@ describe('engine functions', () => {
       addBlock(board, block);
       expect(board.desc[5 * 10 + 5]).toBe(1);
       expect(board.desc[0]).toBe(0);
-      updateBlock(() => board, () => block, () => board.desc, () => {
+      updateBlock(() => board, () => block, () => board.desc, false, () => {
         block.x = 0;
         block.y = 0;
       });
