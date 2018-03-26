@@ -15,8 +15,10 @@ import {
   template: `
     {{ name }}
     <div class="${flexGrowRow}" *ngFor="let row of cols; trackBy: trackCol">
-      <tile [ngClass]="tile === 0 ? emptyTile : tileByNumber(tile)"
-       *ngFor="let tile of row; trackBy: trackRow" [value]="tile"></tile>
+      <tile
+        *ngFor="let tile of row; trackBy: trackRow"
+        [value]="tile"
+      ></tile>
     </div>
 `,
 })

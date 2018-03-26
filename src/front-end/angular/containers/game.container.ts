@@ -34,25 +34,29 @@ import { Resizer } from '../../aspect-resizer';
       [width]="boardWidth$ | async"
       [styles]="styles"
     ></board> 
-    <div>
+    <div class="w5">
       <score [score]="score$ | async"></score>
       <bd-next-pieces *ngIf="!(isPaused$ | async)"
-      [preview]="preview">
+        [preview]="preview"
+      >
       </bd-next-pieces>
       <bd-button 
-      *ngIf="(isPaused$ | async)" 
-      [value]="resumeLabel"
-      [onClick]="resume">
+        *ngIf="(isPaused$ | async)" 
+        [value]="resumeLabel"
+        [onClick]="resume"
+      >
       </bd-button>
       <bd-button 
-      *ngIf="!(isPaused$ | async)" 
-      [value]="pauseLabel"
-      [onClick]="pause">
+        *ngIf="!(isPaused$ | async)" 
+        [value]="pauseLabel"
+        [onClick]="pause"
+      >
       </bd-button>
       <bd-button
-       value="Done"
-       [onClick]="done"
-      ></bd-button>
+        value="Done"
+        [onClick]="done"
+      >
+      </bd-button>
     </div>
 `,
 })
