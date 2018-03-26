@@ -6,7 +6,7 @@ import {
 
 
 export function Tile(props) {
-  return (<div className={ 
-    props.value === 0 ? emptyTile : tileByNumber(props.value)
-  }>{ props.value }</div>);
+  return (
+    <div className={ props.value === 0 ? emptyTile : tileByNumber(props.value)}></div>
+  );
 }

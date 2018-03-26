@@ -18,7 +18,7 @@ import {
       width: 100%;
     }
   </style>
-  <div [ngClass]="value === 0 ? emptyTile : tileByNumber(value)">{{ value }}</div>`,
+  <div [ngClass]="value === 0 ? emptyTile : tileByNumber(value)"></div>`,
 })
 export class Tile {
   @Input() value: number;
