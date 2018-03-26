@@ -1,0 +1,53 @@
+<svg width="62" height="62" viewBox="0 0 62 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>Block</title>
+<desc>Created using Figma</desc>
+<g id="Canvas" transform="translate(-66 112)">
+<g id="Block">
+<g id="Rectangle 2" filter="url(#filter0_d)">
+<use xlink:href="#path0_fill" transform="translate(76 -102)" fill="#DD0031"/>
+</g>
+<g id="Rectangle 2.1">
+<mask id="mask0_outline_ins">
+<use xlink:href="#path1_fill" fill="white" transform="translate(78.1 -99.9)"/>
+</mask>
+<g mask="url(#mask0_outline_ins)">
+<use xlink:href="#path2_stroke_2x" transform="translate(78.1 -99.9)"/>
+</g>
+</g>
+<g id="Rectangle 2.2">
+<mask id="mask1_outline_ins">
+<use xlink:href="#path3_fill" fill="white" transform="translate(84.4 -93.6)"/>
+</mask>
+<g mask="url(#mask1_outline_ins)">
+<use xlink:href="#path4_stroke_2x" transform="translate(84.4 -93.6)"/>
+</g>
+</g>
+<g id="Rectangle 2.3">
+<mask id="mask2_outline_ins">
+<use xlink:href="#path5_fill" fill="white" transform="translate(89.65 -88.35)"/>
+</mask>
+<g mask="url(#mask2_outline_ins)">
+<use xlink:href="#path6_stroke_2x" transform="translate(89.65 -88.35)"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_d" filterUnits="userSpaceOnUse" x="66" y="-112" width="62" height="62" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 0"/>
+<feOffset dx="0" dy="0"/>
+<feGaussianBlur stdDeviation="5"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.866667 0 0 0 0 0 0 0 0 0 0.192157 0 0 0 1 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+</filter>
+<path id="path0_fill" d="M 0 0L 42 0L 42 42L 0 42L 0 0Z"/>
+<path id="path1_fill" d="M 0 0L 37.8 0L 37.8 37.8L 0 37.8L 0 0Z"/>
+<path id="path2_stroke_2x" d="M 0 0L 0 -3L -3 -3L -3 0L 0 0ZM 37.8 0L 40.8 0L 40.8 -3L 37.8 -3L 37.8 0ZM 37.8 37.8L 37.8 40.8L 40.8 40.8L 40.8 37.8L 37.8 37.8ZM 0 37.8L -3 37.8L -3 40.8L 0 40.8L 0 37.8ZM 0 3L 37.8 3L 37.8 -3L 0 -3L 0 3ZM 34.8 0L 34.8 37.8L 40.8 37.8L 40.8 0L 34.8 0ZM 37.8 34.8L 0 34.8L 0 40.8L 37.8 40.8L 37.8 34.8ZM 3 37.8L 3 0L -3 0L -3 37.8L 3 37.8Z"/>
+<path id="path3_fill" d="M 0 0L 25.2 0L 25.2 25.2L 0 25.2L 0 0Z"/>
+<path id="path4_stroke_2x" d="M 0 0L 0 -2L -2 -2L -2 0L 0 0ZM 25.2 0L 27.2 0L 27.2 -2L 25.2 -2L 25.2 0ZM 25.2 25.2L 25.2 27.2L 27.2 27.2L 27.2 25.2L 25.2 25.2ZM 0 25.2L -2 25.2L -2 27.2L 0 27.2L 0 25.2ZM 0 2L 25.2 2L 25.2 -2L 0 -2L 0 2ZM 23.2 0L 23.2 25.2L 27.2 25.2L 27.2 0L 23.2 0ZM 25.2 23.2L 0 23.2L 0 27.2L 25.2 27.2L 25.2 23.2ZM 2 25.2L 2 0L -2 0L -2 25.2L 2 25.2Z"/>
+<path id="path5_fill" d="M 0 0L 14.7 0L 14.7 14.7L 0 14.7L 0 0Z"/>
+<path id="path6_stroke_2x" d="M 0 0L 0 -1L -1 -1L -1 0L 0 0ZM 14.7 0L 15.7 0L 15.7 -1L 14.7 -1L 14.7 0ZM 14.7 14.7L 14.7 15.7L 15.7 15.7L 15.7 14.7L 14.7 14.7ZM 0 14.7L -1 14.7L -1 15.7L 0 15.7L 0 14.7ZM 0 1L 14.7 1L 14.7 -1L 0 -1L 0 1ZM 13.7 0L 13.7 14.7L 15.7 14.7L 15.7 0L 13.7 0ZM 14.7 13.7L 0 13.7L 0 15.7L 14.7 15.7L 14.7 13.7ZM 1 14.7L 1 0L -1 0L -1 14.7L 1 14.7Z"/>
+</defs>
+</svg>
