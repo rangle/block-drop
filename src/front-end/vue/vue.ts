@@ -40,20 +40,22 @@ export function mount(store: EngineStore, resizer: Resizer) {
       const routeTo = route ? route.component : this.routes['/game'].component;
       return h(
         'div',
-        {},
+        {
+          class: 'flex pa2 pa4-ns flex-auto',
+        },
         [
           /** @todo determine why computed props are not in the generic --v */
           h(routeTo, {
             // class: {
             //   'svb-main': true,
             // },
-            props: { 
+            props: {
               createGame: store.game.create,
-              dispatch: store.dispatch.bind(store), 
+              dispatch: store.dispatch.bind(store),
               done: store.game.stop.bind(store.game),
               gameControls: store.game.controls.bind(store.game),
               pause: store.game.pause,
-              resizer, 
+              resizer,
               resume: store.game.resume,
               start: store.game.start.bind(store.game),
               state: this.state,
