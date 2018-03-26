@@ -81,7 +81,7 @@ export const Game = connect(
                   width={ this.props.width }
                   styles={ this.props.subStyles } />
         }
-        <div>
+        <div className="w5">
           <Score score={ this.props.score } />
           {
             this.props.isPaused ?
