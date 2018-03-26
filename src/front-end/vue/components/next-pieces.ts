@@ -17,10 +17,10 @@ export const NextPieces = () => ({
       <div
         v-for="(block, i) in preview"
         v-bind:class="{ mb3: i < (preview.length - 1) }"
+        v-bind:key="i"
       >
         <bd-block
           v-bind:block="block"
-          v-bind:key="i"
         />
         <div class="bb bw1 mt3"
           v-if="i === 0"></div>

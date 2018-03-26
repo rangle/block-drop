@@ -1,5 +1,4 @@
 import { Tile } from './tile';
-import { flexGrowRow, tileByNumber, flexGrowCol } from '../../styles';
 import { columnsFromBlock } from '../../../engine/block';
 
 export const NextPiecesBlock = () => ({
@@ -26,10 +25,11 @@ export const NextPiecesBlock = () => ({
       <div class="flex h2 w2"
         v-bind:class="{ mr2: j < (row.length - 1) }"
         v-for="(tile, j) in row"
+        v-bind:key="j"
       >
         <bd-tile 
-          v-bind:value="tile" 
-          v-bind:key="j">
+          v-bind:value="tile"
+        >
         </bd-tile>
       </div>
     </div>
