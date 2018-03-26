@@ -85,7 +85,8 @@ export const Game = () => {
         type: Object,
       },
     },
-    template: `<div 
+    template: `
+    <div 
       class="${gameViewportClass}" 
       v-bind:style="styles"
     >
@@ -96,7 +97,7 @@ export const Game = () => {
       v-bind:styles="subStyles"
     >
     </bd-board> 
-    <div>
+    <div class="w5">
       <bd-score v-bind:score="state.game.score" />
       <bd-next-pieces
         v-if="!(state.game.isPaused)"

@@ -15,5 +15,5 @@ export const Tile = () => ({
       required: true,
     },
   },
-  template: `<div v-bind:class="tile">{{ value }}</div>`,
+  template: `<div v-bind:class="tile"></div>`,
 });

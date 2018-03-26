@@ -1,9 +1,5 @@
 import * as React from 'react';
-import { Block } from './block';
-import {
-  flexCol,
-  flexGrowShrink,
-} from '../../styles';
+import { NextPiecesBlock } from './next-pieces-block';
 
 export function NextPieces({ preview }) {
 
@@ -13,9 +9,15 @@ export function NextPieces({ preview }) {
       <div className="ph3 pv3">
         {
           preview.map((block, i) => (
-            <Block key={i} block={ block } />
-            )
-          )
+            <div className={i < (preview.length - 1) ? 'mb3' : ''} key={i}>
+              <NextPiecesBlock block={block} />
+              {
+                i === 0 && (
+                  <div className="bb bw1 mt3" />
+                )
+              }
+            </div>
+          ))
         }
       </div>
     </div>
