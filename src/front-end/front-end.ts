@@ -1,19 +1,13 @@
-import {
-  deepFreeze,
-  noop,
-  partial,
-} from '../util';
+import { deepFreeze, noop, partial } from '../util';
 import { create } from './store/store';
 import { root as rootReducer } from './reducers/root.reducer.complete';
-import { show, hide } from './elements';
+import { show, hide, makeInvisible, makeVisible } from './elements';
 import {
   bootstrapRoutes,
   changeFramework as changeFrameworkA,
   changeMultiFramework,
 } from './actions/app.actions';
-import {
-  updateGameStatus,
-} from './actions/game.actions';
+import { updateGameStatus } from './actions/game.actions';
 import {
   EL_ROOT,
   EL_SPLASH,
@@ -32,13 +26,10 @@ const resizer = init(store);
 (<any>store).dispatch(changeMultiFramework(true));
 
 // no idea why editor dislikes store.dispatch :/
-const changeFramework = (offset: number) => (<any>store)
-  .dispatch(changeFrameworkA(offset));
+const changeFramework = (offset: number) =>
+  (<any>store).dispatch(changeFrameworkA(offset));
 
-const splashEl = document.getElementById(EL_SPLASH);
-const rootEl = document.getElementById(EL_ROOT);
-
-const memoPromise = (promiser) => {
+const memoPromise = promiser => {
   let p;
   return () => {
     if (p) {
@@ -50,13 +41,13 @@ const memoPromise = (promiser) => {
 };
 
 const angular = memoPromise(() =>
-  import(/* webpackChunkName: "angular" */ './angular/angular')
+  import(/* webpackChunkName: "angular" */ './angular/angular'),
 );
 const react = memoPromise(() =>
-  import(/* webpackChunkName: "react" */ './react/react')
+  import(/* webpackChunkName: "react" */ './react/react'),
 );
 const vue = memoPromise(() =>
-  import(/* webpackChunkName: "vue" */ './vue/vue')
+  import(/* webpackChunkName: "vue" */ './vue/vue'),
 );
 
 const frameWorks = deepFreeze({
@@ -65,45 +56,50 @@ const frameWorks = deepFreeze({
   'bd-root-vue': vue,
 });
 
-const elements = FRAMEWORK_DESCRIPTIONS.reduce(
-  (state, { id }) => {
-    const el = document.getElementById(id);
-    if (!el) {
-      throw new Error('block drop: no element found for ' + id);
-    }
-    state[id] = el;
-    return state;
-  },
-  Object.create(null)
+const frameworkElements = FRAMEWORK_DESCRIPTIONS.reduce((state, { id }) => {
+  const el = document.getElementById(id);
+  if (!el) {
+    throw new Error('block drop: no element found for ' + id);
+  }
+  state[id] = el;
+  return state;
+}, Object.create(null));
+
+const splashEl = document.getElementById(EL_SPLASH);
+const header = document.querySelector('header');
+const nav = document.querySelector('nav');
+const navButtons = document.querySelectorAll<HTMLButtonElement>(
+  'header button',
 );
 
 let storeSub: Function = noop;
-let listeners: Function[] = [];
 let unmountCurrent = noop;
-hide(rootEl);
-hideAll();
+makeInvisible(nav);
+hideGame();
 
 if ((<any>window).BLOCK_DROP) {
-  console.warn('Block Drop currently only supports one installed instance per' +
-    `page :( ... replacing ${(<any>window).BLOCK_DROP.version} with: ` +
-    VERSION);
+  console.warn(
+    'Block Drop currently only supports one installed instance per' +
+      `page :( ... replacing ${(<any>window).BLOCK_DROP.version} with: ` +
+      VERSION,
+  );
 }
 (<any>window).BLOCK_DROP = deepFreeze({
   version: VERSION,
   mount,
   unmount,
+  loadFramework,
 });
 
-
-function hideAll() {
-  Object.keys(elements).forEach((id) => hide(elements[id]));
+function hideGame() {
+  Object.keys(frameworkElements).forEach(id => hide(frameworkElements[id]));
 }
 
 function mount() {
   storeSub = store.subscribe(() => {
     const state = store.getState();
     if (state.game.isStopped) {
-      hideAll();
+      hideGame();
       unmountCurrent();
       unmountCurrent = noop;
       unmount();
@@ -111,59 +107,55 @@ function mount() {
     }
   });
 
-  rootEl.innerHTML = '';
-  const buttons = FRAMEWORK_DESCRIPTIONS
-  .map((fwDesc, i) => {
-    const button = document.createElement('input');
-    button.type = 'button';
-    button.value = fwDesc.name;
-    button.addEventListener('click', onClick);
-
-    function onClick() {
-      const el = elements[fwDesc.id];
-      disableAllFwButtons(buttons);
-      frameWorks[fwDesc.id]().then((fw) => {
-        store.game.start();
-        hideAll();
-        unmountCurrent();
-        fw.mount(store, resizer);
-        show(el);
-        unmountCurrent = partial(fw.unmount, el);
-        changeFramework(i);
-        enableAllFwButtons(buttons);
-      });
-    }
-
-    listeners.push(() => {
-      button.removeEventListener('click', onClick);
-    });
-
-    rootEl.appendChild(button);
-    return button;
-  });
   hide(splashEl);
-  show(rootEl);
+  makeVisible(nav);
+  const initialFramework = 'bd-root-vue';
+  loadFramework(
+    document.getElementById('vue-toggle') as HTMLButtonElement,
+    initialFramework,
+  );
 }
 
 function unmount() {
-  hide(rootEl);
-  hideAll();
-  listeners.forEach((unsubscribe) => unsubscribe());
-  listeners = [];
-  rootEl.innerHTML = '';
+  makeInvisible(nav);
+  hideGame();
   show(splashEl);
   storeSub();
   storeSub = noop;
 }
 
-function enableAllFwButtons(buttons: HTMLInputElement[]) {
-  buttons.forEach((el) => {
+function loadFramework(button: HTMLButtonElement, anchorId: string) {
+  disableAll(navButtons);
+  setAllInactive(navButtons);
+  frameWorks[anchorId]().then(framework => {
+    store.game.start();
+    hideGame();
+    unmountCurrent();
+    framework.mount(store, resizer);
+    show(frameworkElements[anchorId]);
+    unmountCurrent = partial(framework.unmount);
+    changeFramework(FRAMEWORK_DESCRIPTIONS.findIndex(fw => fw.id === anchorId));
+    enableAll(navButtons);
+    setActive(button);
+  });
+}
+
+function enableAll(buttons: NodeListOf<HTMLButtonElement>) {
+  buttons.forEach(el => {
     el.disabled = false;
   });
 }
 
-function disableAllFwButtons(buttons: HTMLInputElement[]) {
-  buttons.forEach((el) => {
+function disableAll(buttons: NodeListOf<HTMLButtonElement>) {
+  buttons.forEach(el => {
     el.disabled = true;
   });
+}
+
+function setActive(element: HTMLElement) {
+  element.classList.add('ba');
+}
+
+function setAllInactive(buttons: NodeListOf<HTMLButtonElement>) {
+  buttons.forEach(element => element.classList.remove('ba'));
 }

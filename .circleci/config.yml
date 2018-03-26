@@ -28,6 +28,19 @@ jobs:
           paths:
             - ./node_modules
       - run: 'yarn test:ci'
+  build:
+    docker: *docker
+    steps:
+      - run: 'sudo apt-get install awscli'
+      - checkout
+      - restore_cache:
+          key: 'dependency-cache-{{ checksum "yarn.lock" }}'
+      - run: yarn install
+      - save_cache:
+          key: 'dependency-cache-{{ checksum "yarn.lock" }}'
+          paths:
+            - ./node_modules
+      - run: 'yarn build:ci'
   build-deploy:
     docker: *docker
     steps:
@@ -48,6 +61,11 @@ workflows:
     jobs:
       - lint
       - test
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master
       - build-deploy:
           filters:
             branches:

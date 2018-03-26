@@ -1,4 +1,6 @@
+@import './sizes';
 @import 'tachyons/src/tachyons';
+@import './resets';
 @import './variables';
 @import './fonts';
 @import './colors';
