@@ -46,6 +46,7 @@ import {
   noop,
   partial,
 } from '../util';
+import { createGame1 } from './game';
 
 export { configInterfaces } from './configs/config-interfaces';
 
@@ -58,45 +59,129 @@ export function create1state(conf: GameConfig) {
     board,
     buffer,
     conf,
-    games: [{ level: 1, score: 0 }],
+    games: [],
+    history: [],
+    pauses: [],
     preview: [],
   };
 }
 
-export function create1Controls() {
+export function create1Controls(getActiveGameCtrl) {
   return Object.create(null, {
     moveDown: {
       configurable: false,
-      value: noop,
+      value: () => getActiveGameCtrl().moveDown(),
     },
     moveLeft: {
       configurable: false,
-      value: noop,
+      value: () => getActiveGameCtrl().moveLeft(),
     },
     moveRight: {
       configurable: false,
-      value: noop,
+      value: () => getActiveGameCtrl().moveRight(),
     },
     moveUp: {
       configurable: false,
-      value: noop,
+      value: () => getActiveGameCtrl().moveUp(),
     },
     rotateLeft: {
       configurable: false,
-      value: noop,
+      value: () => getActiveGameCtrl().rotateLeft(),
     },
     rotateRight: {
       configurable: false,
-      value: noop,
+      value: () => getActiveGameCtrl().rotateRight(),
     },
   });
 }
 
+function manageNewGame(conf, state, emit, nextBlock) {
+  const game = createGame1(conf, emit, nextBlock);
+  state.games.unshift(game);
+  /** This is grossly stateful, sorry */
+  let isPaused = false;
+  let then: number = 0;
+  let delta: number = 0;
+  let pauseDelta: number = 0;
+
+  loop();
+
+  return Object.create(null, {
+    isPaused: {
+      configurable: false,
+      get: () => false,
+      set: (value: boolean) => {
+        // ignore pausing a paused game
+        if (isPaused && value) {
+          return;
+        }
+        // ignore unpausing an unpaused game
+        if (!isPaused && !value) {
+          return;
+        }
+        if (isPaused && !value) {
+          isPaused = false;
+          then = performance.now() - delta;
+          loop();
+          return;
+        }
+        isPaused = true;
+      },
+    },
+    moveDown: {
+      configurable: false,
+      value: game.moveDown,
+    },
+    moveLeft: {
+      configurable: false,
+      value: game.moveLeft,
+    },
+    moveRight: {
+      configurable: false,
+      value: game.moveRight,
+    },
+    moveUp: {
+      configurable: false,
+      value: game.moveUp,
+    },
+    rotateLeft: {
+      configurable: false,
+      value: game.rotateLeft,
+    },
+    rotateRight: {
+      configurable: false,
+      value: game.rotateRight,
+    },
+  });
+
+  function loop() {
+    requestAnimationFrame((now) => {
+      if (isPaused) {
+        loop();
+        return;
+      }
+      delta = now - then;
+      const didTick = game.tick(delta, conf, game, nextBlock);
+      if (didTick) {
+        then = now;
+      }
+      loop();
+    });
+  }
+}
+
+/*
+ * Creates an Engine.  Engines are responsible for holding onto
+ * the random seed and orchestrating games
+ */
 export function create1(optionsConfig: GameConfig = {}) {
   const obj = Object.create(null);
   const conf = deepFreeze(forceValidateConfig(DEFAULT_CONFIG_1, optionsConfig));
   const state = create1state(conf);
   const events = createEventEmitter();
+  const nextBlock = createNextBlock(conf, state.preview);
+
+  let activeGameControl = manageNewGame(conf, state, events.emit, nextBlock);
 
   /** Public API */
   Object.defineProperties(obj, {
@@ -115,7 +200,7 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     controls: {
       configurable: false,
-      value: create1Controls(),
+      value: create1Controls(() => activeGameControl),
     },
     endGame: {
       configurable: false,
@@ -132,7 +217,12 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     pause: {
       configurable: false,
-      value: () => noop,
+      value: () => {
+        activeGameControl.isPaused = true;
+        return () => {
+          activeGameControl.isPaused = false;
+        };
+      },
     },
     preview: {
       configurable: false,
@@ -189,29 +279,4 @@ export function createNextBlock(
     previewContainer.push(randomBlock());
     return spawn(previewContainer.shift());
   };
-}
-
-export function clearCheck(engine: { rowsCleared: number, buffer: Uint8Array },
-                           board: Board,
-                           detectAndClear: () => number,
-                           forceBufferCopy: boolean) {
-  const cleared = detectAndClear();
-
-  if (cleared || forceBufferCopy) { copyBuffer(board.desc, engine.buffer); }
-
-  return cleared;
-}
-
-export function updateBlock(getBoard: () => Board,
-                            getBlock: () => Block,
-                            getBuffer: () => Uint8Array,
-                            enableShadow: boolean,
-                            fn: () => any,
-                          ) {
-  const block = getBlock();
-  const board = getBoard();
-  const buffer = getBuffer();
-  removeBlock(board, block, buffer, enableShadow);
-  fn();
-  addBlock(board, block, buffer, enableShadow);
 }

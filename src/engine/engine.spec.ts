@@ -7,12 +7,12 @@ import {
 } from './board';
 
 import {
-  clearCheck,
+  // clearCheck,
   createNextBlock,
   // gameOver,
   // paramsToFn,
   // tryFnRedraw,
-  updateBlock,
+  // updateBlock,
   forceValidateConfig,
 } from './engine';
 
@@ -92,44 +92,44 @@ describe('engine functions', () => {
     });
   });
 
-  describe('clearCheck function', () => {
-    it('returns the result of detectAndClear', () => {
-      const board = createBoard1(1, 5);
-      expect(clearCheck({ 
-        rowsCleared: 0,
-        buffer: Uint8Array.from([1, 2, 3]),
-      }, board, () => 77, false)).toBe(77);
-    });
+  // describe('clearCheck function', () => {
+  //   it('returns the result of detectAndClear', () => {
+  //     const board = createBoard1(1, 5);
+  //     expect(clearCheck({ 
+  //       rowsCleared: 0,
+  //       buffer: Uint8Array.from([1, 2, 3]),
+  //     }, board, () => 77, false)).toBe(77);
+  //   });
     
-    it('should copy the board\'s buffer to buffer if rows were cleared', () => {
-      const board = createBoard1(3, 3);
-      board.desc[0] = 1;
-      board.desc[3] = 1;
-      const buffer = new Uint8Array(9);
-      clearCheck({
-        rowsCleared: 0,
-        buffer,
-      }, board, () => 3, false);
-      expect(buffer[0]).toBe(1);
-      expect(buffer[1]).toBe(0);
-      expect(buffer[3]).toBe(1);
-    });
+  //   it('should copy the board\'s buffer to buffer if rows were cleared', () => {
+  //     const board = createBoard1(3, 3);
+  //     board.desc[0] = 1;
+  //     board.desc[3] = 1;
+  //     const buffer = new Uint8Array(9);
+  //     clearCheck({
+  //       rowsCleared: 0,
+  //       buffer,
+  //     }, board, () => 3, false);
+  //     expect(buffer[0]).toBe(1);
+  //     expect(buffer[1]).toBe(0);
+  //     expect(buffer[3]).toBe(1);
+  //   });
 
-    it('should *not* copy the board\'s buffer to buffer if rows were *not* ' +
-      'cleared', () => {
-      const board = createBoard1(3, 3);
-      board.desc[0] = 1;
-      board.desc[3] = 1;
-      const buffer = new Uint8Array(9);
-      clearCheck({
-        rowsCleared: 0,
-        buffer,
-      }, board, () => 0, false);
-      expect(buffer[0]).toBe(0);
-      expect(buffer[1]).toBe(0);
-      expect(buffer[3]).toBe(0);
-    });
-  });
+  //   it('should *not* copy the board\'s buffer to buffer if rows were *not* ' +
+  //     'cleared', () => {
+  //     const board = createBoard1(3, 3);
+  //     board.desc[0] = 1;
+  //     board.desc[3] = 1;
+  //     const buffer = new Uint8Array(9);
+  //     clearCheck({
+  //       rowsCleared: 0,
+  //       buffer,
+  //     }, board, () => 0, false);
+  //     expect(buffer[0]).toBe(0);
+  //     expect(buffer[1]).toBe(0);
+  //     expect(buffer[3]).toBe(0);
+  //   });
+  // });
 
   // describe('paramsToFunction function', () => {
   //   it('should get the results of the given parameters and pass them into ' +
@@ -269,23 +269,23 @@ describe('engine functions', () => {
   //   });
   // });
 
-  describe('updateBlock', () => {
-    it('should update a block\'s position on the board', () => {
-      const board = createBoard1(10, 10); 
-      const block = createBlock([[1]]);
-      block.x = 5;
-      block.y = 5;
-      addBlock(board, block);
-      expect(board.desc[5 * 10 + 5]).toBe(1);
-      expect(board.desc[0]).toBe(0);
-      updateBlock(() => board, () => block, () => board.desc, false, () => {
-        block.x = 0;
-        block.y = 0;
-      });
-      expect(board.desc[5 * 10 + 5]).toBe(0);
-      expect(board.desc[0]).toBe(1);
-    });
-  });
+  // describe('updateBlock', () => {
+  //   it('should update a block\'s position on the board', () => {
+  //     const board = createBoard1(10, 10); 
+  //     const block = createBlock([[1]]);
+  //     block.x = 5;
+  //     block.y = 5;
+  //     addBlock(board, block);
+  //     expect(board.desc[5 * 10 + 5]).toBe(1);
+  //     expect(board.desc[0]).toBe(0);
+  //     updateBlock(() => board, () => block, () => board.desc, false, () => {
+  //       block.x = 0;
+  //       block.y = 0;
+  //     });
+  //     expect(board.desc[5 * 10 + 5]).toBe(0);
+  //     expect(board.desc[0]).toBe(1);
+  //   });
+  // });
   
   describe('forceValidateConfig', () => {
     it('should keep existing properties', () => {

@@ -69,8 +69,8 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   baseLevelScore: 1000,
   tileScoreMultiplier: 10,
   nextLevelMultiplier: 1.61803398875,
-  speed: 618,
-  speedMultiplier: 0.61803398875,
+  speed: 1300,
+  speedMultiplier: 0.8,
   tick: tick1,
 });
 
