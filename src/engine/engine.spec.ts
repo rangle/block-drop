@@ -9,9 +9,9 @@ import {
 import {
   clearCheck,
   createNextBlock,
-  gameOver,
-  paramsToFn,
-  tryFnRedraw,
+  // gameOver,
+  // paramsToFn,
+  // tryFnRedraw,
   updateBlock,
   forceValidateConfig,
 } from './engine';
@@ -131,39 +131,39 @@ describe('engine functions', () => {
     });
   });
 
-  describe('paramsToFunction function', () => {
-    it('should get the results of the given parameters and pass them into ' +
-      'the given function', () => {
-      let result = 0;
-      const testFn1  = () => 5;
-      const testFn2  = () => 3;
-      const consumerFn = (arg1: number, arg2: number) => result = arg1 + arg2;
-      const fn = paramsToFn<() => number>([testFn1, testFn2], consumerFn);
-      fn();
-      expect(result).toBe(8);
-    });
+  // describe('paramsToFunction function', () => {
+  //   it('should get the results of the given parameters and pass them into ' +
+  //     'the given function', () => {
+  //     let result = 0;
+  //     const testFn1  = () => 5;
+  //     const testFn2  = () => 3;
+  //     const consumerFn = (arg1: number, arg2: number) => result = arg1 + arg2;
+  //     const fn = paramsToFn<() => number>([testFn1, testFn2], consumerFn);
+  //     fn();
+  //     expect(result).toBe(8);
+  //   });
     
-    it('should honor variadic arguments', () => {
-      const testFn  = () => 5;
-      const consumerFn = (arg: number, val: number) => arg + val;
-      const fn = paramsToFn<(val: number) => number>([testFn], consumerFn);
-      expect(fn(3)).toBe(8);
-      expect(fn(1)).toBe(6);
-    });
+  //   it('should honor variadic arguments', () => {
+  //     const testFn  = () => 5;
+  //     const consumerFn = (arg: number, val: number) => arg + val;
+  //     const fn = paramsToFn<(val: number) => number>([testFn], consumerFn);
+  //     expect(fn(3)).toBe(8);
+  //     expect(fn(1)).toBe(6);
+  //   });
     
-    it('should return updated references', () => {
-      let result = 0;
-      let store = 5;
-      const testFn  = () => store;
-      const consumerFn = (arg: number) => result = arg;
-      const fn = paramsToFn<() => number>([testFn], consumerFn);
-      fn();
-      expect(result).toBe(5);
-      store = 7;
-      fn();
-      expect(result).toBe(7);
-    });
-  });
+  //   it('should return updated references', () => {
+  //     let result = 0;
+  //     let store = 5;
+  //     const testFn  = () => store;
+  //     const consumerFn = (arg: number) => result = arg;
+  //     const fn = paramsToFn<() => number>([testFn], consumerFn);
+  //     fn();
+  //     expect(result).toBe(5);
+  //     store = 7;
+  //     fn();
+  //     expect(result).toBe(7);
+  //   });
+  // });
 
   describe('tryAndRotate function', () => {
     
@@ -173,101 +173,101 @@ describe('engine functions', () => {
     
   });
 
-  describe('gameOver function', () => {
-    let board;
-    let buffer;
-    let games;
+  // describe('gameOver function', () => {
+  //   let board;
+  //   let buffer;
+  //   let games;
     
-    beforeEach(() => {
-      board = createBoard1(3, 3);
-      board.desc[0] = 1;
-      board.desc[3] = 1;
-      buffer = Uint8Array.from(board.desc);
-      games = [{
-        activePieceHistory: [createBlock([[1, 1]])],
-        activePiece: createBlock([[1]]),
-        rowsCleared: 0,
-      }]; 
-    });
+  //   beforeEach(() => {
+  //     board = createBoard1(3, 3);
+  //     board.desc[0] = 1;
+  //     board.desc[3] = 1;
+  //     buffer = Uint8Array.from(board.desc);
+  //     games = [{
+  //       activePieceHistory: [createBlock([[1, 1]])],
+  //       activePiece: createBlock([[1]]),
+  //       rowsCleared: 0,
+  //     }]; 
+  //   });
     
-    it('should zero the board and the buffer', () => {
-      gameOver(
-        false, 
-        () => board, 
-        () => buffer, 
-        { games, gameOvers: 0, history: [] } as any, 
-        createBlock.bind(null, [[2]]), 
-        noop
-      );
-      expect(board.desc[0]).toBe(0);
-      expect(board.desc[3]).toBe(0);
-      expect(buffer[0]).toBe(0);
-      expect(buffer[3]).toBe(0);
-    });
+  //   it('should zero the board and the buffer', () => {
+  //     gameOver(
+  //       false, 
+  //       () => board, 
+  //       () => buffer, 
+  //       { games, gameOvers: 0, history: [] } as any, 
+  //       createBlock.bind(null, [[2]]), 
+  //       noop
+  //     );
+  //     expect(board.desc[0]).toBe(0);
+  //     expect(board.desc[3]).toBe(0);
+  //     expect(buffer[0]).toBe(0);
+  //     expect(buffer[3]).toBe(0);
+  //   });
     
-    it('should zero the board and the buffer in debug mode', () => {
-      gameOver(
-        true, 
-        () => board, 
-        () => buffer, 
-        { games, gameOvers: 0, history: [] } as any,
-        createBlock.bind(null, [[2]]), 
-        noop
-      );
-      expect(board.desc[0]).toBe(0);
-      expect(board.desc[3]).toBe(0);
-      expect(buffer[0]).toBe(0);
-      expect(buffer[3]).toBe(0);
-    });
+  //   it('should zero the board and the buffer in debug mode', () => {
+  //     gameOver(
+  //       true, 
+  //       () => board, 
+  //       () => buffer, 
+  //       { games, gameOvers: 0, history: [] } as any,
+  //       createBlock.bind(null, [[2]]), 
+  //       noop
+  //     );
+  //     expect(board.desc[0]).toBe(0);
+  //     expect(board.desc[3]).toBe(0);
+  //     expect(buffer[0]).toBe(0);
+  //     expect(buffer[3]).toBe(0);
+  //   });
     
-    it('should add a new game', () => {
-      const state: any = { games, gameOvers: 0, history: [] };
-      gameOver(true, () => board, () => buffer, state, 
-        createBlock.bind(null, [[2]]), noop);
-    expect(board.desc[0]).toBe(0);
-    expect(board.desc[3]).toBe(0);
-    expect(buffer[0]).toBe(0);
-    expect(buffer[3]).toBe(0);
-  });
+  //   it('should add a new game', () => {
+  //     const state: any = { games, gameOvers: 0, history: [] };
+  //     gameOver(true, () => board, () => buffer, state, 
+  //       createBlock.bind(null, [[2]]), noop);
+  //   expect(board.desc[0]).toBe(0);
+  //   expect(board.desc[3]).toBe(0);
+  //   expect(buffer[0]).toBe(0);
+  //   expect(buffer[3]).toBe(0);
+  // });
 
-    it('should add a new game', () => {
-      const state: any = { games, gameOvers: 0, history: [] };
-      gameOver(true, () => board, () => buffer, state, 
-        createBlock.bind(null, [[2]]), noop);
-      expect(state.games.length).toBe(2);
-    }); 
+  //   it('should add a new game', () => {
+  //     const state: any = { games, gameOvers: 0, history: [] };
+  //     gameOver(true, () => board, () => buffer, state, 
+  //       createBlock.bind(null, [[2]]), noop);
+  //     expect(state.games.length).toBe(2);
+  //   }); 
     
-    it('should emit a game-over notification', () => {
-      let result = null;
-      const state: any = { games, gameOvers: 0, history: [] };
-      gameOver(true, () => board, () => buffer, state, 
-        createBlock.bind(null, [[2]]), 
-        (msg) => result = msg);
-      expect(result).toBe('game-over');
-    });
-  });
+  //   it('should emit a game-over notification', () => {
+  //     let result = null;
+  //     const state: any = { games, gameOvers: 0, history: [] };
+  //     gameOver(true, () => board, () => buffer, state, 
+  //       createBlock.bind(null, [[2]]), 
+  //       (msg) => result = msg);
+  //     expect(result).toBe('game-over');
+  //   });
+  // });
 
-  describe('tryFnRedraw function', () => {
-    it('should run the function if can passes', () => {
-      let result = 0;
-      const can = () => true;
-      const fn = () => result = 1;
+  // describe('tryFnRedraw function', () => {
+  //   it('should run the function if can passes', () => {
+  //     let result = 0;
+  //     const can = () => true;
+  //     const fn = () => result = 1;
       
-      tryFnRedraw(can, fn, noop, { history: [], timer: 1 }, {});
+  //     tryFnRedraw(can, fn, noop, { history: [], timer: 1 }, {});
       
-      expect(result).toBe(1);
-    });
+  //     expect(result).toBe(1);
+  //   });
     
-    it('should not run the function is it does not pass', () => {
-      let result = 0;
-      const can = () => false;
-      const fn = () => result = 1;
+  //   it('should not run the function is it does not pass', () => {
+  //     let result = 0;
+  //     const can = () => false;
+  //     const fn = () => result = 1;
 
-      tryFnRedraw(can, fn, noop, {}, {});
+  //     tryFnRedraw(can, fn, noop, {}, {});
 
-      expect(result).toBe(0);
-    });
-  });
+  //     expect(result).toBe(0);
+  //   });
+  // });
 
   describe('updateBlock', () => {
     it('should update a block\'s position on the board', () => {

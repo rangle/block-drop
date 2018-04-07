@@ -113,3 +113,7 @@ export type RandomMethod = 'randomFromSet' | 'random';
 export type SignedTypedArray = Int8Array | Int16Array | Int32Array;
 export type UnsignedTypedArray = Uint8Array | Uint16Array | Uint32Array;
 export type TypedArray = UnsignedTypedArray | SignedTypedArray;
+
+export interface GameState {
+  activePiece(): Block;
+}
