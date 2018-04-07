@@ -95,18 +95,22 @@ export function create1Controls(getActiveGameCtrl) {
   });
 }
 
-function manageNewGame(conf, state, emit, nextBlock) {
-  const game = createGame1(conf, emit, nextBlock);
+function manageNewGame(conf, state, emit, nextBlock, gameOver) {
+  const game = createGame1(conf, emit, nextBlock, gameOver);
   state.games.unshift(game);
   /** This is grossly stateful, sorry */
   let isPaused = false;
-  let then: number = 0;
+  let then: number = performance.now();
   let delta: number = 0;
   let pauseDelta: number = 0;
 
   loop();
 
   return Object.create(null, {
+    endGame: {
+      configurable: false,
+      value: () => game.endGame(),
+    },
     isPaused: {
       configurable: false,
       get: () => false,
@@ -180,8 +184,26 @@ export function create1(optionsConfig: GameConfig = {}) {
   const state = create1state(conf);
   const events = createEventEmitter();
   const nextBlock = createNextBlock(conf, state.preview);
+  let activeGameControl = manageNewGame(
+    conf, state, events.emit, nextBlock, gameOver
+  );
 
-  let activeGameControl = manageNewGame(conf, state, events.emit, nextBlock);
+  function newGame() {
+    if (!activeGameControl) {
+      console.log('new game');
+      activeGameControl = manageNewGame(
+        conf, state, events.emit, nextBlock, gameOver
+      );
+    }
+  }
+
+  function gameOver() {
+    console.log('game over human');
+    events.emit('game-over');
+    activeGameControl = manageNewGame(
+      conf, state, events.emit, nextBlock, gameOver
+    );
+  }
 
   /** Public API */
   Object.defineProperties(obj, {
@@ -204,7 +226,10 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     endGame: {
       configurable: false,
-      value: noop,
+      value: () => {
+        activeGameControl.endGame();
+        activeGameControl = undefined;
+      },
     },
     level: {
       configurable: false,
@@ -235,7 +260,7 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     startGame: {
       configurable: false,
-      value: noop,
+      value: newGame,
     },
   });
   return obj;

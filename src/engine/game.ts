@@ -51,11 +51,17 @@ export function updateBlock(getBoard: () => Board,
 export function createGame1(
   conf: GameConfig, 
   emit,
-  nextBlock
+  nextBlock,
+  gameOver,
 ) {
-  return {
+  const game = {
     activePieceHistory: [],
     activePiece: nextBlock(), 
+    endGame: () => {
+      console.log('end game');
+      game.isEnded = true;
+    },
+    isEnded: false,
     level: 1,
     levelPrev: 1,
     moveDown: console.log.bind(console, 'down'),
@@ -72,6 +78,7 @@ export function createGame1(
     tilesCleared: 0, 
     tilesClearedPrev: 0,
   }; 
+  return game;
 }
 
 function deriveMultiple(level: number, multiplier: number, value: number) {
@@ -83,6 +90,9 @@ function deriveMultiple(level: number, multiplier: number, value: number) {
 
 
 function tick(delta: number, conf: GameConfig, game, nextBlock) {
+  if (game.isEnded) {
+    return;
+  }
   const interval = deriveMultiple(game.level, conf.speedMultiplier, conf.speed);
   if (delta < interval) {
     return false;
