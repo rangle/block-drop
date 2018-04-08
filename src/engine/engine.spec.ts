@@ -17,7 +17,7 @@ describe('engine functions', () => {
   describe('create1Controls', () => {
     it('should map controls to the current game', () => {
       let didRun = false;
-      const c = create1Controls(() => ({
+      const c = create1Controls({ history: [] }, () => ({
         moveDown: () => didRun = true,
       }));
       c.moveDown();

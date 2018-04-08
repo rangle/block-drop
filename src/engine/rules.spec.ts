@@ -33,17 +33,19 @@ describe('rules functions', () => {
     });
     it('returns undefined if the game is ended', () => {
       state.isEnded = true;
-      expect(tick1({ state }, 0)).toBe(undefined);
+      expect(tick1({ state } as any, 0)).toBe(undefined);
     });
 
     it('returns false if delta is less than the interval', () => {
       expect(tick1({
         state,
-      }, 500)).toBe(false);
+      } as any, 500)).toBe(false);
     });
     it('moves the block down if possible', () => {
       let didRun = false;
-      tick1({ emit: noop, state, moveBlock: () => didRun = true }, 10000);
+      tick1({ 
+        emit: noop, state, moveBlock: () => didRun = true 
+      } as any, 10000);
       expect(didRun).toBe(true);
     }); 
 
@@ -64,7 +66,7 @@ describe('rules functions', () => {
           newBlock: noop,
           state,
           moveBlock: noop,
-        }, 10000);
+        } as any, 10000);
         expect(didRun).toBe(true);
       },
     );
@@ -87,7 +89,7 @@ describe('rules functions', () => {
           newBlock: noop,
           state,
           moveBlock: noop,
-        }, 10000);
+        } as any, 10000);
         expect(didRun).toBe(false);
       },
     );

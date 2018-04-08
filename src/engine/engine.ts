@@ -55,11 +55,21 @@ export function create1state(conf: GameConfig) {
     history: [],
     pauses: [],
     preview: [],
+    tick: 0,
   };
 }
 
-export function create1Controls(getActiveGameCtrl) {
-  const invoke = (prop: string) => getActiveGameCtrl()[prop]();
+export function create1Controls(
+  state,
+  getActiveGameCtrl,
+) {
+  const invoke = (prop: string) => {
+    state.history.push({
+      tick: state.tick,
+      control: prop,
+    });
+    getActiveGameCtrl()[prop]();
+  };
 
   return Object.create(null, {
     moveDown: {
@@ -173,6 +183,7 @@ function manageNewGame(conf, state, emit, nextBlock, gameOver) {
       delta = now - then;
       const didTick = game.tick(delta);
       if (didTick) {
+        state.tick += 1;
         then = now;
       }
       loop();
@@ -204,6 +215,10 @@ export function create1(optionsConfig: GameConfig = {}) {
 
   function gameOver() {
     const { board } = state.games[0];
+    state.history.push({
+      tick: state.tick,
+      control: 'gameOver',
+    });
     board.desc.forEach((el, i) => {
       board.desc[i] = 0;
       state.buffer[i] = 0;
@@ -229,7 +244,7 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     controls: {
       configurable: false,
-      value: create1Controls(() => activeGameControl),
+      value: create1Controls(state, () => activeGameControl),
     },
     endGame: {
       configurable: false,
