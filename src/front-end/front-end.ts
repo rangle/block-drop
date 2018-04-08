@@ -1,5 +1,5 @@
 import { deepFreeze, noop, partial } from '../util';
-import { create } from './store/store';
+import { create, EngineStore } from './store/store';
 import { root as rootReducer } from './reducers/root.reducer.complete';
 import { show, hide, makeInvisible, makeVisible } from './elements';
 import {
@@ -9,7 +9,6 @@ import {
 } from './actions/app.actions';
 import { updateGameStatus } from './actions/game.actions';
 import {
-  EL_ROOT,
   EL_SPLASH,
   FRAMEWORK_DESCRIPTIONS,
   VERSION,
@@ -17,7 +16,7 @@ import {
 import { init } from './aspect-resizer';
 import './register-service-worker';
 
-const store = create(rootReducer);
+const store: EngineStore = create(rootReducer) as EngineStore;
 const resizer = init(store);
 
 (<any>store).dispatch(bootstrapRoutes(window.location.pathname));
@@ -66,7 +65,6 @@ const frameworkElements = FRAMEWORK_DESCRIPTIONS.reduce((state, { id }) => {
 }, Object.create(null));
 
 const splashEl = document.getElementById(EL_SPLASH);
-const header = document.querySelector('header');
 const nav = document.querySelector('nav');
 const navButtons = document.querySelectorAll<HTMLButtonElement>(
   'header button',

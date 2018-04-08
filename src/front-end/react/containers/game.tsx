@@ -3,10 +3,7 @@ import { connect } from 'react-redux';
 import { keyPress } from '../../actions/events.actions';
 import { registerKeyControls } from '../../controls';
 import { boardToArray } from '../../../util';
-import {
-  gameViewportClass,
-  previewDebug,
-} from '../../styles';
+import { gameViewportClass } from '../../styles';
 import {
   Board,
   Button,

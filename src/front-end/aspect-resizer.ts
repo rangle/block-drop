@@ -6,7 +6,6 @@ import {
   computeAspectRatioDimensions,
   throttle,
 } from '../util';
-import { verticalUiClass } from './styles';
 import { FRAMEWORK_DESCRIPTIONS } from './constants';
 /**
  *
@@ -74,15 +73,6 @@ export function init(store): Resizer {
     const containerId = FRAMEWORK_DESCRIPTIONS[currentFw].id;
 
     let elAppContainer;
-    let verticalUiSize;
-
-
-    const verticalUi = document.getElementsByClassName(verticalUiClass);
-    verticalUiSize = Array.prototype.reduce
-      .call(verticalUi, (count, el) => {
-        count += el.offsetHeight;
-        return count;
-      }, 0);
 
     if (lastContainer && (lastContainer.id === containerId)) {
       elAppContainer = lastContainer;

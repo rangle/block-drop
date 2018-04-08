@@ -8,12 +8,6 @@ import {
   Inject,
 } from '@angular/core';
 
-import {
-  Button,
-  Number,
-  Select,
-} from '../components';
-
 import { select } from '@angular-redux/store';
 import { Observable } from 'rxjs/Rx';
 import { identity, isObject } from '../../../util';

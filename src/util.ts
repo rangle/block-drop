@@ -162,10 +162,12 @@ export function createReadOnlyApiTo(state: Object) {
 /**
  * Debounces a function by delay.  Last call's parameters win
  */
-export function debounce<T>(delay: number, fn: Function) {
+export function debounce<T extends (...args: any[]) => any>(
+  delay: number, fn: T
+) {
   let timer = null;
 
-  return (...args) => {
+  return ((...args) => {
     if (timer) {
       clearTimeout(timer);
     }
@@ -174,7 +176,7 @@ export function debounce<T>(delay: number, fn: Function) {
       // reset the timer
       timer = null;
     }, delay);
-  };
+  }) as T;
 }
 
 export function identity(value) {
@@ -199,7 +201,9 @@ export function deepCall(map, obj) {
   return map(obj);
 }
 
-export const deepFreeze = partial(deepCall, Object.freeze.bind(Object));
+export const deepFreeze: <T>(o: T) => T = partial(
+  deepCall, Object.freeze.bind(Object)
+);
 
 
 export function divide(a: number, b: number): number {
@@ -298,7 +302,7 @@ export function numberFromString(string: string): number {
  * http://stackoverflow.com/questions/17638305/why-is-bind-slower-than-a-closure
  */
 export function partial<T>(f: Function, ...args) {
-  return <T>(...extra) => f.apply(null, [...args, ...extra])
+  return ((...extra) => f.apply(null, [...args, ...extra]) as T);
 }
 
 export function pluck<T>(prop: string, dict: Dictionary<T>) {
@@ -314,8 +318,8 @@ export function pipe<T extends (arg: A) => R, A, R>(...args: Function[]) {
   }
   const first = args.shift();
   
-  return <T>(...nextArgs) => args
-    .reduce((state, next) => next(state), first.apply(null, nextArgs)); 
+  return ((...nextArgs) => args
+    .reduce((state, next) => next(state), first.apply(null, nextArgs))) as T; 
 }
 
 /**
@@ -336,7 +340,7 @@ export function safeCall(fn: Function, args?: any[]) {
  *
  * can optionally invokeImmediately
  */
-export function throttle<T>(delay: number,
+export function throttle<T extends () => void>(delay: number,
                             fn: Function,
                             invokeImmediate: boolean = false) {
 
@@ -344,7 +348,7 @@ export function throttle<T>(delay: number,
   let lastArgs: any[];
   let isFirst = true;
 
-  return <T>(...args) => {
+  return ((...args) => {
     lastArgs = args;
     if (timer) {
       return;
@@ -365,16 +369,16 @@ export function throttle<T>(delay: number,
       isFirst = true;
       timer = null;
     }, delay);
-  };
+  }) as T;
 }
 
 export function throwOutOfBounds(buffer: any[] | TypedArray,
                                  offset: number,
                                  message: string = '') {
   if (offset < 0) {
-    throw new RangeError(`${message} out of bounds < 0`)
+    throw new RangeError(`${message} out of bounds < 0`);
   }
   if (offset >= buffer.length) {
-    throw new RangeError(`${message} out of bounds > length`)
+    throw new RangeError(`${message} out of bounds > length`);
   }
 }

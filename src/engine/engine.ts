@@ -1,22 +1,18 @@
 /**
- * Orchestrates all the moving parts
+ * Public API:
+ *   - create1() creates an engine
+ * 
+ * The engine is a stateful object that manages a series of games
+ * 
+ * Core Responsibilities:
+ * - Maintain the integrity of gameplay
+ *   - Maintain random seed
+ *   - Maintain validated/frozen config
+ * - Facilitate realtime game play (ie control iteration/steps)
+ * - Validate historical game play
  */
 import {
-  debugBlock,
-  move,
-  rotateLeft,
-  rotateRight,
-} from './block';
-
-import {
-  addBlock,
-  canMoveDown,
-  canMoveUp,
-  canMoveLeft,
-  canMoveRight,
-  DC2MAX,
   functionsDetectClear,
-  removeBlock,
 } from './board';
 
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
@@ -25,9 +21,7 @@ import { createEventEmitter } from '../event';
 
 import {
   Block,
-  Board,
   GameConfig,
-  GameState,
   NextBlockConfig,
 } from '../interfaces';
 
@@ -40,8 +34,6 @@ import {
 } from './random';
 
 import {
-  copyBuffer,
-  createReadOnlyApiTo,
   deepFreeze,
   noop,
   partial,
@@ -111,7 +103,6 @@ function manageNewGame(conf, state, emit, nextBlock, gameOver) {
   let isPaused = false;
   let then: number = performance.now();
   let delta: number = 0;
-  let pauseDelta: number = 0;
   let isEnded = false;
   loop();
 
@@ -203,7 +194,6 @@ export function create1(optionsConfig: GameConfig = {}) {
 
   function newGame() {
     if (!activeGameControl) {
-      console.log('new game');
       activeGameControl = manageNewGame(
         conf, state, events.emit, nextBlock, gameOver
       );

@@ -60,7 +60,7 @@ const INIT: IGameState = deepFreeze({
   config: Object.assign({}, DEFAULT_CONFIG_1, {
     debug: true,
   }),
-  currentGameViewportDimensions: { x: 0, y: 0, direction: 'row' },
+  currentGameViewportDimensions: { x: 0, y: 0, direction: 'row' as 'row' },
   isPaused: false,
   isStopped: false,
   lastEvent: { keyCode: 0 },

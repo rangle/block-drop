@@ -4,10 +4,6 @@ import {
   Input,
 } from '@angular/core';
 
-import {
-  flexGrowCol,
-} from '../../styles';
-
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'bd-next-pieces',

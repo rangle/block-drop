@@ -2,10 +2,6 @@
  * Random helper functions
  */
 import {
-  SeedRandom, 
-} from '../interfaces';
-
-import {
   makeCollection,
 } from './function-collection';
 

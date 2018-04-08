@@ -1,6 +1,4 @@
-import { Store } from 'redux';
 import { blockDropEngine, createGame } from './engine.enhancer';
-import { IState } from './store';
 import { noop } from '../../util';
 
 describe('Engine\'s Redux Enhancer', () => {

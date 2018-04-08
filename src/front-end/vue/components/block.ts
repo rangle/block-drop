@@ -1,5 +1,5 @@
 import { Tile } from './tile';
-import { flexGrowRow, tileByNumber, flexGrowCol } from '../../styles';
+import { flexGrowRow, flexGrowCol } from '../../styles';
 import { columnsFromBlock } from '../../../engine/block';
 
 export const Block = () => ({

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { clamp, noop, numberFromString } from '../../../../util';
+import { clamp, numberFromString } from '../../../../util';
 
 export function Number({ value, onChange, min, max }) {
   if (min === undefined) {

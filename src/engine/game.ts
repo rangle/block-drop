@@ -1,11 +1,17 @@
+/**
+ * Public API:
+ *   - createGame1() creates a game
+ * 
+ * The game is a stateful object that processes a series of ticks (steps)
+ * 
+ * Core Responsibilities:
+ * - Calculate the events of each turn of the game
+ * - Keep Score
+ * - Track Level
+ */
 import {
   addBlock,
   canMoveDown,
-  canMoveUp,
-  canMoveLeft,
-  canMoveRight,
-  DC2MAX,
-  functionsDetectClear,
   removeBlock,
 } from './board';
 import {
@@ -16,15 +22,9 @@ import {
   Block,
   Board,
   GameConfig,
-  GameState,
-  NextBlockConfig,
 } from '../interfaces';
 import {
   copyBuffer,
-  createReadOnlyApiTo,
-  deepFreeze,
-  noop,
-  partial,
 } from '../util';
 import { rotateLeft, rotateRight } from './block';
 
@@ -88,7 +88,6 @@ export function createGame1(
     },
     controls: {
       endGame: () => {
-        console.log('end game');
         game.state.isEnded = true;
       },
       moveDown: () => cartesianControl(game, 'y', 1, conf.canMoveDown),
@@ -163,7 +162,7 @@ function tick(
   if (game.isEnded) {
     return;
   }
-  const { activePiece, buffer, conf, level } = game.state;
+  const { buffer, conf } = game.state;
   const interval = deriveMultiple(
     game.state.level, conf.speedMultiplier, conf.speed
   );
@@ -190,13 +189,4 @@ function tick(
     game.emit('redraw');
   }
   return true;
-}
-
-function newBlock(conf, game, nextBlock, buffer) {
-  game.activePieceHistory.unshift(game.activePiece);
-  game.activePiece = nextBlock();
-  if (conf.debug) {
-    debugBlock('New Piece:', game.activePiece);
-  }
-  addBlock(game.board, game.activePiece, buffer, conf.enableShadow);
 }

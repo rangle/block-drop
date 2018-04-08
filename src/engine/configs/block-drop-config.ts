@@ -13,10 +13,6 @@ import {
 } from '../board';
 
 import {
-  defaultRandom,
-} from '../random';
-
-import {
   checkForLoss1,
   gameOver1,
   spawn1,
