@@ -59,30 +59,32 @@ export function create1state(conf: GameConfig) {
 }
 
 export function create1Controls(getActiveGameCtrl) {
+  const invoke = (prop: string) => getActiveGameCtrl()[prop]();
+
   return Object.create(null, {
     moveDown: {
       configurable: false,
-      value: () => getActiveGameCtrl().moveDown(),
+      value: partial(invoke, 'moveDown'),
     },
     moveLeft: {
       configurable: false,
-      value: () => getActiveGameCtrl().moveLeft(),
+      value: partial(invoke, 'moveLeft'),
     },
     moveRight: {
       configurable: false,
-      value: () => getActiveGameCtrl().moveRight(),
+      value: partial(invoke, 'moveRight'),
     },
     moveUp: {
       configurable: false,
-      value: () => getActiveGameCtrl().moveUp(),
+      value: partial(invoke, 'moveUp'),
     },
     rotateLeft: {
       configurable: false,
-      value: () => getActiveGameCtrl().rotateLeft(),
+      value: partial(invoke, 'rotateLeft'),
     },
     rotateRight: {
       configurable: false,
-      value: () => getActiveGameCtrl().rotateRight(),
+      value: partial(invoke, 'rotateRight'),
     },
   });
 }

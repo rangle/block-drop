@@ -122,6 +122,6 @@ export function blockDropEngine(references: EngineReferences,
           startGame = noop;
         },
       },
-    });
+    }) as EngineStore<IState>;
   };
 }

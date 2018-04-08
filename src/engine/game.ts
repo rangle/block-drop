@@ -11,7 +11,6 @@
  */
 import {
   addBlock,
-  canMoveDown,
   removeBlock,
 } from './board';
 import {
@@ -21,6 +20,7 @@ import {
 import {
   Block,
   Board,
+  Game,
   GameConfig,
 } from '../interfaces';
 import {
@@ -41,20 +41,24 @@ export function clearCheck(
   return cleared;
 }
 
-export function updateBlock(board: Board,
-                            block: Block,
-                            buffer: Uint8Array,
-                            enableShadow: boolean,
-                            updateFn: () => any,
-                          ) {
+export function updateBlock(
+  board: Board,
+  block: Block,
+  buffer: Uint8Array,
+  enableShadow: boolean,
+  updateFn: () => any,
+) {
   removeBlock(board, block, buffer, enableShadow);
   updateFn();
   addBlock(board, block, buffer, enableShadow);
 }
 
 function cartesianControl(
-  game, axis: 'x' | 'y', magnitude: number, can: (board: Board, block: Block
-  ) => boolean) {
+  game: Game, 
+  axis: 'x' | 'y', 
+  magnitude: number, 
+  can: (board: Board, block: Block) => boolean,
+) {
   if (can(game.board, game.state.activePiece)) {
     game.moveBlock(axis, magnitude);
     game.emit('redraw');
@@ -69,11 +73,10 @@ export function createGame1(
   detectAndClear,
   nextBlock,
   gameOver,
-) {
-  const game = {
+): Game {
+  const game: Game = {
     state: {
       activePiece: nextBlock(), 
-      activePieceHistory: [],
       buffer,
       conf,
       isEnded: false,
@@ -120,6 +123,7 @@ export function createGame1(
     },
     addBlock,
     board,
+    clearCheck,
     detectAndClear: () => detectAndClear(board),
     emit,
     gameOver,
@@ -134,7 +138,6 @@ export function createGame1(
       });
     },
     newBlock: () => {
-      game.state.activePieceHistory.unshift(game.state.activePiece);
       game.state.activePiece = game.nextBlock();
       if (conf.debug) {
         debugBlock('New Piece:', game.state.activePiece);
@@ -142,51 +145,7 @@ export function createGame1(
       addBlock(board, game.state.activePiece, buffer, conf.enableShadow);
     },
     nextBlock,
-    tick: (delta: number) => tick(game, delta),
+    tick: (delta: number) => conf.tick(game, delta),
   }; 
   return game;
-}
-
-function deriveMultiple(level: number, multiplier: number, value: number) {
-  if (level <= 1) {
-    return value * multiplier;
-  }
-  return deriveMultiple(level - 1, multiplier, value) * multiplier;
-}
-
-
-function tick(
-  game,
-  delta: number,
-) {
-  if (game.isEnded) {
-    return;
-  }
-  const { buffer, conf } = game.state;
-  const interval = deriveMultiple(
-    game.state.level, conf.speedMultiplier, conf.speed
-  );
-  if (delta < interval) {
-    return false;
-  }
-
-  if (!canMoveDown(game.board, game.state.activePiece)) {
-    game.addBlock(game.board, game.state.activePiece, game.board.desc, false);
-    game.newBlock();
-    clearCheck(
-      buffer, game.board, game.detectAndClear, conf.forceBufferUpdateOnClear
-    );
-    if (conf.checkForLoss(game.board, game.state.activePiece)) {
-      // game over
-      game.gameOver();
-    } else {
-      game.moveBlock('y', 1);
-    }
-    game.emit('redraw');
-    game.emit('drop');
-  } else {
-    game.moveBlock('y', 1);
-    game.emit('redraw');
-  }
-  return true;
 }

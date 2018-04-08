@@ -21,12 +21,12 @@ export function create(root) {
  return createStore<IState>(
       root, devTools ?
         compose(
-          engineEnhancer, 
+          engineEnhancer as any, 
           applyMiddleware(routeBindingMiddleware as any), 
           devTools
         ) as any :
         compose(
-          engineEnhancer, applyMiddleware(routeBindingMiddleware as any)
+          engineEnhancer as any, applyMiddleware(routeBindingMiddleware as any)
         )
     );
 }

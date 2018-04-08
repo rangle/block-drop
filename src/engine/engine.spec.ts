@@ -6,6 +6,7 @@ import {
   createNextBlock,
   // gameOver,
   forceValidateConfig,
+  create1Controls,
 } from './engine';
 
 import {
@@ -13,6 +14,16 @@ import {
 } from './rules';
 
 describe('engine functions', () => {
+  describe('create1Controls', () => {
+    it('should map controls to the current game', () => {
+      let didRun = false;
+      const c = create1Controls(() => ({
+        moveDown: () => didRun = true,
+      }));
+      c.moveDown();
+      expect(didRun).toBe(true);
+    });
+  });
   describe('createNextBlock function', () => {
     let config;
     

@@ -1,11 +1,22 @@
 import {
   clearCheck,
+  createGame1,
   updateBlock,
 } from './game';
 import { addBlock, createBoard1 } from './board';
 import { createBlock } from './block';
+import { noop } from '../util';
 
 describe('game functions', () => {
+  describe('createGame1', () => {
+    it('should return an object', () => {
+      expect(
+        createGame1(
+          {}, noop, new Uint8Array([]), createBoard1(1, 1), noop, noop, noop
+        )
+      ).toBeTruthy();
+    });
+  });
 
   describe('clearCheck function', () => {
     it('returns the result of detectAndClear', () => {

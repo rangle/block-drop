@@ -192,7 +192,7 @@ export function deepCall(map, obj) {
     for (let i in obj) {
       if (isObject(obj[i])) {
         if (!Object.isFrozen(obj[i])) {
-          obj[i] = partial(deepCall, map)(obj[i]);
+          obj[i] = (partial(deepCall, map) as any)(obj[i]);
         }
       }
     }
@@ -298,11 +298,9 @@ export function numberFromString(string: string): number {
 }
 
 /**
- * simple partial applicator.  faster than native .bind by some reports:
- * http://stackoverflow.com/questions/17638305/why-is-bind-slower-than-a-closure
- */
+ * simple .bind wrapper */
 export function partial<T>(f: Function, ...args) {
-  return ((...extra) => f.apply(null, [...args, ...extra]) as T);
+  return f.bind(this, ...args) as T;
 }
 
 export function pluck<T>(prop: string, dict: Dictionary<T>) {
