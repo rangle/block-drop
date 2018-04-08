@@ -96,20 +96,32 @@ export function create1Controls(getActiveGameCtrl) {
 }
 
 function manageNewGame(conf, state, emit, nextBlock, gameOver) {
-  const game = createGame1(conf, emit, nextBlock, gameOver);
+  const detectAndClear = functionsDetectClear.get(conf.detectAndClear);
+  const game = createGame1(
+    conf, 
+    emit, 
+    state.buffer,
+    state.board,
+    detectAndClear,
+    nextBlock, 
+    gameOver,
+  );
   state.games.unshift(game);
   /** This is grossly stateful, sorry */
   let isPaused = false;
   let then: number = performance.now();
   let delta: number = 0;
   let pauseDelta: number = 0;
-
+  let isEnded = false;
   loop();
 
   return Object.create(null, {
     endGame: {
       configurable: false,
-      value: () => game.endGame(),
+      value: () => {
+        isEnded = true;
+        game.controls.endGame();
+      },
     },
     isPaused: {
       configurable: false,
@@ -134,38 +146,39 @@ function manageNewGame(conf, state, emit, nextBlock, gameOver) {
     },
     moveDown: {
       configurable: false,
-      value: game.moveDown,
+      value: game.controls.moveDown,
     },
     moveLeft: {
       configurable: false,
-      value: game.moveLeft,
+      value: game.controls.moveLeft,
     },
     moveRight: {
       configurable: false,
-      value: game.moveRight,
+      value: game.controls.moveRight,
     },
     moveUp: {
       configurable: false,
-      value: game.moveUp,
+      value: game.controls.moveUp,
     },
     rotateLeft: {
       configurable: false,
-      value: game.rotateLeft,
+      value: game.controls.rotateLeft,
     },
     rotateRight: {
       configurable: false,
-      value: game.rotateRight,
+      value: game.controls.rotateRight,
     },
   });
 
   function loop() {
+    if (isEnded) { return; }
     requestAnimationFrame((now) => {
       if (isPaused) {
         loop();
         return;
       }
       delta = now - then;
-      const didTick = game.tick(delta, conf, game, nextBlock);
+      const didTick = game.tick(delta);
       if (didTick) {
         then = now;
       }
@@ -198,11 +211,13 @@ export function create1(optionsConfig: GameConfig = {}) {
   }
 
   function gameOver() {
-    console.log('game over human');
+    const { board } = state.games[0];
+    board.desc.forEach((el, i) => {
+      board.desc[i] = 0;
+      state.buffer[i] = 0;
+    });
     events.emit('game-over');
-    activeGameControl = manageNewGame(
-      conf, state, events.emit, nextBlock, gameOver
-    );
+    newGame();
   }
 
   /** Public API */
@@ -233,7 +248,7 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     level: {
       configurable: false,
-      get: () => state.games[0].level,
+      get: () => state.games[0].state.level,
       set: noop,
     },
     on: {
@@ -255,7 +270,7 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     score: {
       configurable: false,
-      get: () => state.games[0].score,
+      get: () => state.games[0].state.score,
       set: noop,
     },
     startGame: {
