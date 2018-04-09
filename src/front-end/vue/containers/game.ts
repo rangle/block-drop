@@ -106,16 +106,16 @@ export const Game = () => {
       <div class="tc">
         <bd-button
           v-if="state.game.isPaused" 
-          value="RESUME"
+          value="Resume"
           v-on:click="resume">
         </bd-button>
         <bd-button
           v-if="!(state.game.isPaused)" 
-          value="PAUSE"
+          value="Pause"
           v-on:click="pause">
         </bd-button>
         <bd-button
-          value="DONE"
+          value="Done"
           v-on:click="done">
         </bd-button>
       </div>

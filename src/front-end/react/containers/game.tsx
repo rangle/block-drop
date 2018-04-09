@@ -91,10 +91,10 @@ export const Game = connect(
           <div className="tc">
           {
             this.props.isPaused ?
-              <Button value='RESUME' onClick={ resume } /> :
-              <Button value='PAUSE' onClick={ pause } />
+              <Button value='Resume' onClick={ resume } /> :
+              <Button value='Pause' onClick={ pause } />
           }
-          <Button value='DONE' onClick={ stop } />
+          <Button value='Done' onClick={ stop } />
           </div>
         </div>
       </div>

@@ -52,7 +52,7 @@ import { Resizer } from '../../aspect-resizer';
           [onClick]="pause">
         </bd-button>
         <bd-button
-          value="DONE"
+          value="Done"
           [onClick]="done">
         </bd-button>
       </div>
@@ -71,10 +71,10 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   private deRegister: Function[] = [];
   private pause: Function;
   private done: Function;
-  private pauseLabel = 'PAUSE';
+  private pauseLabel = 'Pause';
   private preview: { name: string, cols: number[][]}[] = [];
   private resume: Function;
-  private resumeLabel = 'RESUME';
+  private resumeLabel = 'Resume';
   private styles = {};
 
   constructor(@Inject(Store) private store: EngineStore,
