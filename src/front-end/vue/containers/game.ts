@@ -74,7 +74,7 @@ export const Game = () => {
     },
     template: `
       <div 
-        class="flex flex-nowrap flex-auto" 
+        class="flex flex-auto" 
       >
         <bd-board
           class="w-two-thirds"

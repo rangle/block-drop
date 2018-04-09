@@ -5,13 +5,16 @@ import { routes } from './routes';
 import Vue from 'vue';
 
 const VUE = 'bd-root-vue';
+const APP_ROOT_ID = 'vue-app-root';
 let appRef;
 
 export function mount(store: EngineStore, resizer: Resizer) {
   if (appRef) {
     return;
   }
-  const id = 'rando-' + Date.now().toString(32) + 
+  const id =
+    'rando-' +
+    Date.now().toString(32) +
     Math.floor(Math.random() * 1000).toString(32);
   const el = window.document.createElement('div');
   el.id = id;
@@ -22,7 +25,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
     routes: routes(),
     state: store.getState(),
   };
-
 
   appRef = new Vue({
     data,
@@ -42,6 +44,7 @@ export function mount(store: EngineStore, resizer: Resizer) {
         'div',
         {
           class: 'flex pa2 pa4-ns flex-auto',
+          attrs: { id: APP_ROOT_ID },
         },
         [
           /** @todo determine why computed props are not in the generic --v */
@@ -76,7 +79,7 @@ export function unmount() {
     return;
   }
   appRef.$destroy();
-  const el = window.document.getElementById(VUE);
-  el.innerHTML = '';
+  const el = window.document.getElementById(APP_ROOT_ID);
+  el.remove();
   appRef = null;
 }
