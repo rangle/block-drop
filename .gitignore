@@ -44,3 +44,4 @@ specs/screenshots/diff
 specs/screenshots/screen
 
 yarn-error.log
+package-lock.json

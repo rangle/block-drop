@@ -85,14 +85,14 @@ export const Game = connect(
               null :
               <NextPieces preview={ this.props.preview }/>
           }
-          <div>
+          <div className="tc">
           {
             this.props.isPaused ?
               <Button value='Resume' onClick={ resume } /> :
               <Button value='Pause' onClick={ pause } />
           }
-          </div>
           <Button value='Done' onClick={ stop } />
+          </div>
         </div>
       </div>
     );

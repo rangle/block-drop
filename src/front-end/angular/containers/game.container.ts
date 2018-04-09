@@ -36,23 +36,22 @@ import { Resizer } from '../../aspect-resizer';
         [preview]="preview"
       >
       </bd-next-pieces>
-      <bd-button 
-        *ngIf="(isPaused$ | async)" 
-        [value]="resumeLabel"
-        [onClick]="resume"
-      >
-      </bd-button>
-      <bd-button 
-        *ngIf="!(isPaused$ | async)" 
-        [value]="pauseLabel"
-        [onClick]="pause"
-      >
-      </bd-button>
-      <bd-button
-        value="Done"
-        [onClick]="done"
-      >
-      </bd-button>
+      <div class="tc">
+        <bd-button 
+          *ngIf="(isPaused$ | async)" 
+          [value]="resumeLabel"
+          [onClick]="resume">
+        </bd-button>
+        <bd-button 
+          *ngIf="!(isPaused$ | async)" 
+          [value]="pauseLabel"
+          [onClick]="pause">
+        </bd-button>
+        <bd-button
+          value="Done"
+          [onClick]="done">
+        </bd-button>
+      </div>
     </div>
 `,
 })
