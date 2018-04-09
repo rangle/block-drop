@@ -6,19 +6,24 @@ import { IState } from '../../reducers/root.reducer.shared';
 
 @Component({
   selector: 'bd-angular',
+  host: {
+    class: 'flex pa2 pa4-ns flex-auto',
+  },
   template: `
     <router-outlet></router-outlet>
 `,
 })
 export class App implements OnDestroy, OnInit {
-  styles = { };
-  @select((s) => s.app.routes) routes$;
+  styles = {};
+  @select(s => s.app.routes)
+  routes$;
   private unsubscribe: Function;
 
-  constructor(private ngRedux: NgRedux<IState>,
-              private ngReduxRouter: NgReduxRouter,
-              private router: Router) {
-  }
+  constructor(
+    private ngRedux: NgRedux<IState>,
+    private ngReduxRouter: NgReduxRouter,
+    private router: Router,
+  ) {}
 
   ngOnDestroy() {
     this.unsubscribe();
