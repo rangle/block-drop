@@ -1,9 +1,7 @@
-import { partial } from '../../util';
 import { EngineStore } from '../store/store';
 import { Resizer } from '../aspect-resizer';
 import '../../license';
 import { routes } from './routes';
-import { VUE_LOCATION_CHANGE } from './router-reducer';
 import Vue from 'vue';
 
 const VUE = 'bd-root-vue';
@@ -40,8 +38,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
       const currentRoute = window.location.pathname;
       const route = this.routes[currentRoute];
       const routeTo = route ? route.component : this.routes['/game'].component;
-      /** @todo determine why computed props are not in the generic --v */
-      const redraw = (this as any).redraw.bind(this);
       return h(
         'div',
         {},

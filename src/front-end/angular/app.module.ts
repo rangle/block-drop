@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { NgReduxRouterModule, NgReduxRouter } from '@angular-redux/router';
-import { NgReduxModule, NgRedux, select } from '@angular-redux/store';
+import { NgReduxModule, NgRedux } from '@angular-redux/store';
 import { LOCATION_STRATEGY } from '../constants';
 import { EngineStore } from '../store/store';
 import { Store, Viewport } from './opaque-tokens';

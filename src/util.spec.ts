@@ -6,7 +6,6 @@ import {
   createReadOnlyApiTo,
   debounce,
   divide,
-  deepCall,
   deepFreeze,
   kebabToCamel,
   intMidCeil,
@@ -63,7 +62,7 @@ describe('utility functions', () => {
     it('the last call\'s arguments should "win"', (done) => {
       let result = 0;
       const addToResult = (val: number) => result += val;
-      const debouncedInc = debounce<(value: number) => number>(0, addToResult);
+      const debouncedInc = debounce(0, addToResult);
       debouncedInc(1);
       debouncedInc(2);
       debouncedInc(3);
@@ -251,7 +250,7 @@ describe('utility functions', () => {
       });
 
       expect(() => frozen.a = 23).toThrowError();
-      expect(() => frozen.b = 23).toThrowError();
+      expect(() => frozen.b = '23').toThrowError();
     });
 
     it('should freeze object properties on an object', () => {
@@ -263,7 +262,7 @@ describe('utility functions', () => {
         }
       });
 
-      expect(() => frozen.c.d = 23).toThrowError();
+      expect(() => frozen.c.d = '23').toThrowError();
     });
 
     it('should freeze nested arrays', () => {

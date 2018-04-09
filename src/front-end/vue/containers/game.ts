@@ -1,12 +1,8 @@
 import { registerKeyControls } from '../../controls';
 import { keyPress } from '../../actions/events.actions';
-import {
-  gameViewportClass,
-  previewDebug,
-} from '../../styles';
-import { recomputeBoard, noop } from '../../../util';
+import { gameViewportClass } from '../../styles';
+import { recomputeBoard } from '../../../util';
 import { Board, Button, NextPieces, Score } from '../components';
-import { columnsFromBlock } from '../../../engine/block';
 
 export const Game = () => {
   let deRegister = [];

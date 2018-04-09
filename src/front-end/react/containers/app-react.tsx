@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Button } from '../components';
-import { partial } from '../../../util';
-import { verticalUiClass } from '../../styles';
 
 function mapStateToProps(state, ownProps) {
   return {

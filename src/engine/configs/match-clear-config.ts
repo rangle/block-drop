@@ -1,6 +1,7 @@
 /**
  * Match Clear
  */
+import { GameConfig } from '../../interfaces';
 
 import {
   createBlock,
@@ -8,7 +9,6 @@ import {
 
 import {
   canMoveDown,
-  canMoveUp,
   canMoveLeft,
   canMoveRight,
   canRotateLeft1,
@@ -44,7 +44,7 @@ for (let i = 1; i < 4; i += 1) {
   }
 }
 
-export const DEFAULT_CONFIG_1 = deepFreeze({
+export const DEFAULT_CONFIG_1: GameConfig = deepFreeze({
   width: 11,
   height: 25,
   blockDescriptions,
@@ -63,14 +63,14 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   gameOver: gameOver1,
   detectAndClear: 'detectAndClear2',
   preview: 0,
-  randomMethod: 'randomFromSet',
+  randomMethod: defaultRandom, // 'randomFromSet',
   seedRandom: 'xor4096',
   spawn: spawn1,
   baseLevelScore: 1000,
   tileScoreMultiplier: 10,
   nextLevelMultiplier: 1.61803398875,
-  speed: 618,
-  speedMultiplier: 0.61803398875,
+  speed: 1300,
+  speedMultiplier: 0.8,
   tick: tick1,
 });
 

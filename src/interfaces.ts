@@ -93,15 +93,7 @@ export interface GameConfig extends NextBlockConfig {
   nextLevelMultiplier?: number;
   speed?: number;
   speedMultiplier?: number;
-  tick?: (engine, 
-          board: Board, 
-          moveBlock: (axis: 'x' | 'y', magnitude: number) => any,
-          newBlock: () => any,
-          clearCheck: () => any,
-          commitBlock: () => any,
-          checkForLoss: () => boolean,
-          gameOver: (engine?: any, board?: Board) => any,
-          fnOnBlock: (fn: () => any) => any) =>  any;
+  tick?: (game, delta: number) =>  any;
 }
 
 export type Matrix = Array<number[]>;
@@ -113,3 +105,53 @@ export type RandomMethod = 'randomFromSet' | 'random';
 export type SignedTypedArray = Int8Array | Int16Array | Int32Array;
 export type UnsignedTypedArray = Uint8Array | Uint16Array | Uint32Array;
 export type TypedArray = UnsignedTypedArray | SignedTypedArray;
+
+export interface GameState {
+  activePiece: Block;
+  buffer: TypedArray;
+  conf: GameConfig;
+  isEnded: boolean;
+  level: number;
+  levelPrev: number;
+  nextLevelThreshold: number;
+  rowsCleared: number;
+  rowsClearedPrev: number;
+  score: number;
+  tilesCleared: number;
+  tilesClearedPrev: number;
+}
+
+export interface GameControls {
+  endGame(): void;
+  moveDown(): void;
+  moveLeft(): void;
+  moveRight(): void;
+  moveUp(): void;
+  rotateLeft(): void;
+  rotateRight(): void;
+}
+
+export interface Game {
+  state: GameState;
+  controls: GameControls;
+  addBlock(
+    board: Board,
+    block: Block,
+    buffer: TypedArray,
+    addShadow: boolean
+  ): any;
+  board: Board;
+  clearCheck(
+    buffer: TypedArray,
+    board: Board,
+    detectAndClear: () => number,
+    forceBufferCopy: boolean
+  ): number;
+  detectAndClear: () => number;
+  emit: <T>(channel: string, payload?: T) => any;
+  gameOver: () => any;
+  moveBlock(axis: 'x' | 'y', quantity: number): any;
+  newBlock: () => any;
+  nextBlock: () => Block;
+  tick: (delta: number) => any;
+}

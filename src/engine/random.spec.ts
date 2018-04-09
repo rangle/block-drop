@@ -8,8 +8,6 @@ import {
   noop,
 } from '../util';
 
-const seedRandom = require('seedrandom');
-
 describe('random number functions', () => {
   describe('between function', () => {
     it('should throw if minimum is less than maximum', () => {

@@ -12,5 +12,5 @@ export const root = combineReducers<IState>(
       angular: angularRouterReducer,
       react: reactRouterReducer,
       vue: vueRouterReducer, 
-    })),
+    }), undefined),
   }));

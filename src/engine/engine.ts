@@ -1,22 +1,18 @@
 /**
- * Orchestrates all the moving parts
+ * Public API:
+ *   - create1() creates an engine
+ * 
+ * The engine is a stateful object that manages a series of games
+ * 
+ * Core Responsibilities:
+ * - Maintain the integrity of gameplay
+ *   - Maintain random seed
+ *   - Maintain validated/frozen config
+ * - Facilitate realtime game play (ie control iteration/steps)
+ * - Validate historical game play
  */
 import {
-  debugBlock,
-  move,
-  rotateLeft,
-  rotateRight,
-} from './block';
-
-import {
-  addBlock,
-  canMoveDown,
-  canMoveUp,
-  canMoveLeft,
-  canMoveRight,
-  DC2MAX,
   functionsDetectClear,
-  removeBlock,
 } from './board';
 
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
@@ -25,7 +21,6 @@ import { createEventEmitter } from '../event';
 
 import {
   Block,
-  Board,
   GameConfig,
   NextBlockConfig,
 } from '../interfaces';
@@ -39,392 +34,275 @@ import {
 } from './random';
 
 import {
-  copyBuffer,
-  createReadOnlyApiTo,
   deepFreeze,
   noop,
   partial,
 } from '../util';
+import { createGame1 } from './game';
 
 export { configInterfaces } from './configs/config-interfaces';
 
-/**
- * Partially applies the invocation (and ultimately result) of one or more 
- * functions to the first parameters of a new function which is returned.  
- * Trailing arguments are honored. 
- */
-export function paramsToFn<T>(params: Function[], fn: Function) {
-  return (...args) => {
-    return fn(...params.map(f => f()), ...args); 
+export function create1state(conf: GameConfig) {
+  const board = conf.createBoard(conf.width, conf.height);
+  const buffer = Uint8Array.from(board.desc);
+
+  return {
+    activePiece: null,
+    board,
+    buffer,
+    conf,
+    games: [],
+    history: [],
+    pauses: [],
+    preview: [],
+    tick: 0,
   };
 }
 
-export function create1(config: GameConfig = {}) {
-  const engine = Object.create(null);
-  
-  const c = deepFreeze(forceValidateConfig(DEFAULT_CONFIG_1, config));
-  const events = createEventEmitter();
-  const board = c.createBoard(c.width, c.height);
-  const detectAndClear = functionsDetectClear.get(c.detectAndClear);
-  const preview = [];
-  const nextBlock = createNextBlock(c, preview);
-  const writableState = {
-    games: [
-      createGame1(nextBlock),  
-    ],
-    gameOvers: 0,
-    history: [],
-    isEnded: false,
-    pauses: [],
-    rowsCleared: 0,
-    tick: 0,
-    timer: null,
+export function create1Controls(
+  state,
+  getActiveGameCtrl,
+) {
+  const invoke = (prop: string) => {
+    state.history.push({
+      tick: state.tick,
+      control: prop,
+    });
+    getActiveGameCtrl()[prop]();
   };
-  const state = createReadOnlyApiTo(writableState);
-  const buffer = Uint8Array.from(board.desc);
-  const getActivePiece = () => writableState.games[0].activePiece;
-  const getBoard = () => board;
-  const getBuffer = () => buffer;
-  const blockFn = partial<(f: Function) => Function>(paramsToFn, 
-    [getActivePiece]);
-  const boardBlockFn = partial<(f: Function) => Function>(paramsToFn,
-    [getBoard, getActivePiece]);
-  const updateActiveBlock = partial<(fn: Function) => void>(updateBlock,
-    getBoard, getActivePiece, getBuffer, c.enableShadow);
-  const bCanMoveDown = boardBlockFn<() => boolean>(c.canMoveDown);
-  const bCanMoveUp = boardBlockFn<() => boolean>(c.canMoveUp);
-  const bCanMoveLeft = boardBlockFn<() => boolean>(c.canMoveLeft);
-  const bCanMoveRight = boardBlockFn<() => boolean>(c.canMoveRight);
-  const bCanRotateLeft = boardBlockFn<() => boolean>(c.canRotateLeft);
-  const bCanRotateRight = boardBlockFn<() => boolean>(c.canRotateRight);
-  const bGameOver = () => {
-    gameOver(c.debug, getBoard, getBuffer,
-      writableState, nextBlock, events.emit);
-    clearInterval(writableState.timer);
-    writableState.timer = setInterval(interval, deriveMultiple(
-      writableState.games[0].level, c.speedMultiplier, c.speed
-    ));
-  };
-  const bRotateLeft = blockFn(rotateLeft);
-  const bRotateRight = blockFn(rotateRight);
-  const bMove: (axis: 'x' | 'y', quantity?: number) => any = blockFn(move);
-  const moveDown = partial(bMove, 'y', 1);
-  const moveLeft = partial(bMove, 'x', -1);
-  const moveUp = () => {
-    while (c.canMoveDown(getBoard(), getActivePiece())) {
-      moveDown();
-    }
-    if (state) {
-      writableState.history.push({ tick: state.tick, control: 'move-up' });
-    }
-    events.emit('redraw');
-  };
-  const moveRight = partial(bMove, 'x', 1);
-  const commitBlock = boardBlockFn<() => void>(addBlock);
-  const checkForLoss = boardBlockFn<() => void>(c.checkForLoss);
 
-
-  Object.defineProperties(engine, {
-    activePieceHistory: {
+  return Object.create(null, {
+    moveDown: {
       configurable: false,
-      get: () => writableState.games[0].activePieceHistory.slice(0),
-      set: noop,
+      value: partial(invoke, 'moveDown'),
     },
+    moveLeft: {
+      configurable: false,
+      value: partial(invoke, 'moveLeft'),
+    },
+    moveRight: {
+      configurable: false,
+      value: partial(invoke, 'moveRight'),
+    },
+    moveUp: {
+      configurable: false,
+      value: partial(invoke, 'moveUp'),
+    },
+    rotateLeft: {
+      configurable: false,
+      value: partial(invoke, 'rotateLeft'),
+    },
+    rotateRight: {
+      configurable: false,
+      value: partial(invoke, 'rotateRight'),
+    },
+  });
+}
+
+function manageNewGame(conf, state, emit, nextBlock, gameOver) {
+  const detectAndClear = functionsDetectClear.get(conf.detectAndClear);
+  const game = createGame1(
+    conf, 
+    emit, 
+    state.buffer,
+    state.board,
+    detectAndClear,
+    nextBlock, 
+    gameOver,
+  );
+  state.games.unshift(game);
+  /** This is grossly stateful, sorry */
+  let isPaused = false;
+  let then: number = performance.now();
+  let delta: number = 0;
+  let isEnded = false;
+  loop();
+
+  return Object.create(null, {
+    endGame: {
+      configurable: false,
+      value: () => {
+        isEnded = true;
+        game.controls.endGame();
+      },
+    },
+    isPaused: {
+      configurable: false,
+      get: () => false,
+      set: (value: boolean) => {
+        // ignore pausing a paused game
+        if (isPaused && value) {
+          return;
+        }
+        // ignore unpausing an unpaused game
+        if (!isPaused && !value) {
+          return;
+        }
+        if (isPaused && !value) {
+          isPaused = false;
+          then = performance.now() - delta;
+          loop();
+          return;
+        }
+        isPaused = true;
+      },
+    },
+    moveDown: {
+      configurable: false,
+      value: game.controls.moveDown,
+    },
+    moveLeft: {
+      configurable: false,
+      value: game.controls.moveLeft,
+    },
+    moveRight: {
+      configurable: false,
+      value: game.controls.moveRight,
+    },
+    moveUp: {
+      configurable: false,
+      value: game.controls.moveUp,
+    },
+    rotateLeft: {
+      configurable: false,
+      value: game.controls.rotateLeft,
+    },
+    rotateRight: {
+      configurable: false,
+      value: game.controls.rotateRight,
+    },
+  });
+
+  function loop() {
+    if (isEnded) { return; }
+    requestAnimationFrame((now) => {
+      if (isPaused) {
+        loop();
+        return;
+      }
+      delta = now - then;
+      const didTick = game.tick(delta);
+      if (didTick) {
+        state.tick += 1;
+        then = now;
+      }
+      loop();
+    });
+  }
+}
+
+/*
+ * Creates an Engine.  Engines are responsible for holding onto
+ * the random seed and orchestrating games
+ */
+export function create1(optionsConfig: GameConfig = {}) {
+  const obj = Object.create(null);
+  const conf = deepFreeze(forceValidateConfig(DEFAULT_CONFIG_1, optionsConfig));
+  const state = create1state(conf);
+  const events = createEventEmitter();
+  const nextBlock = createNextBlock(conf, state.preview);
+  let activeGameControl = manageNewGame(
+    conf, state, events.emit, nextBlock, gameOver
+  );
+
+  function newGame() {
+    if (!activeGameControl) {
+      activeGameControl = manageNewGame(
+        conf, state, events.emit, nextBlock, gameOver
+      );
+    }
+  }
+
+  function gameOver() {
+    const { board } = state.games[0];
+    state.history.push({
+      tick: state.tick,
+      control: 'gameOver',
+    });
+    board.desc.forEach((el, i) => {
+      board.desc[i] = 0;
+      state.buffer[i] = 0;
+    });
+    events.emit('game-over');
+    newGame();
+  }
+
+  /** Public API */
+  Object.defineProperties(obj, {
     activePiece: {
       configurable: false,
-      writable: false,
-      value: getActivePiece,
+      value: () => state.activePiece,
     },
     buffer: {
       configurable: false,
-      get: getBuffer,
+      get: () => state.buffer,
       set: noop,  
-    },
-    clean: {
-      configurable: false,
-      writable: false,
-      value: () => {
-        clearInterval(writableState.timer);
-      },
     },
     config: {
       configurable: false,
-      writable: false,
-      value: c,
+      value: conf,
     },
     controls: {
       configurable: false,
-      writable: false,
-      value: Object.create(null, {
-        moveDown: {
-          configurable: false,
-          writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanMoveDown,
-            partial(updateActiveBlock, moveDown),
-            events.emit,
-            writableState,
-            'moveDown'
-          ),
-        },
-        moveLeft: {
-          configurable: false,
-          writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanMoveLeft,
-            partial(updateActiveBlock, moveLeft),
-            events.emit,
-            writableState,
-            'moveLeft'
-          ),
-        },
-        moveRight: {
-          configurable: false,
-          writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanMoveRight,
-            partial(updateActiveBlock, moveRight),
-            events.emit,
-            writableState,
-            'moveRight'
-          ),
-        },
-        moveUp: {
-          configurable: false,
-          writable: false,
-          value: moveUp,
-        },
-        rotateLeft: {
-          configurable: false,
-          writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanRotateLeft, partial(updateActiveBlock, bRotateLeft),
-            events.emit,
-            writableState,
-            'rotateLeft'
-          ),
-        },
-        rotateRight: {
-          configurable: false,
-          writable: false,
-          value: partial<() => void>(tryFnRedraw,
-            bCanRotateRight,
-            partial(updateActiveBlock, bRotateRight),
-            events.emit,
-            writableState,
-            'rotateRight'
-          ),
-        },
-      }),
+      value: create1Controls(state, () => activeGameControl),
     },
-    // ends the game, stateful, only happens if there is an active game
     endGame: {
       configurable: false,
-      writable: false,
       value: () => {
-        if (writableState.isEnded) {
-          return;
-        }
-        clearInterval(writableState.timer);
-        writableState.isEnded = true;
+        activeGameControl.endGame();
+        activeGameControl = undefined;
       },
     },
-    // resets the game
-    gameOver: {
+    level: {
       configurable: false,
-      writable: false,
-      value: bGameOver,
-    },
-    gamesOvers: {
-      configurable: false,
-      get: () => writableState.gameOvers,
-      set: noop,
-    },
-    isStopped: {
-      configurable: false,
-      get: () => writableState.isEnded,
+      get: () => state.games[0].state.level,
       set: noop,
     },
     on: {
       configurable: false,
-      writable: false,
       value: events.on,
-    },
-    emit: {
-      configurable: false,
-      writable: false,
-      value: events.emit,
     },
     pause: {
       configurable: false,
-      writable: false,
       value: () => {
-        const pause = {
-          start: Date.now(),
-          end: NaN,
-        };
-        clearInterval(writableState.timer);
-        writableState.pauses.push(pause);
-        writableState.timer = null;
-
+        activeGameControl.isPaused = true;
         return () => {
-          if (pause.end) {
-            return;
-          }
-          pause.end = Date.now();
-          return startTick();
+          activeGameControl.isPaused = false;
         };
       },
     },
     preview: {
       configurable: false,
-      writable: false,
-      value: preview,
-    },
-    progress: {
-      configurable: false,
-      get: () => {
-        const game = writableState.games[0];
-        const total = game.tilesCleared - game.tilesClearedPrev;
-        return total / game.nextLevelThreshold;
-      },
-      set: noop,
-    },
-    rowsCleared: {
-      configurable: false,
-      get: () => writableState.games[0].rowsCleared,
-      set: noop,
+      value: state.preview,
     },
     score: {
       configurable: false,
-      get: () => writableState.games[0].score,
+      get: () => state.games[0].state.score,
       set: noop,
     },
     startGame: {
       configurable: false,
-      value: () => {
-        if (writableState.isEnded) {
-          writableState.isEnded = false;
-          bGameOver();
-          writableState.timer = setInterval(interval, deriveMultiple(
-            writableState.games[0].level, c.speedMultiplier, c.speed
-          ));
-        }
-      },
-    },
-    level: {
-      configurable: false,
-      get: () => writableState.games[0].level,
-      set: noop,
-    },
-    state: {
-      configurable: false,
-      writable: false,
-      value: state,
+      value: newGame,
     },
   });
-  
-  function newBlock() {
-    writableState.games[0].activePieceHistory.unshift(getActivePiece());
-    writableState.games[0].activePiece = nextBlock();
-    if (c.debug) {
-      debugBlock('New Piece:', getActivePiece());
-    }
-    addBlock(board, getActivePiece(), buffer, c.enableShadow);
-  }
-  
-  function bClearCheck() {
-    const cleared = clearCheck(engine, board, partial(detectAndClear, board),
-        c.forceBufferUpdateOnClear);
-
-    writableState.games[0].rowsCleared += cleared;
-    writableState.games[0].tilesCleared += cleared;
-    if (cleared) {
-      const overflow = cleared - DC2MAX;
-      writableState.games[0].score += overflow * writableState.games[0].level *
-        c.tileScoreMultiplier;
-    }
-  }
-
-  function interval() {
-    const game = writableState.games[0];
-
-    if (game.levelPrev !== game.level) {
-      game.rowsClearedPrev = game.rowsCleared;
-      game.tilesClearedPrev = game.tilesClearedPrev;
-      game.levelPrev = game.level;
-    }
-
-    c.tick(engine,
-      board,
-      (axis: 'x' | 'y', quantity: number) => {
-        updateActiveBlock(() => bMove(axis, quantity));
-      },
-      newBlock,
-      bClearCheck,
-      commitBlock,
-      checkForLoss,
-      c.gameOver);
-
-    score();
-
-    writableState.tick += 1;
-  }
-
-  function startTick() {
-    if (writableState.timer) {
-      console.warn('startTick called and timer exists!');
-      return;
-    }
-
-    writableState.timer = setInterval(interval, deriveMultiple(
-      writableState.games[0].level, c.speedMultiplier, c.speed
-    ));
-  }
-
-  /** Dirty side effect for demo, putting it here to not clutter above */
-  function score() {
-    const game = writableState.games[0];
-    const tilesClearedSinceLevel = game.tilesCleared - game.tilesClearedPrev;
-
-    if (tilesClearedSinceLevel > game.nextLevelThreshold) {
-      game.score += c.baseLevelScore;
-      game.level += 1;
-      game.score += (tilesClearedSinceLevel - game.level) * 
-        c.tileScoreMultiplier * game.level;
-      game.nextLevelThreshold *= c.nextLevelMultiplier;
-      clearInterval(writableState.timer);
-      writableState.timer = setInterval(interval, deriveMultiple(
-        game.level, c.speedMultiplier, c.speed
-      ));
-    }
-  }
-
-  // go
-  addBlock(board, getActivePiece(), buffer, c.enableShadow);
-  startTick();
-
-  return engine;
+  return obj;
 }
 
-function createGame1(nextBlock) {
-  return {
-    activePieceHistory: [],
-    activePiece: nextBlock(), 
-    level: 1,
-    levelPrev: 1,
-    nextLevelThreshold: 45,
-    rowsCleared: 0,
-    rowsClearedPrev: 0,
-    score: 0,
-    tilesCleared: 0, 
-    tilesClearedPrev: 0,
-  }; 
+export function forceValidateConfig(defaults: GameConfig,
+                                    config: any = {}): GameConfig {
+  Object.keys(defaults).forEach((prop) => {
+    config[prop] = config[prop] === undefined ? defaults[prop] : config[prop];
+  });
+  
+  config.seed = config.seed || Date.now();
+  
+  return config;
 }
 
-export function createNextBlock(c: NextBlockConfig, 
-                                previewContainer: Block[] = []) {
-
+export function createNextBlock(
+  c: NextBlockConfig,
+  previewContainer: Block[] = [],
+) { 
   const blocks = c.blockDescriptions
     .map((el) => c.createBlock(el.desc, 0, 0, el.name));
   const rand = randomFunctions.get(c.seedRandom)(c.seed);
@@ -448,104 +326,4 @@ export function createNextBlock(c: NextBlockConfig,
     previewContainer.push(randomBlock());
     return spawn(previewContainer.shift());
   };
-}
-export function clearCheck(engine: { rowsCleared: number, buffer: Uint8Array },
-                           board: Board,
-                           detectAndClear: () => number,
-                           forceBufferCopy: boolean) {
-  const cleared = detectAndClear();
-
-  if (cleared || forceBufferCopy) { copyBuffer(board.desc, engine.buffer); }
-
-  return cleared;
-}
-
-export function gameOver(isDebug: boolean,
-                         getBoard: () => Board,
-                         getBuffer: () => Uint8Array,
-                         writableState: {
-                           games: any[],
-                           gameOvers: number,
-                           history: any[],
-                           tick: number,
-                         },
-                         nextBlock: () => Block,
-                         emit: (message: string) => any) {
-  const board = getBoard();
-  const buffer = getBuffer();
-  if (isDebug) {
-    /* tslint:disable no-console */
-    const { rowsCleared } = writableState.games[0];
-    console.log('Game Over: Purging Game:');
-    console.log(`Rows Cleared: ${rowsCleared}`);
-    console.log('Piece History:', writableState.games[0]
-      .activePieceHistory.map(i => i));
-    console.log('End Board', board.desc);
-    debugBlock('Last Active Piece: ', writableState.games[0].activePiece);
-  }
-  writableState.gameOvers += 1;
-  writableState.games.unshift(createGame1(nextBlock));
-
-  board.desc.forEach((el, i) => {
-    board.desc[i] = 0;
-    buffer[i] = 0;
-  });
-
-  writableState.history.push({
-    tick: writableState.tick,
-    control: 'gameOver',
-  });
-
-  emit('game-over');
-}
-
-export function updateBlock(getBoard: () => Board,
-                            getBlock: () => Block,
-                            getBuffer: () => Uint8Array,
-                            enableShadow: boolean,
-                            fn: () => any,
-                          ) {
-  const block = getBlock();
-  const board = getBoard();
-  const buffer = getBuffer();
-  removeBlock(board, block, buffer, enableShadow);
-  fn();
-  addBlock(board, block, buffer, enableShadow);
-}
-
-export function tryFnRedraw(canFn: () => boolean,
-                            fn: () => any,
-                            emit: (msg: string) => any,
-                            state,
-                            control) {
-  if (canFn()) {
-    if (!state.timer) {
-      return;
-    }
-    fn();
-    if (state) {
-      state.history.push({ tick: state.tick, control });
-    }
-    emit('redraw');
-  } else {
-    emit('invalid-move');
-  }
-}
-
-export function forceValidateConfig(defaults: GameConfig,
-                                    config: any = {}): GameConfig {
-  Object.keys(defaults).forEach((prop) => {
-    config[prop] = config[prop] === undefined ? defaults[prop] : config[prop];
-  });
-  
-  config.seed = config.seed || Date.now();
-  
-  return config;
-}
-
-function deriveMultiple(level: number, multiplier: number, value: number) {
-  if (level <= 1) {
-    return value * multiplier;
-  }
-  return deriveMultiple(level - 1, multiplier, value) * multiplier;
 }

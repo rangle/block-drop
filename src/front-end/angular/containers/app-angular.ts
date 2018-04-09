@@ -3,9 +3,6 @@ import { Router } from '@angular/router';
 import { NgReduxRouter } from '@angular-redux/router';
 import { NgRedux, select } from '@angular-redux/store';
 import { IState } from '../../reducers/root.reducer.shared';
-import {
-  verticalUiClass,
-} from '../../styles';
 
 @Component({
   selector: 'bd-angular',
@@ -15,7 +12,7 @@ import {
 })
 export class App implements OnDestroy, OnInit {
   styles = { };
-  @select((s) => s.app.routes) private routes$;
+  @select((s) => s.app.routes) routes$;
   private unsubscribe: Function;
 
   constructor(private ngRedux: NgRedux<IState>,

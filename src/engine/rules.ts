@@ -3,12 +3,13 @@ import {
 } from './block';
 
 import {
-  canMoveDown,
+  canMoveDown, DC2MAX,
 } from './board';
 
 import { 
   Block,
   Board,
+  Game,
 } from '../interfaces';
 
 import { 
@@ -31,27 +32,67 @@ export function spawn1(width: number, height: number, block: Block): Block {
   return block;
 }
 
-export function tick1(engine,
-                      board: Board,
-                      moveBlock: (axis: 'x' | 'y', mag: number) => any,
-                      newBlock: () => any,
-                      clearCheck: () => any,
-                      commitBlock: () => any,
-                      checkForLoss: () => boolean,
-                      gameOver: (engine?: { gameOver: () => any}, 
-                                 board?: Board) => any) {
-  if (!canMoveDown(board, engine.activePiece())) {
-    commitBlock();
-    newBlock();
-    clearCheck();
-    if (checkForLoss()) {
-      // game over
-      gameOver(engine, board);
-    }
-  } else {
-    moveBlock('y', 1);
+export function tick1(
+  game: Game,
+  delta: number,
+) {
+  if (game.state.isEnded) {
+    return;
   }
-  engine.emit('redraw');
-  engine.emit('drop');
+  const { buffer, conf, level } = game.state;
+  const interval = deriveMultiple(
+    level, conf.speedMultiplier, conf.speed
+  );
+  if (delta < interval) {
+    return false;
+  }
+
+  if (game.state.conf.canMoveDown(game.board, game.state.activePiece)) {
+    game.moveBlock('y', 1);
+    game.emit('redraw');
+  } else {
+    game.addBlock(game.board, game.state.activePiece, game.board.desc, false);
+    game.newBlock();
+    const cleared = game.clearCheck(
+      buffer, game.board, game.detectAndClear, conf.forceBufferUpdateOnClear
+    );
+    if (cleared) {
+      score(game, cleared);
+    }
+    if (conf.checkForLoss(game.board, game.state.activePiece)) {
+      // game over
+      game.gameOver();
+    } else {
+      game.moveBlock('y', 1);
+    }
+    game.emit('redraw');
+    game.emit('drop');
+  }
+  return true;
+
 }
 
+function deriveMultiple(level: number, multiplier: number, value: number) {
+  if (level <= 1) {
+    return value * multiplier;
+  }
+  return deriveMultiple(level - 1, multiplier, value) * multiplier;
+}
+
+function score(game: Game, cleared: number) {
+  const overflow = cleared - DC2MAX;
+  game.state.score += overflow * game.state.level *
+    game.state.conf.tileScoreMultiplier;
+  const {
+    conf, nextLevelThreshold, tilesCleared, tilesClearedPrev
+  } = game.state;
+  const tilesClearedSinceLevel = tilesCleared - tilesClearedPrev;
+
+  if (tilesClearedSinceLevel > nextLevelThreshold) {
+    game.state.score += conf.baseLevelScore;
+    game.state.level += 1;
+    game.state.score += (tilesClearedSinceLevel - game.state.level) *
+      conf.tileScoreMultiplier * game.state.level;
+    game.state.nextLevelThreshold *= conf.nextLevelMultiplier;
+  }
+}

@@ -2,9 +2,7 @@ import * as React from 'react';
 import { Tile } from './';
 import {
   board,
-  flex,
   flexGrowRow,
-  flexNoWrap,
 } from '../../styles';
 
 export function Board(props) {

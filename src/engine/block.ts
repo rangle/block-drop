@@ -3,7 +3,6 @@
  */
 import {
   Block,
-  BlockDescription,
   Direction,
   Matrix,
 } from '../interfaces';

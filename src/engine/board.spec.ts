@@ -1,6 +1,5 @@
 import { 
   createBlock,
-  rotateRight,
 } from './block';
 
 import {
@@ -16,7 +15,6 @@ import {
   detectAndClear1,
   detectAndClearTile1,
   detectAndClear2,
-  gravityDrop,
   gravityDropTile,
   indexFromPoint,
   isOverlapping, 
@@ -608,15 +606,6 @@ describe('game-board functions', () => {
       gravityDropTile(board, 15);
       expect(board.desc[15]).toBe(1);
     });
-  });
-
-  describe('gravityDrop function', () => {
-    let board;
-
-    beforeEach(() => {
-      board = createBoard1(10, 10);
-    });
-
   });
 
   describe('indexFromPoint function', () => {
