@@ -37,8 +37,8 @@ for (let i = 1; i < 4; i += 1) {
   for (let j = 1; j < 4; j += 1) {
     for (let k = 1; k < 4; k += 1) {
       blockDescriptions.push({
-        desc: [[i], [j], [k]],
-        name: `${i}.${j}.${k}`,
+        desc: [[i * 10], [j * 10], [k * 10]],
+        name: `${i * 10}.${j * 10}.${k * 10}`,
       });
     }
   }
@@ -55,6 +55,8 @@ export const DEFAULT_CONFIG_1: GameConfig = deepFreeze({
   canRotateLeft: canRotateLeft1,
   canRotateRight: canRotateRight1,
   checkForLoss: checkForLoss1,
+  connectedBlocks: 9,
+  clearDelay: 1200,
   createBoard: createBoard1,
   createBlock: createBlock,
   dropOnUp: true,
@@ -69,7 +71,7 @@ export const DEFAULT_CONFIG_1: GameConfig = deepFreeze({
   baseLevelScore: 1000,
   tileScoreMultiplier: 10,
   nextLevelMultiplier: 1.61803398875,
-  speed: 1300,
+  speed: 750,
   speedMultiplier: 0.8,
   tick: tick1,
 });

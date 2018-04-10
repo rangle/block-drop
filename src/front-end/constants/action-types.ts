@@ -12,6 +12,7 @@ export const UPDATE_ACTIVE_PIECE = 'update-active-piece';
 export const UPDATE_BUFFER = 'update-board';
 export const UPDATE_PREVIEW = 'update-preview';
 export const UPDATE_SCORE = 'update-score';
+export const UPDATE_SCORE_DATA = 'update-score-data';
 export const UPDATE_LEVEL = 'update-level';
 export const UPDATE_LEVEL_PROGRESS = 'update-level-progress';
 export const UPDATE_GAME_STATUS = 'update-game-status';

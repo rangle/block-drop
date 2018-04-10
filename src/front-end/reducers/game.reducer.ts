@@ -27,6 +27,7 @@ import {
   UPDATE_SCORE,
   UPDATE_LEVEL_PROGRESS,
   UPDATE_GAME_STATUS,
+  UPDATE_SCORE_DATA,
 } from '../constants';
 import { O_EMPTY_BLOCK } from '../constants';
 import { mergeProp, partial } from '../../util';
@@ -50,6 +51,8 @@ export interface IGameState {
   levelProgress: number;
   preview: Block[];
   score: number;
+  lastLevelScore: number;
+  lastClearScore: number;
   trimCols: number;
   trimRows: number;
 }
@@ -64,6 +67,8 @@ const INIT: IGameState = deepFreeze({
   isPaused: false,
   isStopped: false,
   lastEvent: { keyCode: 0 },
+  lastLevelScore: 0,
+  lastClearScore: 0,
   level: 0,
   levelProgress: 0,
   preview: [],
@@ -111,6 +116,13 @@ export function game(state = INIT, { payload, type }) {
 
     case UPDATE_GAME_STATUS:
       return bMergeProp('isStopped');
+
+    case UPDATE_SCORE_DATA:
+      return {
+        ...state,
+        lastLevelScore: payload.levelScore,
+        lastClearScore: payload.clearScore,
+      };
 
     default:
       return state;

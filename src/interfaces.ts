@@ -82,6 +82,8 @@ export interface GameConfig extends NextBlockConfig {
   canRotateLeft?: (board: Board, block: Block) => boolean;
   canRotateRight?: (board: Board, block: Block) => boolean;
   checkForLoss?: (board: Board, block: Block) => boolean;
+  clearDelay?: number;
+  connectedBlocks?: number;
   createBoard?: (width: number, height: number) => Board;
   detectAndClear?: string;
   dropOnUp?: boolean;
@@ -109,8 +111,10 @@ export type TypedArray = UnsignedTypedArray | SignedTypedArray;
 export interface GameState {
   activePiece: Block;
   buffer: TypedArray;
+  cascadeCount: number;
   conf: GameConfig;
   isEnded: boolean;
+  isClearDelay: boolean;
   level: number;
   levelPrev: number;
   nextLevelThreshold: number;
@@ -141,15 +145,12 @@ export interface Game {
     addShadow: boolean
   ): any;
   board: Board;
-  clearCheck(
-    buffer: TypedArray,
-    board: Board,
-    detectAndClear: () => number,
-    forceBufferCopy: boolean
-  ): number;
-  detectAndClear: () => number;
+  clearCheck(markOffset?: number): number;
+  clearNonSolids(): void;
+  detectAndClear: (markOffset?: number) => number;
   emit: <T>(channel: string, payload?: T) => any;
   gameOver: () => any;
+  gravityDrop: () => any;
   moveBlock(axis: 'x' | 'y', quantity: number): any;
   newBlock: () => any;
   nextBlock: () => Block;

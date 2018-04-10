@@ -443,7 +443,7 @@ describe('game-board functions', () => {
 
     it('should add the given tile to adjacents if tile is non-zero and given ' +
       'value is zero or omitted', () => {
-      board.desc[5] = 7;
+      board.desc[5] = 10;
       const adj = [];
       detectAndClearTile1(board, 5, adj);
       expect(adj[0]).toBe(5);
@@ -458,14 +458,14 @@ describe('game-board functions', () => {
 
     it('should add the given tile to adjacents if tile\'s value matches ' +
       'given value', () => {
-      board.desc[5] = 7;
+      board.desc[5] = 10;
       const adj = [];
-      detectAndClearTile1(board, 5, adj, [], 7);
+      detectAndClearTile1(board, 5, adj, [], 10);
       expect(adj[0]).toBe(5);
     });
 
     it('should return adjacents if on the last (bottom right) tile', () => {
-      board.desc[99] = 7;
+      board.desc[99] = 10;
       const adj = [];
       detectAndClearTile1(board, 99, adj);
       expect(adj).toEqual([ 99 ]);
@@ -473,8 +473,8 @@ describe('game-board functions', () => {
 
     it('should not match the east (right) tile if its value is different',
       () => {
-        board.desc[5] = 7;
-        board.desc[6] = 6;
+        board.desc[5] = 10;
+        board.desc[6] = 20;
         const adj = [];
         detectAndClearTile1(board, 5, adj);
         expect(adj[0]).toBe(5);
@@ -483,8 +483,8 @@ describe('game-board functions', () => {
 
     it('should not match the west (left) tile if its value is different',
       () => {
-        board.desc[5] = 7;
-        board.desc[4] = 6;
+        board.desc[5] = 10;
+        board.desc[4] = 20;
         const adj = [];
         detectAndClearTile1(board, 5, adj);
         expect(adj[0]).toBe(5);
@@ -493,8 +493,8 @@ describe('game-board functions', () => {
 
     it('should not match the south (bottom) tile if its value is different',
       () => {
-        board.desc[5] = 7;
-        board.desc[15] = 6;
+        board.desc[5] = 10;
+        board.desc[15] = 20;
         const adj = [];
         detectAndClearTile1(board, 5, adj);
         expect(adj[0]).toBe(5);
@@ -502,8 +502,8 @@ describe('game-board functions', () => {
       });
 
     it('should match the east (right) tile if its value matches', () => {
-        board.desc[5] = 7;
-        board.desc[6] = 7;
+        board.desc[5] = 10;
+        board.desc[6] = 10;
         const adj = [];
         detectAndClearTile1(board, 5, adj);
         expect(adj[0]).toBe(5);
@@ -511,8 +511,8 @@ describe('game-board functions', () => {
       });
 
     it('should match the west (left) tile if its value matches', () => {
-        board.desc[5] = 7;
-        board.desc[4] = 7;
+        board.desc[5] = 10;
+        board.desc[4] = 10;
         const adj = [];
         detectAndClearTile1(board, 5, adj);
         expect(adj[0]).toBe(5);
@@ -520,8 +520,8 @@ describe('game-board functions', () => {
       });
 
     it('should match the south (bottom) tile if its value matches', () => {
-        board.desc[5] = 7;
-        board.desc[15] = 7;
+        board.desc[5] = 10;
+        board.desc[15] = 10;
         const adj = [];
         detectAndClearTile1(board, 5, adj);
         expect(adj[0]).toBe(5);
@@ -530,8 +530,8 @@ describe('game-board functions', () => {
 
     it('should not match the east (right) tile if it\'s on the east (right) ' +
       'edge', () => {
-      board.desc[9] = 7;
-      board.desc[10] = 7;
+      board.desc[9] = 10;
+      board.desc[10] = 10;
       const adj = [];
       detectAndClearTile1(board, 9, adj);
       expect(adj[0]).toBe(9);
@@ -540,8 +540,8 @@ describe('game-board functions', () => {
 
     it('should not match the west (left) tile if it\'s on the west (left) edge',
       () => {
-        board.desc[9] = 7;
-        board.desc[10] = 7;
+        board.desc[9] = 10;
+        board.desc[10] = 10;
         const adj = [];
         detectAndClearTile1(board, 10, adj);
         expect(adj[0]).toBe(10);
@@ -549,21 +549,47 @@ describe('game-board functions', () => {
       });
 
     it('should not match the east (right) tile if skip is "right"', () => {
-      board.desc[8] = 7;
-      board.desc[9] = 7;
+      board.desc[8] = 10;
+      board.desc[9] = 10;
       const adj = [];
-      detectAndClearTile1(board, 8, adj, [], 7, 'right');
+      detectAndClearTile1(board, 8, adj, [], 10, 'right');
       expect(adj[0]).toBe(8);
       expect(adj.length).toBe(1);
     });
 
     it('should not match the west (left) tile if skip is "left"', () => {
-      board.desc[8] = 7;
-      board.desc[9] = 7;
+      board.desc[8] = 10;
+      board.desc[9] = 10;
       const adj = [];
-      detectAndClearTile1(board, 9, adj, [], 7, 'left');
+      detectAndClearTile1(board, 9, adj, [], 10, 'left');
       expect(adj[0]).toBe(9);
       expect(adj.length).toBe(1);
+    });
+
+    it('should not match tiles that are not divisible by 10', () => {
+      board.desc[8] = 7;
+      const adj = [];
+      detectAndClearTile1(board, 9, adj, [], 10, 'left');
+      expect(adj[0]).toBe(undefined);
+      expect(adj.length).toBe(0);
+    });
+
+    it('should match the following case study', () => {
+      board = createBoard1(7, 4);
+      board.desc[5] = 10;
+      board.desc[11] = 10;
+      board.desc[12] = 10;
+      board.desc[15] = 10;
+      board.desc[19] = 10;
+      board.desc[20] = 10;
+      board.desc[21] = 10;
+      board.desc[22] = 10;
+      board.desc[23] = 10;
+      board.desc[24] = 10;
+      board.desc[25] = 10;
+      board.desc[26] = 10;
+      const adj = detectAndClearTile1(board, 5);
+      expect(adj.length).toBe(12);
     });
 
   });
@@ -579,9 +605,9 @@ describe('game-board functions', () => {
       expect(detectAndClear2(board)).toBe(0);
     });
 
-    it('should return 41 if given a checkerboard', () => {
+    it('should return 0 if given a checkerboard', () => {
       board = checkerboard();
-      expect(detectAndClear2(board)).toBe(41);
+      expect(detectAndClear2(board)).toBe(0);
     });
   });
 

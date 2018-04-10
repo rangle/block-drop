@@ -12,6 +12,7 @@
 import {
   addBlock,
   removeBlock,
+  gravityDrop,
 } from './board';
 import {
   debugBlock,
@@ -28,13 +29,16 @@ import {
 } from '../util';
 import { rotateLeft, rotateRight } from './block';
 
+const CLEAR_OFFSET = 1;
+
 export function clearCheck(
   buffer: Uint8Array,
   board: Board,
-  detectAndClear: () => number,
-  forceBufferCopy: boolean
+  detectAndClear: (markOffset?: number) => number,
+  forceBufferCopy: boolean,
+  offset = CLEAR_OFFSET,
 ) {
-  const cleared = detectAndClear();
+  const cleared = detectAndClear(offset);
 
   if (cleared || forceBufferCopy) { copyBuffer(board.desc, buffer); }
 
@@ -78,8 +82,10 @@ export function createGame1(
     state: {
       activePiece: nextBlock(), 
       buffer,
+      cascadeCount: 1,
       conf,
       isEnded: false,
+      isClearDelay: false,
       level: 1,
       levelPrev: 1,
       nextLevelThreshold: 45,
@@ -123,10 +129,31 @@ export function createGame1(
     },
     addBlock,
     board,
-    clearCheck,
-    detectAndClear: () => detectAndClear(board),
+    clearCheck: (offset: number = 0) => clearCheck(
+      buffer, board, game.detectAndClear, false, offset
+    ),
+    clearNonSolids: () => {
+      let didClear = 0;
+      for (let i = 0; i < buffer.length; i += 1) {
+        if (board.desc[i] % 10 === 0) {
+          continue;
+        }
+        board.desc[i] = 0;
+        buffer[i] = 0;
+
+        didClear += 1;
+      }
+      return didClear;
+    },
+    detectAndClear: (markOffset = 0) => detectAndClear(
+      board, conf.connectedBlocks, markOffset 
+    ),
     emit,
     gameOver,
+    gravityDrop: () => {
+      gravityDrop(board);
+      copyBuffer(board.desc, buffer);
+    },
     moveBlock: (axis: 'x' | 'y', quantity: number) => {
       updateBlock(
         board, 

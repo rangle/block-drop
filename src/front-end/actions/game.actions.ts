@@ -9,6 +9,7 @@ import {
   UPDATE_BUFFER,
   UPDATE_PREVIEW,
   UPDATE_SCORE,
+  UPDATE_SCORE_DATA,
   UPDATE_LEVEL,
   UPDATE_LEVEL_PROGRESS,
   UPDATE_GAME_STATUS,
@@ -96,5 +97,15 @@ export function updateGameStatus(isStopped: boolean) {
   return {
     type: UPDATE_GAME_STATUS,
     payload: isStopped,
+  };
+}
+
+export function updateScoreData(levelData: {
+  clearScore: number,
+  levelScore: number,
+}) {
+  return {
+    type: UPDATE_SCORE_DATA,
+    payload: levelData,
   };
 }
