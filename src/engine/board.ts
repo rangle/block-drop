@@ -19,7 +19,7 @@ import {
   throwOutOfBounds,
 } from '../util';
 
-export const SHADOW_OFFSET = 6;
+export const SHADOW_OFFSET = 9;
 export const DC2MAX = 9;
 
 export const functionsDetectClear = makeCollection({
@@ -246,7 +246,7 @@ export function detectAndClearTile1(board: Board,
   throwOutOfBounds(board.desc, offset, 'detectAndClearTile1');
 
   // skip if visited
-  if (visited.indexOf(offset) !== -1) {
+  if (visited.indexOf(offset) >= 0) {
     return adjacents;
   }
 
@@ -254,6 +254,11 @@ export function detectAndClearTile1(board: Board,
 
   // return the existing array if it's empty
   if (board.desc[offset] === 0) {
+    return adjacents;
+  }
+
+  // return the existing array if it is a "non solid"
+  if (board.desc[offset] % 10 !== 0) {
     return adjacents;
   }
 
@@ -270,17 +275,14 @@ export function detectAndClearTile1(board: Board,
   // add the offset if it's not present
   if (adjacents.indexOf(offset) === -1) {
     adjacents.push(offset);
-  }
-
-  // stop looking on the last tile
-  if (offset + 1 === board.desc.length) {
-    return adjacents;
-  }
+  } 
 
   // look down if possible
   if ((offset + board.width) < board.desc.length) {
-    detectAndClearTile1(
-      board, offset + board.width, adjacents, visited, value, 'up');
+    if (skip !== 'down') {
+      detectAndClearTile1(
+        board, offset + board.width, adjacents, visited, value, 'up');
+    }
   }
 
   // look up if possilbe
@@ -348,7 +350,9 @@ export function gravityDrop(board: Board) {
   }
 }
 
-export function detectAndClear2Sweeper(board: Board, max: number) {
+export function detectAndClear2(
+  board: Board, max = DC2MAX, markOffset = 0,
+) {
   let clearedTiles = 0;
 
   for (let i = 0; i < board.desc.length; i += 1) {
@@ -356,34 +360,17 @@ export function detectAndClear2Sweeper(board: Board, max: number) {
     const len = adjacentTiles.length;
     if (len >= max) {
       clearedTiles += len;
-      adjacentTiles.forEach((offset) => board.desc[offset] = 0);
+      if (markOffset) {
+        adjacentTiles.forEach((offset) => board.desc[offset] += markOffset);
+      } else {
+        adjacentTiles.forEach((offset) => board.desc[offset] = 0);
+      }
     }
   }
 
   return clearedTiles;
 }
 
-export function detectAndClear2(board: Board, max = DC2MAX): number {
-  let total = 0;
-  let current = 1;
-
-  function loop() {
-    let clearedTiles = detectAndClear2Sweeper(board, max);
-    gravityDrop(board);
-    clearedTiles += detectAndClear2Sweeper(board, max);
-
-    return clearedTiles;
-  }
-
-  while (current) {
-    current = loop();
-    if (current) {
-      total += current;
-    }
-  }
-
-  return total;
-}
 
 export function indexFromPoint(width: number, x: number, y: number): number {
   return y * width + x;
@@ -458,9 +445,9 @@ export function removeBlock(board: Board,
 export function clearShadow(buffer: Uint8Array) {
   for (let i = 0; i < buffer.length; i += 1) {
     if (
-      buffer[i] === (SHADOW_OFFSET + 1) ||
-      buffer[i] === (SHADOW_OFFSET + 2) ||
-      buffer[i] === (SHADOW_OFFSET + 3)
+      buffer[i] === (SHADOW_OFFSET + 10) ||
+      buffer[i] === (SHADOW_OFFSET + 20) ||
+      buffer[i] === (SHADOW_OFFSET + 30)
     ) {
       buffer[i] = 0;
     }

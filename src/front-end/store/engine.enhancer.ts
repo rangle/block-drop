@@ -16,6 +16,7 @@ import {
   updatePreview,
   updateLevel,
   updateScore,
+  updateScoreData,
   updateLevelProgress,
   updateGameStatus,
 } from '../actions/game.actions';
@@ -56,6 +57,12 @@ export function createGame(references: EngineReferences,
 
   /** be sure to keep the references fresh, a partial would bind to ref */
   references.engine.on('redraw', updateState);
+  references.engine.on('score', updateLastScore);
+
+  function updateLastScore(scoreData) {
+    console.log.bind(console, 'Debug: Score:', scoreData)();
+    (<any>store).dispatch(updateScoreData(scoreData));
+  }
 
   function updateState() {
     (<any>store).dispatch(updateActivePiece(references.engine.activePiece()));

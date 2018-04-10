@@ -120,15 +120,33 @@
 }
 
 .bd-bg-shadow-green {
-  background-color: rgba(34, 139, 34, 0.5);
+  background-color: rgba(34, 139, 34, 0.15);
 }
 
 .bd-bg-shadow-red {
-  background-color: rgba(205, 92, 92, 0.5);
+  background-color: rgba(205, 92, 92, 0.15);
 }
 
 .bd-bg-shadow-blue {
-  background-color: rgba(100, 149, 237, 0.5);
+  background-color: rgba(100, 149, 237, 0.15);
+}
+
+.bd-bg-gone-green {
+  background-color: rgba(34, 200, 34, 1);
+}
+
+.bd-bg-gone-red {
+  background-color: rgba(205, 142, 142, 1);
+}
+
+.bd-bg-gone-blue {
+  background-color: rgba(120, 169, 237, 1);
+}
+
+.bd-bg-gone-animation {
+  visibility: hidden;
+  opacity: 0;
+  transition: background-color 1.5s, visibility 0s 1.5s, opacity 1.5s linear;
 }
 
 /** Dimension Specific stuff */
