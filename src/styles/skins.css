@@ -1,0 +1,71 @@
+.skin-angular-red {
+    box-shadow: 
+    inset 0 0 0 1px #000,
+    inset 0 0 0 2px var(--angular-red),
+    inset 0 0 0 3px #000,
+    inset 0 0 0 4px var(--angular-red),
+    inset 0 0 0 5px #000,
+    inset 0 0 0 6.5px var(--angular-red),
+    inset 0 0 0 7.5px #000,
+    inset 0 0 0 99px var(--angular-red),
+    0 0 10px var(--angular-red); 
+}
+
+.skin-react-blue {
+    box-shadow: 
+    inset 0 0 0 1px #000,
+    inset 0 0 0 2px var(--react-blue),
+    inset 0 0 0 3px #000,
+    inset 0 0 0 4px var(--react-blue),
+    inset 0 0 0 5px #000,
+    inset 0 0 0 6.5px var(--react-blue),
+    inset 0 0 0 7.5px #000,
+    inset 0 0 0 99px var(--react-blue),
+    0 0 10px var(--react-blue); 
+}
+
+.skin-vue-green {
+    box-shadow: 
+    inset 0 0 0 1px #000,
+    inset 0 0 0 2px var(--vue-green),
+    inset 0 0 0 3px #000,
+    inset 0 0 0 4px var(--vue-green),
+    inset 0 0 0 5px #000,
+    inset 0 0 0 6.5px var(--vue-green),
+    inset 0 0 0 7.5px #000,
+    inset 0 0 0 99px var(--vue-green),
+    0 0 10px var(--vue-green); 
+}
+
+.skin-angular-red-shadow {
+    box-shadow: 
+    inset 0 0 0 1px #000,
+    inset 0 0 0 2px var(--angular-red),
+    inset 0 0 0 3px #000,
+    inset 0 0 0 4px var(--angular-red),
+    inset 0 0 0 5px #000,
+    inset 0 0 0 6.5px var(--angular-red),
+    inset 0 0 0 99px #000; 
+}
+
+.skin-react-blue-shadow {
+    box-shadow: 
+    inset 0 0 0 1px #000,
+    inset 0 0 0 2px var(--react-blue),
+    inset 0 0 0 3px #000,
+    inset 0 0 0 4px var(--react-blue),
+    inset 0 0 0 5px #000,
+    inset 0 0 0 6.5px var(--react-blue),
+    inset 0 0 0 99px #000; 
+}
+
+.skin-vue-green-shadow {
+    box-shadow: 
+    inset 0 0 0 1px #000,
+    inset 0 0 0 2px var(--vue-green),
+    inset 0 0 0 3px #000,
+    inset 0 0 0 4px var(--vue-green),
+    inset 0 0 0 5px #000,
+    inset 0 0 0 6.5px var(--vue-green),
+    inset 0 0 0 99px #000; 
+}

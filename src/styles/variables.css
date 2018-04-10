@@ -5,4 +5,5 @@
   --vue-green: #41b883;
   --brand-purple: #412f4e;
   --font-family: 'Calibre', Helvetica, Arial, sans-serif;
+  --animate-speed: 1000ms;
 }

@@ -11,9 +11,9 @@ const colours = deepFreeze({
   bgRed: 'bd-bg-red',
   bgWrong: 'bd-bg-wrong',
   borderBlack: 'bd-border-black',
-  borderBlue: 'bd-border-blue',
-  borderGreen: 'bd-border-green',
-  borderRed: 'bd-border-red',
+  borderBlue: 'b--react-blue ',
+  borderGreen: 'b--vue-green ',
+  borderRed: 'b--angular-red',
   borderWhite: 'bd-border-white',
   shadow: 'bd-shadow',
   borderShadow: 'bd-bg-border-shadow',
@@ -24,7 +24,7 @@ const colours = deepFreeze({
   bgGoneRed: 'bd-bg-gone-red',
   bgGoneBlue: 'bd-bg-gone-blue',
 });
-const gone = 'bd-bg-gone-animation';
+const gone = 'animated bounceOut';
 
 export const verticalUiClass = 'bd-vert-ui';
 export const border = 'bd-border';
@@ -53,29 +53,24 @@ export const flexGrowShrink =
 export const flexGrowShrink31 =
   `${flex} ${flex31auto} ${flexNoWrap} ` + `${justifyAround}`;
 
-export const tileBase = `flex-auto`;
-export const activeTile = `${tileBase} ba bw1`;
-export const emptyTile = `${tileBase}`;
+export const tileBase = `flex-auto ba bw1`;
+export const activeTile = `${tileBase}`;
+export const emptyTile = `${tileBase} b--transparent`;
 
-export const tileDefault =
-  `${activeTile} ${colours.bgWrong} ` + `${colours.borderRed}`;
-export const tileRed =
-  `${activeTile} bg-angular-red ${colours.borderRed}`;
-export const tileGreen =
-  `${activeTile} bg-vue-green ${colours.borderGreen}`;
-export const tileBlue = `${activeTile} bg-react-blue ${colours.borderBlue}`;
-export const shadowBase = `${activeTile} ${colours.shadow} ` +
-  `${colours.borderShadow}`;
-// TODO: wants to be the same as the base but with transparency
-export const tileShadowGreen = `${shadowBase} ${colours.bgShadowGreen}`;
-export const tileShadowRed = `${shadowBase} ${colours.bgShadowRed}`;
-export const tileShadowBlue = `${shadowBase} ${colours.bgShadowBlue}`;
+export const tileDefault = `${activeTile} b--transparent`;
+export const tileRed =     `${activeTile} ${colours.borderRed} skin-angular-red`;
+export const tileGreen =   `${activeTile} ${colours.borderGreen} skin-vue-green`;
+export const tileBlue =    `${activeTile} ${colours.borderBlue} skin-react-blue`;
 
-export const goneBase = `${activeTile} ${gone} ` +
-  `${colours.borderShadow}`;
-export const tileGoneGreen = `${goneBase} ${colours.bgGoneGreen}`;
-export const tileGoneRed = `${goneBase} ${colours.bgGoneRed}`;
-export const tileGoneBlue = `${goneBase} ${colours.bgGoneBlue}`;
+export const shadowBase =  `${tileBase} o-40`;
+export const tileShadowRed =   `${shadowBase} ${colours.borderRed} skin-angular-red-shadow`;
+export const tileShadowGreen = `${shadowBase} ${colours.borderGreen} skin-vue-green-shadow`;
+export const tileShadowBlue =  `${shadowBase} ${colours.borderBlue} skin-react-blue-shadow`;
+
+export const goneBase = `${activeTile} ${gone} b--transparent`;
+export const tileGoneRed = `${goneBase} skin-angular-red`;
+export const tileGoneGreen = `${goneBase} skin-vue-green`;
+export const tileGoneBlue = `${goneBase} skin-react-blue`;
 
 export const board = `${monoFont} ` + `${flexGrowShrink31} ${flexCol}`;
 

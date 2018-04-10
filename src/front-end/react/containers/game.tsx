@@ -69,13 +69,13 @@ export const Game = connect(mapStateToProps, mapDispatchToProps)(
             {this.props.isPaused ? null : (
               <NextPieces preview={this.props.preview} />
             )}
-            <div className='tc'>
+            <div className='flex flex-wrap justify-between man1 man2-ns'>
               {this.props.isPaused ? (
-                <Button value='Resume' onClick={resume} />
+                <div className="flex-auto ma1 ma2-ns"><Button value='Resume' onClick={resume}/></div>
               ) : (
-                <Button value='Pause' onClick={pause} />
+                <div className="flex-auto ma1 ma2-ns"><Button value='Pause' onClick={pause} className="flex-auto ma1 ma2-ns"/></div>
               )}
-              <Button value='Done' onClick={stop} />
+                <div className="flex-auto ma1 ma2-ns"><Button value='Done' onClick={stop} className="flex-auto ma1 ma2-ns"/></div>
             </div>
           </div>
         </div>

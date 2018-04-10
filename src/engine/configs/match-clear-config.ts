@@ -56,7 +56,7 @@ export const DEFAULT_CONFIG_1: GameConfig = deepFreeze({
   canRotateRight: canRotateRight1,
   checkForLoss: checkForLoss1,
   connectedBlocks: 9,
-  clearDelay: 1200,
+  clearDelay: 1000,
   createBoard: createBoard1,
   createBlock: createBlock,
   dropOnUp: true,
