@@ -49,9 +49,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
         [
           /** @todo determine why computed props are not in the generic --v */
           h(routeTo, {
-            // class: {
-            //   'svb-main': true,
-            // },
             props: {
               createGame: store.game.create,
               dispatch: store.dispatch.bind(store),

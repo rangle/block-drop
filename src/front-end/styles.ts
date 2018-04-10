@@ -59,7 +59,8 @@ export const tileGreen =
 export const tileBlue = `${activeTile} bg-react-blue ${colours.borderBlue}`;
 export const shadowBase = `${activeTile} ${colours.shadow} ` +
   `${colours.borderShadow}`;
-export const tileShadowGreen = `${shadowBase} ${colours.bgShadowGreen}`; // TODO: wants to be the same as the base but with transparency
+// TODO: wants to be the same as the base but with transparency
+export const tileShadowGreen = `${shadowBase} ${colours.bgShadowGreen}`;
 export const tileShadowRed = `${shadowBase} ${colours.bgShadowRed}`;
 export const tileShadowBlue = `${shadowBase} ${colours.bgShadowBlue}`;
 
