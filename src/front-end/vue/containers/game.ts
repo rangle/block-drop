@@ -1,6 +1,5 @@
 import { registerKeyControls } from '../../controls';
 import { keyPress } from '../../actions/events.actions';
-import { gameViewportClass } from '../../styles';
 import { recomputeBoard } from '../../../util';
 import { Board, Button, NextPieces, Score } from '../components';
 
@@ -8,7 +7,7 @@ export const Game = () => {
   let deRegister = [];
   return {
     beforeDestroy() {
-      deRegister.forEach((fn) => fn());
+      deRegister.forEach(fn => fn());
       deRegister = [];
     },
     components: {
@@ -20,36 +19,28 @@ export const Game = () => {
     computed: {
       board() {
         return recomputeBoard(
-          this.state.game.buffer, this.state.game.config.width
+          this.state.game.buffer,
+          this.state.game.config.width,
         );
-      },
-      styles() {
-        return {
-          flexDirection: this.state.game.currentGameViewportDimensions
-            .direction,
-        };
-      },
-      subStyles() {
-        return {
-          minWidth: this.state.game.currentGameViewportDimensions.x + 'px',
-          minHeight: this.state.game.currentGameViewportDimensions.y + 'px',
-          maxWidth: this.state.game.currentGameViewportDimensions.x + 'px',
-          maxHeight: this.state.game.currentGameViewportDimensions.y + 'px',
-        };
       },
     },
     mounted() {
       const controls = this.gameControls();
       this.resizer.resize();
       deRegister.push(this.resizer.bind());
-      deRegister.push(registerKeyControls({
-        37: controls.moveLeft,
-        38: controls.moveUp,
-        39: controls.moveRight,
-        40: controls.moveDown,
-        81: controls.rotateLeft,
-        87: controls.rotateRight,
-      }, (e) => this.dispatch(keyPress(e))));
+      deRegister.push(
+        registerKeyControls(
+          {
+            37: controls.moveLeft,
+            38: controls.moveUp,
+            39: controls.moveRight,
+            40: controls.moveDown,
+            81: controls.rotateLeft,
+            87: controls.rotateRight,
+          },
+          e => this.dispatch(keyPress(e)),
+        ),
+      );
     },
     props: {
       dispatch: {
@@ -82,40 +73,41 @@ export const Game = () => {
       },
     },
     template: `
-    <div 
-      class="${gameViewportClass}" 
-      v-bind:style="styles"
-    >
-    <bd-board v-if="!(state.game.isPaused)"
-      v-bind:board="board"
-      v-bind:level="state.game.level"
-      v-bind:width="state.game.config.width"
-      v-bind:styles="subStyles"
-    >
-    </bd-board> 
-    <div class="w5">
-      <bd-score v-bind:score="state.game.score" />
-      <bd-next-pieces
-        v-if="!(state.game.isPaused)"
-        v-bind:preview="state.game.preview"
-      />
-      <div class="tc">
-        <bd-button
-          v-if="state.game.isPaused" 
-          value="Resume"
-          v-on:click="resume">
-        </bd-button>
-        <bd-button
-          v-if="!(state.game.isPaused)" 
-          value="Pause"
-          v-on:click="pause">
-        </bd-button>
-        <bd-button
-          value="Done"
-          v-on:click="done">
-        </bd-button>
+      <div 
+        class="flex flex-auto" 
+      >
+        <bd-board
+          class="w-two-thirds"
+          v-if="!(state.game.isPaused)"
+          :board="board"
+          :level="state.game.level"
+          :width="state.game.config.width"
+        >
+        </bd-board> 
+        <div class="w-third">
+          <bd-score :score="state.game.score" />
+          <bd-next-pieces
+            v-if="!(state.game.isPaused)"
+            :preview="state.game.preview"
+          />
+          <div class="tc">
+            <bd-button
+              v-if="state.game.isPaused" 
+              value="Resume"
+              @click="resume">
+            </bd-button>
+            <bd-button
+              v-if="!(state.game.isPaused)" 
+              value="Pause"
+              @click="pause">
+            </bd-button>
+            <bd-button
+              value="Done"
+              @click="done">
+            </bd-button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>`,
+    `,
   };
 };

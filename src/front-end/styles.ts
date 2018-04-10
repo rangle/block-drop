@@ -48,19 +48,18 @@ export const flexGrowShrink =
 export const flexGrowShrink31 =
   `${flex} ${flex31auto} ${flexNoWrap} ` + `${justifyAround}`;
 
-export const tileBase = `${border} ${flex11auto}`;
-export const activeTile = `${tileBase}`;
-export const emptyTile = `${tileBase} ${colours.black} ${colours.borderBlack}`;
+export const tileBase = `flex-auto`;
+export const activeTile = `${tileBase} ba bw1`;
+export const emptyTile = `${tileBase}`;
 
 export const tileRed =
-  `${activeTile} ${colours.bgRed} ${colours.red} ` + `${colours.borderRed}`;
+  `${activeTile} bg-angular-red ${colours.borderRed}`;
 export const tileGreen =
-  `${activeTile} ${colours.bgGreen} ${colours.green} ` +
-  `${colours.borderGreen}`;
-export const tileBlue = `${activeTile} ${colours.bgBlue} ${colours.blue} ` +
-  `${colours.borderBlue}`;
+  `${activeTile} bg-vue-green ${colours.borderGreen}`;
+export const tileBlue = `${activeTile} bg-react-blue ${colours.borderBlue}`;
 export const shadowBase = `${activeTile} ${colours.shadow} ` +
   `${colours.borderShadow}`;
+// TODO: wants to be the same as the base but with transparency
 export const tileShadowGreen = `${shadowBase} ${colours.bgShadowGreen}`;
 export const tileShadowRed = `${shadowBase} ${colours.bgShadowRed}`;
 export const tileShadowBlue = `${shadowBase} ${colours.bgShadowBlue}`;

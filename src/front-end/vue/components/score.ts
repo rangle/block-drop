@@ -1,14 +1,12 @@
 export const Score = () => ({
-  props: {
-    score: {
-      required: true,
-      type: Number,
-    },
-  },
+  props: { score: { required: true, type: Number } },
   template: `
-  <div class="black bg-vue-green flex items-end mb4 ph3 pv1 shadow-vue-green">
-    <div class="f6 fw3 mr2">SCORE</div>
-    <div class="f2">{{ score }}</div>
+  <div 
+    class="blue-black bg-vue-green flex 
+      items-end mb2 mb4-ns ph2 ph3-ns pv1 shadow-vue-green"
+  >
+    <div class="f6 f4-ns calibre-light mr2 mr3-ns mb2-ns">SCORE</div>
+    <div class="f3 f2-m f1-l mt1 mt2-m mt3-l">{{ score }}</div>
   </div>
   `,
 });

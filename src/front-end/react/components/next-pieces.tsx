@@ -3,23 +3,19 @@ import { NextPiecesBlock } from './next-pieces-block';
 
 export function NextPieces({ preview }) {
 
-  return (
-    <div className="ba bw2 b--react-blue mb4 shadow-react-blue">
-      <h3 className="black bg-react-blue f3 mb0 mt0 tc">NEXT</h3>
-      <div className="ph3 pv3">
-        {
-          preview.map((block, i) => (
-            <div className={i < (preview.length - 1) ? 'mb3' : ''} key={i}>
-              <NextPiecesBlock block={block} />
-              {
-                i === 0 && (
-                  <div className="bb bw1 mt3" />
-                )
-              }
-            </div>
-          ))
-        }
+  return <div className="ba bw2 b--react-blue mb4 shadow-react-blue">
+      <h3 className="blue-black bg-react-blue f4 f2-m f1-l ma0 pt1 pt2-m pt3-l tc">
+        NEXT
+      </h3>
+      <div className="pa2 pa3-ns">
+        {preview.map((block, i) => (
+          <div className={i < preview.length - 1 ? 'mb3' : ''} key={i}>
+            <NextPiecesBlock block={block} />
+            {i === 0 && (
+              <hr className="ma0 mt3 bn shadow-react-blue bg-react-blue h0-25" />
+            )}
+          </div>
+        ))}
       </div>
-    </div>
-  );
+    </div>;
 }

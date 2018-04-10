@@ -5,13 +5,16 @@ import { routes } from './routes';
 import Vue from 'vue';
 
 const VUE = 'bd-root-vue';
+const APP_ROOT_ID = 'vue-app-root';
 let appRef;
 
 export function mount(store: EngineStore, resizer: Resizer) {
   if (appRef) {
     return;
   }
-  const id = 'rando-' + Date.now().toString(32) + 
+  const id =
+    'rando-' +
+    Date.now().toString(32) +
     Math.floor(Math.random() * 1000).toString(32);
   const el = window.document.createElement('div');
   el.id = id;
@@ -22,7 +25,6 @@ export function mount(store: EngineStore, resizer: Resizer) {
     routes: routes(),
     state: store.getState(),
   };
-
 
   appRef = new Vue({
     data,
@@ -40,20 +42,20 @@ export function mount(store: EngineStore, resizer: Resizer) {
       const routeTo = route ? route.component : this.routes['/game'].component;
       return h(
         'div',
-        {},
+        {
+          class: 'flex pa2 pa4-ns flex-auto',
+          attrs: { id: APP_ROOT_ID },
+        },
         [
           /** @todo determine why computed props are not in the generic --v */
           h(routeTo, {
-            // class: {
-            //   'svb-main': true,
-            // },
-            props: { 
+            props: {
               createGame: store.game.create,
-              dispatch: store.dispatch.bind(store), 
+              dispatch: store.dispatch.bind(store),
               done: store.game.stop.bind(store.game),
               gameControls: store.game.controls.bind(store.game),
               pause: store.game.pause,
-              resizer, 
+              resizer,
               resume: store.game.resume,
               start: store.game.start.bind(store.game),
               state: this.state,
@@ -74,7 +76,7 @@ export function unmount() {
     return;
   }
   appRef.$destroy();
-  const el = window.document.getElementById(VUE);
-  el.innerHTML = '';
+  const el = window.document.getElementById(APP_ROOT_ID);
+  el.remove();
   appRef = null;
 }

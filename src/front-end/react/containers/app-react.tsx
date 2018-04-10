@@ -10,20 +10,22 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-function mapDispatchToProps(dispatch)  {
+function mapDispatchToProps(dispatch) {
   return {};
 }
 
-export const App = withRouter(connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(React.createClass({
-  render() {
-    return (<div>
-      <div>
-        { this.props.children }
-      </div>
-    </div>);
-  },
-})));
-
+export const App = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(
+    React.createClass({
+      render() {
+        return (
+          <div className='flex flex-auto flex-column'>
+            <hr
+              className='ma0 bn shadow-react-blue bg-react-blue h0-25 h0-5-l' />
+            {this.props.children}
+          </div>
+        );
+      },
+    }),
+  ),
+);

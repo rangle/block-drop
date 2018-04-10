@@ -8,6 +8,15 @@
   width: 45%;
 }
 
+.h0-25 {
+  height: 0.25rem;
+}
+.h0-5 {
+  height: 0.5rem;
+}
+.h0-75 {
+  height: 0.75rem;
+}
 .h2-5 {
   height: 2.5rem;
 }
@@ -24,6 +33,15 @@
   }
   .w-45-ns {
     width: 45%;
+  }
+  .h0-25-ns {
+    height: 0.25rem;
+  }
+  .h0-5-ns {
+    height: 0.5rem;
+  }
+  .h0-75-ns {
+    height: 0.75rem;
   }
   .h2-5-ns {
     height: 2.5rem;
@@ -43,6 +61,15 @@
   .w-45-m {
     width: 45%;
   }
+  .h0-25-m {
+    height: 0.25rem;
+  }
+  .h0-5-m {
+    height: 0.5rem;
+  }
+  .h0-75-m {
+    height: 0.75rem;
+  }
   .h2-5-m {
     height: 2.5rem;
   }
@@ -60,6 +87,15 @@
   }
   .w-45-l {
     width: 45%;
+  }
+  .h0-25-l {
+    height: 0.25rem;
+  }
+  .h0-5-l {
+    height: 0.5rem;
+  }
+  .h0-75-l {
+    height: 0.75rem;
   }
   .h2-5-l {
     height: 2.5rem;
