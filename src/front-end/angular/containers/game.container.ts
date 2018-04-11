@@ -32,18 +32,21 @@ import { Resizer } from '../../aspect-resizer';
         [preview]="preview"
       >
       </bd-next-pieces>
-      <div class="tc">
+      <div class="flex flex-wrap justify-between man1 man2-ns">
         <bd-button 
+          class="flex-auto ma1 ma2-ns"
           *ngIf="(isPaused$ | async)" 
           [value]="resumeLabel"
           [onClick]="resume">
         </bd-button>
         <bd-button 
+          class="flex-auto ma1 ma2-ns"
           *ngIf="!(isPaused$ | async)" 
           [value]="pauseLabel"
           [onClick]="pause">
         </bd-button>
-        <bd-button
+        <bd-button 
+          class="flex-auto ma1 ma2-ns"
           value="Done"
           [onClick]="done">
         </bd-button>

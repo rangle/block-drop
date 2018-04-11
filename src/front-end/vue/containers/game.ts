@@ -90,18 +90,21 @@ export const Game = () => {
             v-if="!(state.game.isPaused)"
             :preview="state.game.preview"
           />
-          <div class="tc">
-            <bd-button
+          <div class="flex flex-wrap justify-between man1 man2-ns">
+            <bd-button 
+              class="flex-auto ma1 ma2-ns"
               v-if="state.game.isPaused" 
               value="Resume"
               @click="resume">
             </bd-button>
-            <bd-button
+            <bd-button 
+              class="flex-auto ma1 ma2-ns"
               v-if="!(state.game.isPaused)" 
               value="Pause"
               @click="pause">
             </bd-button>
-            <bd-button
+            <bd-button 
+              class="flex-auto ma1 ma2-ns"
               value="Done"
               @click="done">
             </bd-button>
