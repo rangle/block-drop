@@ -107,9 +107,9 @@ function mount() {
 
   hide(splashEl);
   makeVisible(nav);
-  const initialFramework = 'bd-root-vue';
+  const initialFramework = 'bd-root-angular';
   loadFramework(
-    document.getElementById('vue-toggle') as HTMLButtonElement,
+    document.getElementById('angular-toggle') as HTMLButtonElement,
     initialFramework,
   );
 }
