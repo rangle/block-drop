@@ -21,11 +21,11 @@ export const InputString = () => ({
     >
   `,
   watch: {
-    inputValue(newVal: string, oldVal: string) {
+    inputValue() {
       const val = this.sanitizer(this.inputValue);
       this.$emit('change', val);
     },
-    value(newVal: number | string, oldVal: number | string) {
+    value(newVal: number | string) {
       this.inputValue = newVal;
     },
   },

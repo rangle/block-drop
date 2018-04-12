@@ -2,7 +2,7 @@ export const Button = () => ({
   methods: {
     onClick() {
       this.$emit('click');
-    }
+    },
   },
   props: {
     value: {

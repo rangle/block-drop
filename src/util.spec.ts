@@ -46,9 +46,9 @@ describe('utility functions', () => {
   });
 
   describe('debounce function', () => {
-    it('should only call a function once, after a delay', (done) => {
+    it('should only call a function once, after a delay', done => {
       let result = 0;
-      const inc = () => result += 1;
+      const inc = () => (result += 1);
       const debouncedInc = debounce<() => void>(0, inc);
       debouncedInc();
       debouncedInc();
@@ -59,9 +59,9 @@ describe('utility functions', () => {
       });
     });
 
-    it('the last call\'s arguments should "win"', (done) => {
+    it('the last call\'s arguments should "win"', done => {
       let result = 0;
-      const addToResult = (val: number) => result += val;
+      const addToResult = (val: number) => (result += val);
       const debouncedInc = debounce(0, addToResult);
       debouncedInc(1);
       debouncedInc(2);
@@ -72,21 +72,20 @@ describe('utility functions', () => {
       });
     });
 
-    it('should support multiple calls if they\'re adequately spaced',
-      (done) => {
-        let result = 0;
-        const inc = () => result += 1;
-        const debouncedInc = debounce<() => void>(0, inc);
+    it("should support multiple calls if they're adequately spaced", done => {
+      let result = 0;
+      const inc = () => (result += 1);
+      const debouncedInc = debounce<() => void>(0, inc);
+      debouncedInc();
+      setTimeout(() => {
+        expect(result).toBe(1);
         debouncedInc();
         setTimeout(() => {
-          expect(result).toBe(1);
-          debouncedInc();
-          setTimeout(() => {
-            expect(result).toBe(2);
-            done();
-          }, 5);
+          expect(result).toBe(2);
+          done();
         }, 5);
-      });
+      }, 5);
+    });
   });
 
   describe('divide function', () => {
@@ -131,16 +130,16 @@ describe('utility functions', () => {
     it('should overwrite the second argument', () => {
       const from = new Uint8Array([1, 2, 3]);
       const to = new Uint8Array([4, 5, 6]);
-      copyBuffer(from, to);     
+      copyBuffer(from, to);
       expect(Array.from(to)).toEqual([1, 2, 3]);
-    });   
+    });
   });
-  
+
   describe('createReadOnlyApiTo function', () => {
     it('should throw if not given an Object', () => {
       expect(() => createReadOnlyApiTo(5)).toThrowError();
     });
-    
+
     it('should create a read only API', () => {
       const readOnly = createReadOnlyApiTo({
         a: 5,
@@ -149,14 +148,14 @@ describe('utility functions', () => {
       readOnly.a = 5;
       expect(readOnly.a).toBe(5);
     });
-    
+
     it('should ignore methods', () => {
       const readOnly = createReadOnlyApiTo({
         a: noop,
       });
       expect(readOnly.a).toBeUndefined();
     });
-    
+
     it('should update if the original object is changed', () => {
       const writable = {
         a: 5,
@@ -166,7 +165,7 @@ describe('utility functions', () => {
       writable.a = 7;
       expect(readOnly.a).toBe(7);
     });
-    
+
     it('nested objects should also be read only', () => {
       const writable = {
         a: {
@@ -177,7 +176,7 @@ describe('utility functions', () => {
       readOnly.a.b = 7;
       expect(readOnly.a.b).toBe(5);
     });
-    
+
     it('nested objects should not be configurable', () => {
       const writable = {
         a: {
@@ -188,7 +187,7 @@ describe('utility functions', () => {
       readOnly.a = 52;
       expect(readOnly.a.b).toBe(5);
     });
-    
+
     it('nested objects should also update if their writable changes', () => {
       const writable = {
         a: {
@@ -203,9 +202,7 @@ describe('utility functions', () => {
 
     it('nested arrays should also be read only', () => {
       const writable = {
-        a: [
-          5,
-        ],
+        a: [5],
       };
       const readOnly = createReadOnlyApiTo(writable);
       readOnly.a[0] = 7;
@@ -214,9 +211,7 @@ describe('utility functions', () => {
 
     it('nested arrays should not be configurable', () => {
       const writable = {
-        a: [
-          5,
-        ],
+        a: [5],
       };
       const readOnly = createReadOnlyApiTo(writable);
       readOnly.a = 52;
@@ -225,9 +220,7 @@ describe('utility functions', () => {
 
     it('nested arrays should also update if their writable changes', () => {
       const writable = {
-        a: [
-          5,
-        ],
+        a: [5],
       };
       const readOnly = createReadOnlyApiTo(writable);
       expect(readOnly.a[0]).toBe(5);
@@ -249,8 +242,8 @@ describe('utility functions', () => {
         b: 'hello',
       });
 
-      expect(() => frozen.a = 23).toThrowError();
-      expect(() => frozen.b = '23').toThrowError();
+      expect(() => (frozen.a = 23)).toThrowError();
+      expect(() => (frozen.b = '23')).toThrowError();
     });
 
     it('should freeze object properties on an object', () => {
@@ -259,31 +252,30 @@ describe('utility functions', () => {
         b: 'hello',
         c: {
           d: 'test',
-        }
+        },
       });
 
-      expect(() => frozen.c.d = '23').toThrowError();
+      expect(() => (frozen.c.d = '23')).toThrowError();
     });
 
     it('should freeze nested arrays', () => {
-      const frozen = deepFreeze([[ 1 ]]);
+      const frozen = deepFreeze([[1]]);
 
-      expect(() => frozen[0][0] = 5).toThrowError();
+      expect(() => (frozen[0][0] = 5)).toThrowError();
       expect(() => frozen[0].push(5)).toThrowError();
     });
-    
-    it('should skip frozen sub-objects', () => {
-      const frozen = deepFreeze({ test: Object.freeze({ nest: { val: 1 } })});
-      expect(() => frozen.test.nest.val = 5).not.toThrowError();
-    });
 
+    it('should skip frozen sub-objects', () => {
+      const frozen = deepFreeze({ test: Object.freeze({ nest: { val: 1 } }) });
+      expect(() => (frozen.test.nest.val = 5)).not.toThrowError();
+    });
   });
 
   describe('intMidCeil', () => {
     it('should return 2 if given 5', () => {
       expect(intMidCeil(5)).toBe(2);
     });
-    
+
     it('should return 2 if given 4', () => {
       expect(intMidCeil(4)).toBe(2);
     });
@@ -303,17 +295,17 @@ describe('utility functions', () => {
     it('should return true instead of false', () => {
       expect(invertBoolean(() => false)()).toBe(true);
     });
-    
+
     it('should return false instead of true', () => {
       expect(invertBoolean(() => true)()).toBe(false);
     });
-    
+
     it('should take an argument', () => {
-      expect(invertBoolean((arg) => arg)(false)).toBe(true);
+      expect(invertBoolean(arg => arg)(false)).toBe(true);
     });
-    
+
     it('should take variadic argument', () => {
-      expect(invertBoolean((a, b, c) => c)(null, null, true)).toBe(false);
+      expect(invertBoolean((_, __, c) => c)(null, null, true)).toBe(false);
     });
   });
 
@@ -321,7 +313,7 @@ describe('utility functions', () => {
     it('should return false if given a falsey', () => {
       expect(isBoard1(null)).toBe(false);
     });
-    
+
     it('should return true if Board1 has a descBuffer', () => {
       expect(isBoard1({ descBuffer: new Uint8Array(1) })).toBe(true);
     });
@@ -331,19 +323,19 @@ describe('utility functions', () => {
     it('should return false if given nothing', () => {
       expect(isObject(undefined)).toBe(false);
     });
-    
+
     it('should return false if given null', () => {
       expect(isObject(null)).toBe(false);
     });
-    
+
     it('should return false if given a primitive', () => {
       expect(isObject(5)).toBe(false);
     });
-    
+
     it('should return true if given an Array', () => {
       expect(isObject([])).toBe(true);
     });
-    
+
     it('should return true if given an Object', () => {
       expect(isObject({})).toBe(true);
     });
@@ -362,12 +354,15 @@ describe('utility functions', () => {
       expect(newObj).not.toBe(obj);
     });
 
-    it('should return a new object that has the original properties other ' +
-      'than the prop merged in', () => {
-      const obj = { test2: 'word' };
-      const newObj: any = mergeProp(obj, 'me', 'test');
-      expect(newObj.test2).toBe('word');
-    });
+    it(
+      'should return a new object that has the original properties other ' +
+        'than the prop merged in',
+      () => {
+        const obj = { test2: 'word' };
+        const newObj: any = mergeProp(obj, 'me', 'test');
+        expect(newObj.test2).toBe('word');
+      },
+    );
   });
 
   describe('noop function', () => {
@@ -382,7 +377,7 @@ describe('utility functions', () => {
     });
 
     it('should handle simple decimals', () => {
-      expect(numberFromString('.25')).toBe(.25);
+      expect(numberFromString('.25')).toBe(0.25);
     });
 
     it('should handle silly decimals', () => {
@@ -400,18 +395,19 @@ describe('utility functions', () => {
 
   describe('partial function', () => {
     function addThreeArgs(a: number, b: number, c: number): number {
-      return a + b * c; 
+      return a + b * c;
     }
-    
+
     it('should work for a simple single argument', () => {
-      expect(partial<(b: number, c: number) => number>(addThreeArgs, 3)(2, 3))
-        .toBe(9);
+      expect(
+        partial<(b: number, c: number) => number>(addThreeArgs, 3)(2, 3),
+      ).toBe(9);
     });
-    
+
     it('should work for two arguments', () => {
       expect(partial<(c: number) => number>(addThreeArgs, 3, 2)(3)).toBe(9);
     });
-    
+
     it('should work for three arguments', () => {
       expect(partial<() => number>(addThreeArgs, 3, 2, 3)()).toBe(9);
     });
@@ -427,23 +423,29 @@ describe('utility functions', () => {
     it('should return throw if given nothing', () => {
       expect(() => pipe()).toThrowError();
     });
-    
+
     it('should return the identity if given one argument', () => {
       expect(pipe(pipe)).toBe(pipe);
     });
-    
+
     it('should compose functions from left to right', () => {
-      const add1 = (i) => i + 1;
-      const times3 = (i) => i * 3;
+      const add1 = i => i + 1;
+      const times3 = i => i * 3;
       const addOneThenTimes3 = pipe<(val: number) => number, number, number>(
-        add1, times3);
+        add1,
+        times3,
+      );
       expect(addOneThenTimes3(5)).toBe(18);
     });
   });
 
   describe('safeCall function', () => {
-    it('should resolve even if it\s function throws', () => {
-      expect(() => safeCall(() => { throw new Error(); })).not.toThrowError();
+    it('should resolve even if its function throws', () => {
+      expect(() =>
+        safeCall(() => {
+          throw new Error();
+        }),
+      ).not.toThrowError();
     });
 
     it('should resolve normal cases', () => {
@@ -452,9 +454,9 @@ describe('utility functions', () => {
   });
 
   describe('throttle function', () => {
-    it('should run a function once after a predefined delay', (done) => {
+    it('should run a function once after a predefined delay', done => {
       let result = 0;
-      const throttled = throttle<() => void>(5, () => result += 1);
+      const throttled = throttle<() => void>(5, () => (result += 1));
       throttled();
       throttled();
       throttled();
@@ -466,9 +468,9 @@ describe('utility functions', () => {
       }, 15);
     });
 
-    it('should optionally run a function at the _start_ of a delay', (done) => {
+    it('should optionally run a function at the _start_ of a delay', done => {
       let result = 0;
-      const throttled = throttle<() => void>(5, () => result += 1, true);
+      const throttled = throttle<() => void>(5, () => (result += 1), true);
       throttled();
       expect(result).toBe(1);
       setTimeout(() => {
@@ -477,9 +479,9 @@ describe('utility functions', () => {
       }, 15);
     });
 
-    it('should work multiple times', (done) => {
+    it('should work multiple times', done => {
       let result = 0;
-      const throttled = throttle<() => void>(5, () => result += 1);
+      const throttled = throttle<() => void>(5, () => (result += 1));
       throttled();
       expect(result).toBe(0);
       setTimeout(() => {

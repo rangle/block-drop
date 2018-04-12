@@ -6,9 +6,7 @@ import {
   Output,
 } from '@angular/core';
 
-import {
-  identity,
-} from '../../../../util';
+import { identity } from '../../../../util';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,8 +24,6 @@ export class String {
   @Output() update = new EventEmitter<string>();
 
   onChange($event) {
-    this.update.emit(
-      this.sanitizer($event.target.value)
-    );
+    this.update.emit(this.sanitizer($event.target.value));
   }
 }

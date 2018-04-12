@@ -23,9 +23,9 @@ describe('app reducer', () => {
 
   describe('CHANGE_FRAMEWORK', () => {
     it('should re-calculate currentFramework based on payload', () => {
-        const state = <IAppState>{};
-        const newState = app(state, { type: CHANGE_FRAMEWORK, payload: 5 });
-        expect(newState.currentFramework).toEqual(5);
+      const state = <IAppState>{};
+      const newState = app(state, { type: CHANGE_FRAMEWORK, payload: 5 });
+      expect(newState.currentFramework).toEqual(5);
     });
   });
 
@@ -36,7 +36,6 @@ describe('app reducer', () => {
       expect(newState.useMultiFrameworks).toEqual(5);
     });
   });
-
 });
 
 describe('routesFilter function', () => {

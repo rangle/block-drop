@@ -1,29 +1,21 @@
 /**
  * shortcut for importing blocks from arrays
  */
-import {
-  Block,
-  Direction,
-  Matrix,
-} from '../interfaces';
+import { Block, Direction, Matrix } from '../interfaces';
 
 import {
   rotateLeft as rotateMatrixLeft,
   rotateRight as rotateMatrixRight,
 } from './matrix';
 
-import {
-  deepFreeze,
-  intMidCeil,
-  intMidFloor,
-} from '../util';
+import { deepFreeze, intMidCeil, intMidFloor } from '../util';
 
 export function columnsFromBlock(block: Block) {
   const cols = [];
   let desc = [];
   let lastJ = 0;
 
-  forEach(block, (el, x, y, i, j) => {
+  forEach(block, (el, _, __, ___, j) => {
     if (j !== lastJ) {
       cols.push(desc);
       desc = [];
@@ -35,18 +27,20 @@ export function columnsFromBlock(block: Block) {
   return cols;
 }
 
-export function createBlock(desc: Matrix,
-                            posX: number = 0,
-                            posY: number = 0,
-                            name: string = 'block'): Block {
+export function createBlock(
+  desc: Matrix,
+  posX: number = 0,
+  posY: number = 0,
+  name: string = 'block',
+): Block {
   if (!Array.isArray(desc)) {
     throw new TypeError('createBlock requires desc to be an array');
   }
-  
+
   if (!desc.length) {
     throw new TypeError('createBlock requires desc to have length');
   }
-  
+
   let width = desc.length;
 
   if (!Array.isArray(desc[0])) {
@@ -54,10 +48,11 @@ export function createBlock(desc: Matrix,
   }
 
   if (!desc[0].length) {
-    throw new TypeError('createBlock request desc\'s second dimension to ' +
-      'have length');
+    throw new TypeError(
+      "createBlock request desc's second dimension to " + 'have length',
+    );
   }
-  
+
   let height = desc[0].length;
 
   return Object.create(null, {
@@ -74,7 +69,7 @@ export function createBlock(desc: Matrix,
     desc: {
       configurable: true,
       writable: true,
-      value:  deepFreeze(desc),
+      value: deepFreeze(desc),
     },
     descUp: {
       configurable: false,
@@ -104,17 +99,17 @@ export function createBlock(desc: Matrix,
     orientation: {
       configurable: true,
       writable: true,
-      value:  Direction.Up,
+      value: Direction.Up,
     },
     x: {
       configurable: true,
       writable: true,
-      value:  posX,
+      value: posX,
     },
     y: {
       configurable: true,
       writable: true,
-      value:  posY,
+      value: posY,
     },
     width: {
       configurable: true,
@@ -135,12 +130,16 @@ export function debugBlock(msg: string, block: Block) {
   console.log(`${msg} name: ${name} x: ${x} y: ${y} shape: ${desc}`);
 }
 
-export function forEach(block: Block, 
-                        fn: (el: number, 
-                             boardX: number, 
-                             boardY: number, 
-                             blockX: number, 
-                             blockY: number) => void) {
+export function forEach(
+  block: Block,
+  fn: (
+    el: number,
+    boardX: number,
+    boardY: number,
+    blockX: number,
+    blockY: number,
+  ) => void,
+) {
   for (let j = 0; j < block.height; j += 1) {
     let posY;
 
@@ -151,7 +150,7 @@ export function forEach(block: Block,
     } else {
       posY = block.y + j - block.centreY;
     }
-    
+
     for (let i = 0; i < block.width; i += 1) {
       let posX;
 
@@ -164,12 +163,12 @@ export function forEach(block: Block,
       }
 
       fn(block.desc[i][j], posX, posY, i, j);
-    } 
+    }
   }
 }
 
 export function move(block: Block, axis: 'x' | 'y', value: number) {
-  block[axis] += value; 
+  block[axis] += value;
 }
 
 export function up(block: Block) {
@@ -229,7 +228,7 @@ export function rotateLeft(block: Block) {
 
 export function rotateRight(block: Block) {
   [block.height, block.width] = [block.width, block.height];
-  
+
   switch (block.orientation) {
     case Direction.Down:
       left(block);

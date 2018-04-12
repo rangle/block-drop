@@ -1,7 +1,4 @@
-import {
-  emptyTile,
-  tileByNumber,
-} from '../../styles';
+import { emptyTile, tileByNumber } from '../../styles';
 
 export const Tile = () => ({
   computed: {

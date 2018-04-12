@@ -1,9 +1,9 @@
 /**
  * Public API:
  *   - create1() creates an engine
- * 
+ *
  * The engine is a stateful object that manages a series of games
- * 
+ *
  * Core Responsibilities:
  * - Maintain the integrity of gameplay
  *   - Maintain random seed
@@ -11,33 +11,19 @@
  * - Facilitate realtime game play (ie control iteration/steps)
  * - Validate historical game play
  */
-import {
-  functionsDetectClear,
-} from './board';
+import { functionsDetectClear } from './board';
 
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
 import { createEventEmitter } from '../event';
 
-import {
-  Block,
-  GameConfig,
-  NextBlockConfig,
-} from '../interfaces';
+import { Block, GameConfig, NextBlockConfig } from '../interfaces';
 
 import '../license';
 
-import {
-  between,
-  functions as randomFunctions,
-  randomSet,
-} from './random';
+import { between, functions as randomFunctions, randomSet } from './random';
 
-import {
-  deepFreeze,
-  noop,
-  partial,
-} from '../util';
+import { deepFreeze, noop, partial } from '../util';
 import { createGame1 } from './game';
 
 export { configInterfaces } from './configs/config-interfaces';
@@ -59,10 +45,7 @@ export function create1state(conf: GameConfig) {
   };
 }
 
-export function create1Controls(
-  state,
-  getActiveGameCtrl,
-) {
+export function create1Controls(state, getActiveGameCtrl) {
   const invoke = (prop: string) => {
     state.history.push({
       tick: state.tick,
@@ -102,12 +85,12 @@ export function create1Controls(
 function manageNewGame(conf, state, emit, nextBlock, gameOver) {
   const detectAndClear = functionsDetectClear.get(conf.detectAndClear);
   const game = createGame1(
-    conf, 
-    emit, 
+    conf,
+    emit,
     state.buffer,
     state.board,
     detectAndClear,
-    nextBlock, 
+    nextBlock,
     gameOver,
   );
   state.games.unshift(game);
@@ -174,8 +157,10 @@ function manageNewGame(conf, state, emit, nextBlock, gameOver) {
   });
 
   function loop() {
-    if (isEnded) { return; }
-    requestAnimationFrame((now) => {
+    if (isEnded) {
+      return;
+    }
+    requestAnimationFrame(now => {
       if (isPaused) {
         loop();
         return;
@@ -202,13 +187,21 @@ export function create1(optionsConfig: GameConfig = {}) {
   const events = createEventEmitter();
   const nextBlock = createNextBlock(conf, state.preview);
   let activeGameControl = manageNewGame(
-    conf, state, events.emit, nextBlock, gameOver
+    conf,
+    state,
+    events.emit,
+    nextBlock,
+    gameOver,
   );
 
   function newGame() {
     if (!activeGameControl) {
       activeGameControl = manageNewGame(
-        conf, state, events.emit, nextBlock, gameOver
+        conf,
+        state,
+        events.emit,
+        nextBlock,
+        gameOver,
       );
     }
   }
@@ -219,7 +212,7 @@ export function create1(optionsConfig: GameConfig = {}) {
       tick: state.tick,
       control: 'gameOver',
     });
-    board.desc.forEach((el, i) => {
+    board.desc.forEach((_, i) => {
       board.desc[i] = 0;
       state.buffer[i] = 0;
     });
@@ -236,7 +229,7 @@ export function create1(optionsConfig: GameConfig = {}) {
     buffer: {
       configurable: false,
       get: () => state.buffer,
-      set: noop,  
+      set: noop,
     },
     config: {
       configurable: false,
@@ -288,40 +281,44 @@ export function create1(optionsConfig: GameConfig = {}) {
   return obj;
 }
 
-export function forceValidateConfig(defaults: GameConfig,
-                                    config: any = {}): GameConfig {
-  Object.keys(defaults).forEach((prop) => {
+export function forceValidateConfig(
+  defaults: GameConfig,
+  config: any = {},
+): GameConfig {
+  Object.keys(defaults).forEach(prop => {
     config[prop] = config[prop] === undefined ? defaults[prop] : config[prop];
   });
-  
+
   config.seed = config.seed || Date.now();
-  
+
   return config;
 }
 
 export function createNextBlock(
   c: NextBlockConfig,
   previewContainer: Block[] = [],
-) { 
-  const blocks = c.blockDescriptions
-    .map((el) => c.createBlock(el.desc, 0, 0, el.name));
+) {
+  const blocks = c.blockDescriptions.map(el =>
+    c.createBlock(el.desc, 0, 0, el.name),
+  );
   const rand = randomFunctions.get(c.seedRandom)(c.seed);
   const spawn: (block: Block) => Block = partial(c.spawn, c.width, c.height);
-  
-  const randomBlock: () => Block = c.randomMethod === 'random' ?
-    () => blocks[between(rand, blocks.length)] :
-    randomSet(rand, blocks);
-  
+
+  const randomBlock: () => Block =
+    c.randomMethod === 'random'
+      ? () => blocks[between(rand, blocks.length)]
+      : randomSet(rand, blocks);
+
   if (c.preview <= 0) {
     return () => spawn(randomBlock());
   }
-  
+
   const max = c.preview > blocks.length ? blocks.length : c.preview;
-  
+
   for (let i = 0; i < max; i += 1) {
     previewContainer.push(randomBlock());
   }
-  
+
   return () => {
     previewContainer.push(randomBlock());
     return spawn(previewContainer.shift());

@@ -1,16 +1,8 @@
-import {
-  functionsDetectClear,
-} from '../board';
+import { functionsDetectClear } from '../board';
 
-import {
-  functions as functionsRandom,
-} from '../random';
+import { functions as functionsRandom } from '../random';
 
-import {
-  deepFreeze,
-  isNumber,
-  isString,
-} from '../../util';
+import { deepFreeze, isNumber, isString } from '../../util';
 
 export const positiveInteger = deepFreeze({
   type: 'number',
@@ -71,5 +63,5 @@ export const configInterfaces = deepFreeze([
     options: () => functionsRandom.list(),
     prop: 'seedRandom',
     type: 'select',
-  }
+  },
 ]);

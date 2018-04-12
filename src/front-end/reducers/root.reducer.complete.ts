@@ -5,12 +5,15 @@ import { IState, rootObject } from './root.reducer.shared';
 import { vueRouterReducer } from '../vue/router-reducer';
 import { angularRouterReducer } from '../angular/router-reducer';
 
-
 export const root = combineReducers<IState>(
   Object.assign({}, rootObject, {
-    routing: routeBinding(combineReducers({
-      angular: angularRouterReducer,
-      react: reactRouterReducer,
-      vue: vueRouterReducer, 
-    }), undefined),
-  }));
+    routing: routeBinding(
+      combineReducers({
+        angular: angularRouterReducer,
+        react: reactRouterReducer,
+        vue: vueRouterReducer,
+      }),
+      undefined,
+    ),
+  }),
+);

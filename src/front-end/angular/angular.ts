@@ -14,7 +14,7 @@ declare const __PRODUCTION__: boolean;
 
 if (__PRODUCTION__) {
   enableProdMode();
-} 
+}
 
 const ANGULAR = 'bd-root-angular';
 const UNMOUNT_RETRY = 50;
@@ -30,11 +30,13 @@ export function mount(store: EngineStore, resizer: Resizer) {
 
   const AppModule = getAppModule(store, resizer);
 
-  return platformBrowserDynamic().bootstrapModule(AppModule)
-    .then((ref) => {
+  return platformBrowserDynamic()
+    .bootstrapModule(AppModule)
+    .then(ref => {
       isStarting = false;
       appRef = ref;
-    }).catch((err) => {
+    })
+    .catch(err => {
       /* tslint:disable no-console */
       console.log(`failed to bootstrap angular 2: ${err.message}`);
       console.log(err.stack);

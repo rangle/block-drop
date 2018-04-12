@@ -1,12 +1,7 @@
-import {
-  Board1, 
-  BooleanFunction,
-  Dictionary,
-  TypedArray,
-} from './interfaces';
+import { Board1, BooleanFunction, Dictionary, TypedArray } from './interfaces';
 
-export const aspectRatio =
-  (width: number, height: number) => divide(width, height);
+export const aspectRatio = (width: number, height: number) =>
+  divide(width, height);
 
 export function boardToArray(b, width) {
   return Array.from(b.slice(width * 2));
@@ -31,18 +26,19 @@ export function recomputeBoard(buffer, width) {
   return newBoard;
 }
 
-
 export function camelToKebab(string: string) {
-  return string.replace(/([A-Z])/g, (s) => '-' + s.toLowerCase());
+  return string.replace(/([A-Z])/g, s => '-' + s.toLowerCase());
 }
 
 export function kebabToCamel(string: string) {
-  return string.replace(/(\-[a-z])/g, (s) => s.toUpperCase().replace('-', ''));
+  return string.replace(/(\-[a-z])/g, s => s.toUpperCase().replace('-', ''));
 }
 
-export function clamp(val: number,
-                      min: number = NaN,
-                      max: number = NaN): number {
+export function clamp(
+  val: number,
+  min: number = NaN,
+  max: number = NaN,
+): number {
   if (min === min) {
     if (val < min) {
       val = min;
@@ -81,14 +77,16 @@ export function clamp(val: number,
  * console.log(result1.y); // 7.5
  *
  **/
-export function computeAspectRatioDimensions(ox: number, oy: number,
-                                      ix: number, iy: number
-): { x: number, y: number } {
-
+export function computeAspectRatioDimensions(
+  ox: number,
+  oy: number,
+  ix: number,
+  iy: number,
+): { x: number; y: number } {
   const result = { x: 0, y: 0 };
 
   const oar = aspectRatio(ox, oy); // outer aspect ratio
-  const ar = aspectRatio(ix, iy);    // desired aspect ratio
+  const ar = aspectRatio(ix, iy); // desired aspect ratio
 
   if (ar > oar) {
     result.x = ox;
@@ -102,21 +100,21 @@ export function computeAspectRatioDimensions(ox: number, oy: number,
 }
 
 export function copyBuffer(from, to) {
-  from.forEach((el, i) => to[i] = from[i]);
+  from.forEach((_, i) => (to[i] = from[i]));
 }
 /**
- * Links `state` such that it is a reference to a read only API 
- * 
- * read only in this case is a non-configurable getter/setter where the 
- * setter is noop. Props that are Objects are run against `createReadOnlyApiTo` 
- * and * are non-configurable.  Arrays are *copied* and their contents are run 
+ * Links `state` such that it is a reference to a read only API
+ *
+ * read only in this case is a non-configurable getter/setter where the
+ * setter is noop. Props that are Objects are run against `createReadOnlyApiTo`
+ * and * are non-configurable.  Arrays are *copied* and their contents are run
  * against `createReadOnlyApiTo`
- * 
- * **NOTE** this kind of an API, especially the nested objects will have 
+ *
+ * **NOTE** this kind of an API, especially the nested objects will have
  * performance penalties if getters are called repeatedly.  Also it's important
  * to be wary about Array references as they will "stale"
- * 
- * **NOTE 2** this function ignores methods 
+ *
+ * **NOTE 2** this function ignores methods
  */
 export function createReadOnlyApiTo(state: Object) {
   if (!isObject(state)) {
@@ -130,22 +128,24 @@ export function createReadOnlyApiTo(state: Object) {
       if (Array.isArray(state[i])) {
         Object.defineProperty(stats, i, {
           configurable: false,
-          get: () => state[i].map((el, j) => isObject(el) ?
-            createReadOnlyApiTo(state[i][j]) :
-            state[i][j]),
+          get: () =>
+            state[i].map(
+              (el, j) =>
+                isObject(el) ? createReadOnlyApiTo(state[i][j]) : state[i][j],
+            ),
           set: noop,
         });
       } else {
         Object.defineProperty(stats, i, {
           configurable: false,
-          get: () => isObject(state[i]) ? createReadOnlyApiTo(state[i]) : 
-            state[i],
+          get: () =>
+            isObject(state[i]) ? createReadOnlyApiTo(state[i]) : state[i],
           set: noop,
-        }); 
+        });
       }
     } else {
       if (isFunction(state[i])) {
-        // ignore functions (no smuggling :)) 
+        // ignore functions (no smuggling :))
       } else {
         Object.defineProperty(stats, i, {
           configurable: false,
@@ -163,7 +163,8 @@ export function createReadOnlyApiTo(state: Object) {
  * Debounces a function by delay.  Last call's parameters win
  */
 export function debounce<T extends (...args: any[]) => any>(
-  delay: number, fn: T
+  delay: number,
+  fn: T,
 ) {
   let timer = null;
 
@@ -202,9 +203,9 @@ export function deepCall(map, obj) {
 }
 
 export const deepFreeze: <T>(o: T) => T = partial(
-  deepCall, Object.freeze.bind(Object)
+  deepCall,
+  Object.freeze.bind(Object),
 );
-
 
 export function divide(a: number, b: number): number {
   if (b === 0) {
@@ -234,7 +235,9 @@ export function invertBoolean(fnBool: BooleanFunction): BooleanFunction {
 }
 
 export function isBoard1(board: any): board is Board1 {
-  if (!board) { return false; }
+  if (!board) {
+    return false;
+  }
   return board.descBuffer instanceof Uint8Array;
 }
 
@@ -270,12 +273,10 @@ export function mergeProp(obj: Object, newValue, prop: string) {
   return Object.assign({}, obj, newObj);
 }
 
-
 /**
  * Sometimes a no operation is useful
  */
-export function noop() {
-}
+export function noop() {}
 
 export function numberFromString(string: string): number {
   const mostlyNumeric = string.replace(/[^\d.-]/g, '');
@@ -290,11 +291,13 @@ export function numberFromString(string: string): number {
     return parseFloat(mostlyNumeric);
   }
 
-  return parseFloat(mostlyNumeric
-    .split('.')
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('.'));
+  return parseFloat(
+    mostlyNumeric
+      .split('.')
+      .filter(Boolean)
+      .slice(0, 2)
+      .join('.'),
+  );
 }
 
 /**
@@ -315,9 +318,12 @@ export function pipe<T extends (arg: A) => R, A, R>(...args: Function[]) {
     return <T>args[0];
   }
   const first = args.shift();
-  
-  return ((...nextArgs) => args
-    .reduce((state, next) => next(state), first.apply(null, nextArgs))) as T; 
+
+  return ((...nextArgs) =>
+    args.reduce(
+      (state, next) => next(state),
+      first.apply(null, nextArgs),
+    )) as T;
 }
 
 /**
@@ -338,10 +344,11 @@ export function safeCall(fn: Function, args?: any[]) {
  *
  * can optionally invokeImmediately
  */
-export function throttle<T extends () => void>(delay: number,
-                            fn: Function,
-                            invokeImmediate: boolean = false) {
-
+export function throttle<T extends () => void>(
+  delay: number,
+  fn: Function,
+  invokeImmediate: boolean = false,
+) {
   let timer = null;
   let lastArgs: any[];
   let isFirst = true;
@@ -370,9 +377,11 @@ export function throttle<T extends () => void>(delay: number,
   }) as T;
 }
 
-export function throwOutOfBounds(buffer: any[] | TypedArray,
-                                 offset: number,
-                                 message: string = '') {
+export function throwOutOfBounds(
+  buffer: any[] | TypedArray,
+  offset: number,
+  message: string = '',
+) {
   if (offset < 0) {
     throw new RangeError(`${message} out of bounds < 0`);
   }

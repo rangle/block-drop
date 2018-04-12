@@ -6,9 +6,7 @@ import {
   rotateRight,
 } from './block';
 
-import {
-  Direction
-} from '../interfaces';
+import { Direction } from '../interfaces';
 
 describe('block functions', () => {
   describe('columnsFromBlock', () => {
@@ -23,68 +21,67 @@ describe('block functions', () => {
     it('should throw if given a desc that is not an array', () => {
       expect(() => createBlock(<Array<number[]>>{})).toThrowError();
     });
-    
+
     it('should throw if a given desc has no length', () => {
       expect(() => createBlock([])).toThrowError();
     });
 
-    it('should throw if given a desc\'s second dimension is not an array',
-      () => {
-        expect(() => createBlock([<Array<number>>{}])).toThrowError();
-      });
+    it("should throw if given a desc's second dimension is not an array", () => {
+      expect(() => createBlock([<Array<number>>{}])).toThrowError();
+    });
 
-    it('should throw if a given desc\s second dimension has no length', () => {
+    it('should throw if a given descs second dimension has no length', () => {
       expect(() => createBlock([[]])).toThrowError();
     });
 
     it('should return a block with an immutable description', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.desc[0] = [5]).toThrowError();
+      expect(() => (block.desc[0] = [5])).toThrowError();
     });
-    
+
     it('should return a block a *mutable reference* to the description', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.desc = [[]]).not.toThrowError();
+      expect(() => (block.desc = [[]])).not.toThrowError();
     });
 
     it('should return a block with an immutable descUp', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descUp[0] = [5]).toThrowError();
+      expect(() => (block.descUp[0] = [5])).toThrowError();
     });
 
     it('should return a block an immutable reference to descUp', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descUp = [[]]).toThrowError();
+      expect(() => (block.descUp = [[]])).toThrowError();
     });
 
     it('should return a block with an immutable descDown', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descDown[0] = [5]).toThrowError();
+      expect(() => (block.descDown[0] = [5])).toThrowError();
     });
 
     it('should return a block an immutable reference to descDown', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descDown = [[]]).toThrowError();
+      expect(() => (block.descDown = [[]])).toThrowError();
     });
-    
+
     it('should return a block with an immutable descLeft', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descLeft[0] = [5]).toThrowError();
+      expect(() => (block.descLeft[0] = [5])).toThrowError();
     });
 
     it('should return a block an immutable reference to descLeft', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descLeft = [[]]).toThrowError();
+      expect(() => (block.descLeft = [[]])).toThrowError();
     });
 
     it('should return a block with an immutable descRight', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descRight[0] = [5]).toThrowError();
+      expect(() => (block.descRight[0] = [5])).toThrowError();
     });
 
     it('should return a block an immutable reference to descRight', () => {
       const block = createBlock([[1], [1], [1]]);
-      expect(() => block.descRight = [[]]).toThrowError();
+      expect(() => (block.descRight = [[]])).toThrowError();
     });
   });
 
@@ -92,79 +89,124 @@ describe('block functions', () => {
     it('should iterate over each element in the block', () => {
       let result = [];
       const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-      forEach(block, (el) => {
+      forEach(block, el => {
         result.push(el);
       });
       expect(result).toEqual([1, 4, 7, 2, 5, 8, 3, 6, 9]);
     });
-    
+
     it('should call back with board positions', () => {
       let result = [];
       const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 0, 0);
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, x, y) => {
         result.push({ x, y });
       });
       expect(result).toEqual([
-        { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 },
-        { x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 },
-        { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 },
+        { x: -1, y: -1 },
+        { x: 0, y: -1 },
+        { x: 1, y: -1 },
+        { x: -1, y: 0 },
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: -1, y: 1 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
       ]);
     });
-    
+
     it('should call back with four length board positions', () => {
       let result = [];
       const block = createBlock(
-        [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2]], 0, 0);
-      forEach(block, (el, x, y, i, j) => {
+        [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2]],
+        0,
+        0,
+      );
+      forEach(block, (_, x, y) => {
         result.push({ x, y });
       });
       expect(result).toEqual([
-        { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 2, y: -1},
-        { x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0},
-        { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1},
-      ]);
-    });
-    
-    it('should call back with five length board positions', () => {
-      let result = [];
-      const block = createBlock(
-        [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2], [3, 4, 5]], 0, 0);
-      forEach(block, (el, x, y, i, j) => {
-        result.push({ x, y });
-      });
-      expect(result).toEqual([
-        { x: -2, y: -1 }, { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: -1 }, 
+        { x: -1, y: -1 },
+        { x: 0, y: -1 },
+        { x: 1, y: -1 },
         { x: 2, y: -1 },
-        { x: -2, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 0 }, { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
         { x: 2, y: 0 },
-        { x: -2, y: 1 }, { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 1 },
+        { x: -1, y: 1 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
         { x: 2, y: 1 },
       ]);
     });
-    
+
+    it('should call back with five length board positions', () => {
+      let result = [];
+      const block = createBlock(
+        [[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2], [3, 4, 5]],
+        0,
+        0,
+      );
+      forEach(block, (_, x, y) => {
+        result.push({ x, y });
+      });
+      expect(result).toEqual([
+        { x: -2, y: -1 },
+        { x: -1, y: -1 },
+        { x: 0, y: -1 },
+        { x: 1, y: -1 },
+        { x: 2, y: -1 },
+        { x: -2, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: -2, y: 1 },
+        { x: -1, y: 1 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 1 },
+      ]);
+    });
+
     it('should call back with iterator positions', () => {
       let result = [];
       const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-      forEach(block, (el, x, y, i, j) => {
-        result.push({ x: i, y: j });
-      });
-      expect(result).toEqual([ 
-        { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 },
-        { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, 
-        { x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }, 
-      ]);
-    });
-    
-    it('should handle four lengths iterator positions', () => {
-      let result = [];
-      const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2]]);
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, __, ___, i, j) => {
         result.push({ x: i, y: j });
       });
       expect(result).toEqual([
-        { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 },
-        { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 2, y: 1 }, { x: 3, y: 1 },
-        { x: 0, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 },
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 1 },
+        { x: 0, y: 2 },
+        { x: 1, y: 2 },
+        { x: 2, y: 2 },
+      ]);
+    });
+
+    it('should handle four lengths iterator positions', () => {
+      let result = [];
+      const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2]]);
+      forEach(block, (_, __, ___, i, j) => {
+        result.push({ x: i, y: j });
+      });
+      expect(result).toEqual([
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 3, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 1 },
+        { x: 3, y: 1 },
+        { x: 0, y: 2 },
+        { x: 1, y: 2 },
+        { x: 2, y: 2 },
+        { x: 3, y: 2 },
       ]);
     });
   });

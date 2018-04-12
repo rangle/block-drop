@@ -8,11 +8,7 @@ import {
   changeMultiFramework,
 } from './actions/app.actions';
 import { updateGameStatus } from './actions/game.actions';
-import {
-  EL_SPLASH,
-  FRAMEWORK_DESCRIPTIONS,
-  VERSION,
-} from './constants';
+import { EL_SPLASH, FRAMEWORK_DESCRIPTIONS, VERSION } from './constants';
 import { init } from './aspect-resizer';
 import './register-service-worker';
 

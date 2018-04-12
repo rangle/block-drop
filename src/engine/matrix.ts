@@ -1,9 +1,7 @@
 /**
  * Naive matrix functions
  */
-import {
-  Matrix,
-} from '../interfaces';
+import { Matrix } from '../interfaces';
 
 /**
  * Non destructive rotateLeft function
@@ -39,7 +37,7 @@ export function rotateRight(m: Matrix): Matrix {
   if (m[0].length === 0) {
     return [];
   }
-  
+
   const transposed = transpose(m);
   const rotated = [];
 

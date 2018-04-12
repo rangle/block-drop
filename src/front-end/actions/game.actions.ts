@@ -101,8 +101,8 @@ export function updateGameStatus(isStopped: boolean) {
 }
 
 export function updateScoreData(levelData: {
-  clearScore: number,
-  levelScore: number,
+  clearScore: number;
+  levelScore: number;
 }) {
   return {
     type: UPDATE_SCORE_DATA,

@@ -1,7 +1,14 @@
 import { board, flexGrowRow } from '../../styles';
 import { Tile } from './tile';
 
-export const Board = () => ({ components: { 'bd-tile': Tile() }, props: { board: { required: true, type: Array }, level: { required: true, type: Number }, styles: Object }, template: `
+export const Board = () => ({
+  components: { 'bd-tile': Tile() },
+  props: {
+    board: { required: true, type: Array },
+    level: { required: true, type: Number },
+    styles: Object,
+  },
+  template: `
     <div 
       class="ba bw2 b--vue-green mr2 mr4-ns flex flex-column shadow-vue-green"
     >
@@ -15,4 +22,5 @@ export const Board = () => ({ components: { 'bd-tile': Tile() }, props: { board:
         </div>
       </div>
     </div>
-  ` });
+  `,
+});

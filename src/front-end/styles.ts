@@ -58,14 +58,20 @@ export const activeTile = `${tileBase}`;
 export const emptyTile = `${tileBase} b--transparent`;
 
 export const tileDefault = `${activeTile} b--transparent`;
-export const tileRed =     `${activeTile} ${colours.borderRed} skin-angular-red`;
-export const tileGreen =   `${activeTile} ${colours.borderGreen} skin-vue-green`;
-export const tileBlue =    `${activeTile} ${colours.borderBlue} skin-react-blue`;
+export const tileRed = `${activeTile} ${colours.borderRed} skin-angular-red`;
+export const tileGreen = `${activeTile} ${colours.borderGreen} skin-vue-green`;
+export const tileBlue = `${activeTile} ${colours.borderBlue} skin-react-blue`;
 
-export const shadowBase =  `${tileBase} o-40`;
-export const tileShadowRed =   `${shadowBase} ${colours.borderRed} skin-angular-red-shadow`;
-export const tileShadowGreen = `${shadowBase} ${colours.borderGreen} skin-vue-green-shadow`;
-export const tileShadowBlue =  `${shadowBase} ${colours.borderBlue} skin-react-blue-shadow`;
+export const shadowBase = `${tileBase} o-40`;
+export const tileShadowRed = `${shadowBase} ${
+  colours.borderRed
+} skin-angular-red-shadow`;
+export const tileShadowGreen = `${shadowBase} ${
+  colours.borderGreen
+} skin-vue-green-shadow`;
+export const tileShadowBlue = `${shadowBase} ${
+  colours.borderBlue
+} skin-react-blue-shadow`;
 
 export const goneBase = `${activeTile} ${gone} b--transparent`;
 export const tileGoneRed = `${goneBase} skin-angular-red`;

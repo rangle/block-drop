@@ -1,23 +1,19 @@
 import { blockDropEngine, createGame } from './engine.enhancer';
 import { noop } from '../../util';
 
-describe('Engine\'s Redux Enhancer', () => {
+describe("Engine's Redux Enhancer", () => {
   let store: any;
 
   beforeEach(() => {
     store = {
       dispatch: () => null,
       getState: () => ({
-        nextConfig: {
-
-        },
+        nextConfig: {},
       }),
     };
-
   });
 
   describe('createGame function', () => {
-
     it('should set a new engine reference', () => {
       const ref = {};
       createGame(ref, store);

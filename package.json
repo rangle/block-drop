@@ -3,40 +3,11 @@
   "version": "0.0.1",
   "description": "Block dropping game",
   "main": "index.js",
-  "scripts": {
-    "prebuild": "npm run clean",
-    "build": "yarn build:angular && yarn build:complete && yarn build:engine && yarn build:react && yarn build:vue",
-    "build:angular": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.angular.config.js",
-    "build:complete": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.complete.config.js",
-    "build:engine": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.engine.config.js",
-    "build:react": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.react.config.js",
-    "build:vue": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.vue.config.js",
-    "build:ci": "yarn clean && yarn build:complete",
-    "clean": "rimraf ./coverage && rimraf ./dist && rimraf ./lib",
-    "deploy:prod": "aws s3 sync dist/block-drop s3://block-drop",
-    "deploy": "aws s3 sync --delete dist/block-drop s3://block-drop-dev",
-    "dev": "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback --host 0.0.0.0",
-    "pree2e": "echo \"Make sure Block Drop Is Running !!!\"",
-    "e2e": "wdio ./wdio.conf.js",
-    "lint": "tslint ./src/**/*.ts",
-    "test": "yarn lint && jest",
-    "test:ci": "jest --ci --runInBand",
-    "test:watch": "jest --watch",
-    "tsc": "tsc -p ./tsconfig.build.json",
-    "webpack": "webpack"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bennett000/block-drop.git"
   },
-  "keywords": [
-    "game",
-    "block",
-    "drop",
-    "gravity",
-    "clear",
-    "lines"
-  ],
+  "keywords": ["game", "block", "drop", "gravity", "clear", "lines"],
   "author": "Michael J. Bennett",
   "contributors": [],
   "license": "GPL-3.0",
@@ -46,6 +17,40 @@
   "homepage": "https://github.com/bennett000/block-drop#readme",
   "engines": {
     "node": ">=4.0.0"
+  },
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build":
+      "yarn build:angular && yarn build:complete && yarn build:engine && yarn build:react && yarn build:vue",
+    "build:angular":
+      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.angular.config.js",
+    "build:complete":
+      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.complete.config.js",
+    "build:engine":
+      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.engine.config.js",
+    "build:react":
+      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.react.config.js",
+    "build:vue":
+      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.vue.config.js",
+    "build:ci": "yarn clean && yarn build:complete",
+    "clean": "rimraf ./coverage && rimraf ./dist && rimraf ./lib",
+    "deploy:prod": "aws s3 sync dist/block-drop s3://block-drop",
+    "deploy": "aws s3 sync --delete dist/block-drop s3://block-drop-dev",
+    "dev":
+      "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback --host 0.0.0.0",
+    "pree2e": "echo \"Make sure Block Drop Is Running !!!\"",
+    "e2e": "wdio ./wdio.conf.js",
+    "format": "prettier --write \"**/*.*(ts|js|css|json|md)\"",
+    "lint": "tslint ./src/**/*.ts",
+    "precommit": "lint-staged",
+    "test": "yarn lint && jest",
+    "test:ci": "jest --ci --runInBand",
+    "test:watch": "jest --watch",
+    "tsc": "tsc -p ./tsconfig.build.json",
+    "webpack": "webpack"
+  },
+  "lint-staged": {
+    "*.+(js|ts|css|json|md)": ["prettier --write", "git add"]
   },
   "devDependencies": {
     "@angular-redux/router": "^7.0.0",
@@ -73,13 +78,16 @@
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.0.7",
+    "husky": "^0.14.3",
     "istanbul": "^0.4.4",
     "istanbul-instrumenter-loader": "^0.2.0",
     "jest": "^22.4.3",
+    "lint-staged": "^7.0.4",
     "mini-css-extract-plugin": "^0.2.0",
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^11.1.0",
     "postcss-loader": "^2.1.3",
+    "prettier": "^1.11.1",
     "react": "15.2.1",
     "react-dom": "15.2.1",
     "react-redux": "4.4.5",
@@ -112,41 +120,5 @@
     "webpack-cli": "^2.0.12",
     "webpack-dev-server": "^3.1.1",
     "zone.js": "^0.8.20"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx}",
-      "!**/node_modules/**",
-      "!**/coverage/**",
-      "!**/dist/**",
-      "!**/*.d.ts",
-      "!**/interfaces.ts",
-      "!**/handler.ts"
-    ],
-    "coverageDirectory": "coverage/",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/coverage/",
-      "/dist/"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "html"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
   }
 }

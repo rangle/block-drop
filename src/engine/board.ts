@@ -1,47 +1,40 @@
 /**
  * Describes the game board and its actions
  */
-import {
-  forEach,
-  rotateLeft,
-  rotateRight,
-} from './block';
+import { forEach, rotateLeft, rotateRight } from './block';
 
 import { makeCollection } from './function-collection';
 
-import {
-  Block,
-  Board,
-  Board1,
-} from '../interfaces';
+import { Block, Board, Board1 } from '../interfaces';
 
-import {
-  throwOutOfBounds,
-} from '../util';
+import { throwOutOfBounds } from '../util';
 
 export const SHADOW_OFFSET = 9;
 export const DC2MAX = 9;
 
-export const functionsDetectClear = makeCollection({
+export const functionsDetectClear = makeCollection(
+  {
+    detectAndClear1,
+    detectAndClear2,
+  },
   detectAndClear1,
-  detectAndClear2,
-}, detectAndClear1);
+);
 
-export function addBlock(board: Board,
-                         block: Block,
-                         buffer: Uint8Array = board.desc,
-                         addShadow: boolean = false,
-                        ) {
-
+export function addBlock(
+  board: Board,
+  block: Block,
+  buffer: Uint8Array = board.desc,
+  addShadow: boolean = false,
+) {
   if (addShadow) {
-    forEach(block, (el, x, y, i, j) => {
+    forEach(block, (_, x, y, i, j) => {
       const index = indexFromPoint(board.width, x, y);
       if (block.desc[i][j] === 0) {
         return;
       }
       buffer[index] = block.desc[i][j] + SHADOW_OFFSET;
     });
-    gravityDrop({ 
+    gravityDrop({
       desc: buffer,
       width: board.width,
       height: board.height,
@@ -50,7 +43,7 @@ export function addBlock(board: Board,
     clearShadow(buffer);
   }
 
-  forEach(block, (el, x, y, i, j) => {
+  forEach(block, (_, x, y, i, j) => {
     const index = indexFromPoint(board.width, x, y);
     if (block.desc[i][j] === 0) {
       return;
@@ -60,7 +53,7 @@ export function addBlock(board: Board,
 }
 
 export function canMoveDown(board: Board, block: Block): boolean {
-  const newY =  block.y + 1; 
+  const newY = block.y + 1;
   const bottomEdge = newY + block.height - block.centreY;
   if (bottomEdge > board.height) {
     return false;
@@ -69,7 +62,7 @@ export function canMoveDown(board: Board, block: Block): boolean {
 }
 
 export function canMoveUp(board: Board, block: Block): boolean {
-  const newY =  block.y - 1;
+  const newY = block.y - 1;
   const topEdge = newY - block.centreY;
   if (topEdge < 0) {
     return false;
@@ -102,25 +95,25 @@ export function canMoveRight(board: Board, block: Block): boolean {
  */
 export function canRotateEdges(board: Board, block: Block): boolean {
   const rightEdge = block.x + block.width - block.centreX;
-  
+
   if (rightEdge > board.width - 1) {
     return false;
   }
-  
+
   const leftEdge = block.x - block.centreX;
-  
+
   if (leftEdge <= 0) {
     return false;
   }
-  
+
   const bottomEdge = block.y + block.height - block.centreY;
-  
+
   if (bottomEdge > board.height - 1) {
     return false;
   }
-  
+
   const topEdge = block.y - block.centreY;
-  
+
   if (topEdge <= 0) {
     return false;
   }
@@ -132,11 +125,11 @@ export function canRotateLeft1(board: Board, block: Block): boolean {
   if (!canRotateEdges(board, block)) {
     return false;
   }
-  
+
   rotateLeft(block);
   const result = !isOverlapping(board, block, block.x, block.y);
   rotateRight(block);
-  
+
   return result;
 }
 
@@ -144,11 +137,11 @@ export function canRotateRight1(board: Board, block: Block): boolean {
   if (!canRotateEdges(board, block)) {
     return false;
   }
-  
+
   rotateRight(block);
   const result = !isOverlapping(board, block, block.x, block.y);
   rotateLeft(block);
-  
+
   return result;
 }
 
@@ -159,11 +152,11 @@ export function createBoard1(x: number, y: number): Board1 {
   const total = x * y;
   const board = new Uint8Array(total);
   let i;
-  
+
   for (i = 0; i < total; i += 1) {
     board[i] = 0;
   }
-  
+
   return Object.create(null, {
     desc: {
       configurable: true,
@@ -184,20 +177,20 @@ export function createBoard1(x: number, y: number): Board1 {
       configurable: false,
       writable: false,
       value: y,
-    }
+    },
   });
 }
 
 /**
  * Populates `descBuffer` with the new state *and* flips `desc`/`descBuffer`
- * 
- * The new state is calculated by checking for solid rows and omitting them 
- * from * the `nextBoard`.  Rows above the cleared rows are moved down by the 
- * number of * rows immediately below them that have been cleared.  Finally the 
+ *
+ * The new state is calculated by checking for solid rows and omitting them
+ * from * the `nextBoard`.  Rows above the cleared rows are moved down by the
+ * number of * rows immediately below them that have been cleared.  Finally the
  * function * returns the number of rows cleared.
- * 
- * This function is labelled detectAndClear1 because it's conceivable that 
- * alternate algorithms will be considered in the future as well as alternate 
+ *
+ * This function is labelled detectAndClear1 because it's conceivable that
+ * alternate algorithms will be considered in the future as well as alternate
  * rules
  */
 export function detectAndClear1(board: Board1): number {
@@ -205,12 +198,12 @@ export function detectAndClear1(board: Board1): number {
   let newRowOffset = 0;
   let completeRow = true;
   let rowCounter = 0;
-  
+
   for (let i = board.desc.length - 1; i >= 0; i -= 1) {
     if (board.desc[i] === 0) {
       completeRow = false;
     }
-    
+
     board.descBuffer[i + newRowOffset] = board.desc[i];
 
     rowCounter += 1;
@@ -236,13 +229,14 @@ export function detectAndClear1(board: Board1): number {
   return clearedRows;
 }
 
-export function detectAndClearTile1(board: Board,
-                                    offset: number,
-                                    adjacents: number[] = [],
-                                    visited: number[] = [],
-                                    value: number = 0,
-                                    skip: 'left' | 'right' |
-                                      'down' | 'up' | 'none' = 'none') {
+export function detectAndClearTile1(
+  board: Board,
+  offset: number,
+  adjacents: number[] = [],
+  visited: number[] = [],
+  value: number = 0,
+  skip: 'left' | 'right' | 'down' | 'up' | 'none' = 'none',
+) {
   throwOutOfBounds(board.desc, offset, 'detectAndClearTile1');
 
   // skip if visited
@@ -275,13 +269,19 @@ export function detectAndClearTile1(board: Board,
   // add the offset if it's not present
   if (adjacents.indexOf(offset) === -1) {
     adjacents.push(offset);
-  } 
+  }
 
   // look down if possible
-  if ((offset + board.width) < board.desc.length) {
+  if (offset + board.width < board.desc.length) {
     if (skip !== 'down') {
       detectAndClearTile1(
-        board, offset + board.width, adjacents, visited, value, 'up');
+        board,
+        offset + board.width,
+        adjacents,
+        visited,
+        value,
+        'up',
+      );
     }
   }
 
@@ -289,7 +289,13 @@ export function detectAndClearTile1(board: Board,
   if (offset >= board.width) {
     if (skip !== 'up') {
       detectAndClearTile1(
-        board, offset - board.width, adjacents, visited, value, 'down');
+        board,
+        offset - board.width,
+        adjacents,
+        visited,
+        value,
+        'down',
+      );
     }
   }
 
@@ -297,12 +303,18 @@ export function detectAndClearTile1(board: Board,
   if (offset % board.width !== 0) {
     if (skip !== 'left') {
       detectAndClearTile1(
-        board, offset - 1, adjacents, visited, value, 'right');
+        board,
+        offset - 1,
+        adjacents,
+        visited,
+        value,
+        'right',
+      );
     }
   }
 
   // if it's the right most tile
-  if (((offset + 1) % board.width) === 0) {
+  if ((offset + 1) % board.width === 0) {
     // if not, we've already looked left and down...
     return adjacents;
   } else {
@@ -350,9 +362,7 @@ export function gravityDrop(board: Board) {
   }
 }
 
-export function detectAndClear2(
-  board: Board, max = DC2MAX, markOffset = 0,
-) {
+export function detectAndClear2(board: Board, max = DC2MAX, markOffset = 0) {
   let clearedTiles = 0;
 
   for (let i = 0; i < board.desc.length; i += 1) {
@@ -361,16 +371,15 @@ export function detectAndClear2(
     if (len >= max) {
       clearedTiles += len;
       if (markOffset) {
-        adjacentTiles.forEach((offset) => board.desc[offset] += markOffset);
+        adjacentTiles.forEach(offset => (board.desc[offset] += markOffset));
       } else {
-        adjacentTiles.forEach((offset) => board.desc[offset] = 0);
+        adjacentTiles.forEach(offset => (board.desc[offset] = 0));
       }
     }
   }
 
   return clearedTiles;
 }
-
 
 export function indexFromPoint(width: number, x: number, y: number): number {
   return y * width + x;
@@ -379,19 +388,21 @@ export function indexFromPoint(width: number, x: number, y: number): number {
 /**
  * Simple test to see if a block's position overlaps other blocks on the board
  */
-export function isOverlapping(board: Board,
-                              block: Block, 
-                              newX: number = block.x,
-                              newY: number = block.y): boolean {
+export function isOverlapping(
+  board: Board,
+  block: Block,
+  newX: number = block.x,
+  newY: number = block.y,
+): boolean {
   let overlaps = false;
-  
+
   for (let j = block.height - 1; j >= 0; j -= 1) {
     if (overlaps) {
       break;
     }
-    
+
     let testY;
-    
+
     if (j < block.centreY) {
       testY = newY - block.centreY + j;
     } else if (j === block.centreY) {
@@ -419,17 +430,17 @@ export function isOverlapping(board: Board,
       }
     }
   }
-  
+
   return overlaps;
 }
 
-export function removeBlock(board: Board,
-                           block: Block,
-                           buffer: Uint8Array = board.desc,
-                           hasShadow: boolean = false,
-                          ) {
-
-  forEach(block, (el, x, y, i, j) => {
+export function removeBlock(
+  board: Board,
+  block: Block,
+  buffer: Uint8Array = board.desc,
+  hasShadow: boolean = false,
+) {
+  forEach(block, (_, x, y, i, j) => {
     const index = indexFromPoint(board.width, x, y);
     if (block.desc[i][j] === 0) {
       return;
@@ -445,9 +456,9 @@ export function removeBlock(board: Board,
 export function clearShadow(buffer: Uint8Array) {
   for (let i = 0; i < buffer.length; i += 1) {
     if (
-      buffer[i] === (SHADOW_OFFSET + 10) ||
-      buffer[i] === (SHADOW_OFFSET + 20) ||
-      buffer[i] === (SHADOW_OFFSET + 30)
+      buffer[i] === SHADOW_OFFSET + 10 ||
+      buffer[i] === SHADOW_OFFSET + 20 ||
+      buffer[i] === SHADOW_OFFSET + 30
     ) {
       buffer[i] = 0;
     }

@@ -20,10 +20,5 @@
     "useCache": false,
     "emitRequireType": false
   },
-  "exclude": [
-    "coverage",
-    "dist",
-    "lib",
-    "node_modules"
-  ]
+  "exclude": ["coverage", "dist", "lib", "node_modules"]
 }

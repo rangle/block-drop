@@ -1,13 +1,11 @@
 const path = require('path');
 const shared = require('./webpack/webpack.shared.config.js');
-const plugins = shared.plugins.concat([ shared.pluginIndex('index.html') ]);
+const plugins = shared.plugins.concat([shared.pluginIndex('index.html')]);
 
 const { isProd } = shared;
 
 module.exports = {
-  devtool: isProd ? 
-    'source-map' :
-    'cheap-module-eval-source-map',
+  devtool: isProd ? 'source-map' : 'cheap-module-eval-source-map',
   entry: {
     'block-drop': './src/index.ts',
   },

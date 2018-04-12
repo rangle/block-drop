@@ -18,15 +18,17 @@ const devTools =
   (<any>window).devToolsExtension && (<any>window).devToolsExtension();
 
 export function create(root) {
- return createStore<IState>(
-      root, devTools ?
-        compose(
-          engineEnhancer as any, 
-          applyMiddleware(routeBindingMiddleware as any), 
-          devTools
-        ) as any :
-        compose(
-          engineEnhancer as any, applyMiddleware(routeBindingMiddleware as any)
-        )
-    );
+  return createStore<IState>(
+    root,
+    devTools
+      ? (compose(
+          engineEnhancer as any,
+          applyMiddleware(routeBindingMiddleware as any),
+          devTools,
+        ) as any)
+      : compose(
+          engineEnhancer as any,
+          applyMiddleware(routeBindingMiddleware as any),
+        ),
+  );
 }

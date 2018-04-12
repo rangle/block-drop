@@ -3,8 +3,13 @@ const shared = require('./webpack.shared.config.js');
 
 module.exports = {
   entry: {
-    'block-drop-engine': path
-      .join(__dirname, '..', 'src', 'engine', 'engine.ts'),
+    'block-drop-engine': path.join(
+      __dirname,
+      '..',
+      'src',
+      'engine',
+      'engine.ts',
+    ),
   },
   module: shared.module,
   mode: 'production',

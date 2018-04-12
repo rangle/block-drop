@@ -5,16 +5,22 @@ describe('next config reducer', () => {
   describe('CHANGE_NEXT_CONFIG', () => {
     it('should assign a new payload to state[meta]', () => {
       const state: any = { test: 5 };
-      const newState = nextConfig(
-        state, { type: CHANGE_NEXT_CONFIG, payload: 7, meta: 'test' });
+      const newState = nextConfig(state, {
+        type: CHANGE_NEXT_CONFIG,
+        payload: 7,
+        meta: 'test',
+      });
 
       expect(newState.test).toBe(7);
     });
 
     it('should return a new object', () => {
       const state: any = { test: 5 };
-      const newState = nextConfig(
-        state, { type: CHANGE_NEXT_CONFIG, payload: 7, meta: 'test' });
+      const newState = nextConfig(state, {
+        type: CHANGE_NEXT_CONFIG,
+        payload: 7,
+        meta: 'test',
+      });
 
       expect(newState).not.toBe(state);
     });
