@@ -1,4 +1,3 @@
-
 /**
  * x/y refer to board positions (if the block is active) always measured from
  * the block's top left, even after rotation
@@ -33,7 +32,7 @@ export interface Board {
 export type BooleanFunction = (...args: any[]) => boolean;
 
 export interface Board1 extends Board {
-  descBuffer: Uint8Array; 
+  descBuffer: Uint8Array;
 }
 
 export interface Dictionary<T> {
@@ -67,9 +66,7 @@ export interface NextBlockConfig extends MapBaseConfig {
   seedRandom?: string;
   randomMethod?: RandomMethod;
   seed?: string;
-  spawn?: (boardWidth: number,
-           boardHeight: number,
-           block: Block) => Block;
+  spawn?: (boardWidth: number, boardHeight: number, block: Block) => Block;
 }
 
 export interface GameConfig extends NextBlockConfig {
@@ -95,7 +92,7 @@ export interface GameConfig extends NextBlockConfig {
   nextLevelMultiplier?: number;
   speed?: number;
   speedMultiplier?: number;
-  tick?: (game, delta: number) =>  any;
+  tick?: (game, delta: number) => any;
 }
 
 export type Matrix = Array<number[]>;
@@ -142,7 +139,7 @@ export interface Game {
     board: Board,
     block: Block,
     buffer: TypedArray,
-    addShadow: boolean
+    addShadow: boolean,
   ): any;
   board: Board;
   clearCheck(markOffset?: number): number;

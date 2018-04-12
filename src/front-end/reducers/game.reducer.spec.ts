@@ -22,7 +22,7 @@ describe('game reducer', () => {
   actions[UPDATE_BUFFER] = 'buffer';
   actions[UPDATE_PREVIEW] = 'preview';
 
-  Object.keys(actions).forEach((action) => {
+  Object.keys(actions).forEach(action => {
     describe(action, () => {
       testSimpleNewMerge(action, actions[action]);
     });

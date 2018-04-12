@@ -3,9 +3,7 @@
  */
 import { GameConfig } from '../../interfaces';
 
-import {
-  createBlock,
-} from '../block';
+import { createBlock } from '../block';
 
 import {
   canMoveDown,
@@ -16,20 +14,11 @@ import {
   createBoard1,
 } from '../board';
 
-import {
-  defaultRandom,
-} from '../random';
+import { defaultRandom } from '../random';
 
-import {
-  checkForLoss1,
-  gameOver1,
-  spawn1,
-  tick1,
-} from '../rules';
+import { checkForLoss1, gameOver1, spawn1, tick1 } from '../rules';
 
-import {
-  deepFreeze,
-} from '../../util';
+import { deepFreeze } from '../../util';
 
 const blockDescriptions = [];
 
@@ -75,4 +64,3 @@ export const DEFAULT_CONFIG_1: GameConfig = deepFreeze({
   speedMultiplier: 0.8,
   tick: tick1,
 });
-

@@ -1,12 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import {
-  tileByNumber,
-} from '../../styles';
+import { tileByNumber } from '../../styles';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

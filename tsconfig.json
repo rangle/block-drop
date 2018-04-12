@@ -12,12 +12,7 @@
     "sourceMap": false,
     "inlineSourceMap": true,
     "jsx": "react",
-    "noUnusedLocals": true,
+    "noUnusedLocals": true
   },
-  "exclude": [
-    "coverage",
-    "dist",
-    "lib",
-    "node_modules"
-  ]
+  "exclude": ["coverage", "dist", "lib", "node_modules"]
 }

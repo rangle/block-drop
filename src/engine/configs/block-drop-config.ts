@@ -2,26 +2,13 @@
  * Block Drop
  */
 
-import {
-  createBlock,
-} from '../block';
+import { createBlock } from '../block';
 
-import {
-  canRotateLeft1,
-  canRotateRight1,
-  createBoard1,
-} from '../board';
+import { canRotateLeft1, canRotateRight1, createBoard1 } from '../board';
 
-import {
-  checkForLoss1,
-  gameOver1,
-  spawn1,
-  tick1,
-} from '../rules';
+import { checkForLoss1, gameOver1, spawn1, tick1 } from '../rules';
 
-import {
-  deepFreeze,
-} from '../../util';
+import { deepFreeze } from '../../util';
 
 export const DEFAULT_CONFIG_1 = deepFreeze({
   width: 11,
@@ -79,4 +66,3 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
   speed: 1000,
   tick: tick1,
 });
-

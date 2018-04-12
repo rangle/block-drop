@@ -2,11 +2,7 @@ import { nextConfigProp } from '../../actions/game.actions';
 import { Store } from '../opaque-tokens';
 import { configInterfaces } from '../../../engine/configs/config-interfaces';
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 
 import { select } from '@angular-redux/store';
 import { Observable } from 'rxjs/Rx';
@@ -40,7 +36,8 @@ import { EngineStore } from '../../store/store';
 `,
 })
 export class GameConfig {
-  @select((s) => s.nextConfig) config$: Observable<string>;
+  @select(s => s.nextConfig)
+  config$: Observable<string>;
   createGame: Function;
   configInterfaces: any[];
   identity = identity;

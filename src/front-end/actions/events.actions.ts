@@ -7,7 +7,7 @@ export function keyPress(event: { keyCode: number }) {
   };
 }
 
-export function viewportResize(event: { x: number, y: number }) {
+export function viewportResize(event: { x: number; y: number }) {
   return {
     type: EVENT_RESIZE,
     payload: event,

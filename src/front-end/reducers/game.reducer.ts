@@ -1,18 +1,10 @@
-import {
-  Block,
-} from '../../interfaces';
+import { Block } from '../../interfaces';
 
-import {
-  GameConfig,
-} from '../../interfaces';
+import { GameConfig } from '../../interfaces';
 
-import {
-  deepFreeze,
-} from '../../util';
+import { deepFreeze } from '../../util';
 
-import {
-  DEFAULT_CONFIG_1,
-} from '../../engine/configs/default-config';
+import { DEFAULT_CONFIG_1 } from '../../engine/configs/default-config';
 
 import {
   EVENT_KEYPRESS,
@@ -42,7 +34,9 @@ export interface IGameState {
   buffer: Uint8Array;
   config: GameConfig;
   currentGameViewportDimensions: {
-    x: number, y: number, direction: 'row' | 'column'
+    x: number;
+    y: number;
+    direction: 'row' | 'column';
   };
   isPaused: boolean;
   isStopped: boolean;

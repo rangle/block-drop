@@ -1,9 +1,7 @@
 /**
  * Random helper functions
  */
-import {
-  makeCollection,
-} from './function-collection';
+import { makeCollection } from './function-collection';
 
 const seedRandom = require('seedrandom');
 
@@ -18,29 +16,31 @@ export const functions = makeCollection<(seed: string) => () => number>(
     xor4096: seedRandom.xor4096,
     xorshift7: seedRandom.xorshift7,
     xorwow: seedRandom.xorwow,
-  }, seedRandom.xor4096);
+  },
+  seedRandom.xor4096,
+);
 
 /**
  * Generates a random integer using the given random function, assumes between
  * 0-max but min can be set
  */
-export function between(randomFunc: () => number,
-                        max: number,
-                        min: number = 0) {
+export function between(
+  randomFunc: () => number,
+  max: number,
+  min: number = 0,
+) {
   if (min >= max) {
     throw new RangeError('between: minimum must be less than maximum');
   }
 
-  return Math.floor((randomFunc() * (max - min)) + min);
+  return Math.floor(randomFunc() * (max - min) + min);
 }
 
 /**
  * Returns a function that will return a random value from a given set, the
  * values will not duplicate until the set is exhausted
  */
-export function randomSet<T>(randomFunc: () => number,
-                          givenSet: T[]): () => T {
-
+export function randomSet<T>(randomFunc: () => number, givenSet: T[]): () => T {
   const randomOrder = shuffle<T>(randomFunc, givenSet.slice(0));
   let position = 0;
 
@@ -51,14 +51,14 @@ export function randomSet<T>(randomFunc: () => number,
     }
     const ret = randomOrder[position];
     position += 1;
-    
+
     return ret;
   };
 }
 
 /**
  * Implementation of Knuth's version of  the Fisher Yates shuffle
- * 
+ *
  * https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
  */
 export function shuffle<T>(randomFunc: () => number, arr: T[]): T[] {
@@ -66,7 +66,6 @@ export function shuffle<T>(randomFunc: () => number, arr: T[]): T[] {
 
   // While there remain elements to shuffle...
   while (0 !== curr) {
-
     // Pick a remaining element...
     const rand = Math.floor(randomFunc() * curr);
     curr -= 1;

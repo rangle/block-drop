@@ -1,8 +1,4 @@
-import {
-  createEventEmitter,
-  emitFrom,
-  onTo,
-} from './event';
+import { createEventEmitter, emitFrom, onTo } from './event';
 
 import { noop } from './util';
 
@@ -20,13 +16,13 @@ describe('event emitter functions', () => {
       onTo(dict, 'test', noop);
       expect(Object.keys(dict.test).length).toBe(1);
     });
-    
+
     it('onTo should return a cleanup method', () => {
       const dict = <{ test: any }>{};
       const off = onTo(dict, 'test', noop);
       expect(Object.keys(dict.test).length).toBe(1);
       off();
-      expect(dict.test).toBeUndefined(); 
+      expect(dict.test).toBeUndefined();
     });
   });
 
@@ -34,16 +30,20 @@ describe('event emitter functions', () => {
     it('should ignore non-existant channels', () => {
       expect(() => emitFrom({}, 'test')).not.toThrowError();
     });
-    
+
     it('should run functions with arguments', () => {
       let called1 = 0;
       let called2 = 0;
-      emitFrom({
-        test: {
-          someUniqueId: (arg) => called1 = arg,
-          somethingElse: (arg) => called2 = arg,
+      emitFrom(
+        {
+          test: {
+            someUniqueId: arg => (called1 = arg),
+            somethingElse: arg => (called2 = arg),
+          },
         },
-      }, 'test', 5);
+        'test',
+        5,
+      );
       expect(called1).toBe(5);
       expect(called2).toBe(5);
     });

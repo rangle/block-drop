@@ -1,6 +1,4 @@
-import {
-  clamp,
-} from '../../../../util';
+import { clamp } from '../../../../util';
 
 export const InputNumber = () => ({
   data: () => ({

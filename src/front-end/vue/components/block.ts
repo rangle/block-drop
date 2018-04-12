@@ -18,10 +18,10 @@ export const Block = () => ({
     },
   },
   template: `
-  <div class="${ flexGrowCol }">
+  <div class="${flexGrowCol}">
     {{ block.name }}
     <div 
-      class="${ flexGrowRow }" 
+      class="${flexGrowRow}" 
       v-for="(row, i) in cols" 
       v-bind:key="i"
       >

@@ -1,32 +1,18 @@
 /**
  * Public API:
  *   - createGame1() creates a game
- * 
+ *
  * The game is a stateful object that processes a series of ticks (steps)
- * 
+ *
  * Core Responsibilities:
  * - Calculate the events of each turn of the game
  * - Keep Score
  * - Track Level
  */
-import {
-  addBlock,
-  removeBlock,
-  gravityDrop,
-} from './board';
-import {
-  debugBlock,
-  move,
-} from './block';
-import {
-  Block,
-  Board,
-  Game,
-  GameConfig,
-} from '../interfaces';
-import {
-  copyBuffer,
-} from '../util';
+import { addBlock, removeBlock, gravityDrop } from './board';
+import { debugBlock, move } from './block';
+import { Block, Board, Game, GameConfig } from '../interfaces';
+import { copyBuffer } from '../util';
 import { rotateLeft, rotateRight } from './block';
 
 const CLEAR_OFFSET = 1;
@@ -40,7 +26,9 @@ export function clearCheck(
 ) {
   const cleared = detectAndClear(offset);
 
-  if (cleared || forceBufferCopy) { copyBuffer(board.desc, buffer); }
+  if (cleared || forceBufferCopy) {
+    copyBuffer(board.desc, buffer);
+  }
 
   return cleared;
 }
@@ -58,9 +46,9 @@ export function updateBlock(
 }
 
 function cartesianControl(
-  game: Game, 
-  axis: 'x' | 'y', 
-  magnitude: number, 
+  game: Game,
+  axis: 'x' | 'y',
+  magnitude: number,
   can: (board: Board, block: Block) => boolean,
 ) {
   if (can(game.board, game.state.activePiece)) {
@@ -70,7 +58,7 @@ function cartesianControl(
 }
 
 export function createGame1(
-  conf: GameConfig, 
+  conf: GameConfig,
   emit,
   buffer: Uint8Array,
   board: Board,
@@ -80,7 +68,7 @@ export function createGame1(
 ): Game {
   const game: Game = {
     state: {
-      activePiece: nextBlock(), 
+      activePiece: nextBlock(),
       buffer,
       cascadeCount: 1,
       conf,
@@ -111,27 +99,32 @@ export function createGame1(
       rotateLeft: () => {
         if (conf.canRotateLeft(board, game.state.activePiece)) {
           updateBlock(
-            board, game.state.activePiece, buffer, conf.enableShadow,
-            () => rotateLeft(game.state.activePiece)
+            board,
+            game.state.activePiece,
+            buffer,
+            conf.enableShadow,
+            () => rotateLeft(game.state.activePiece),
           ),
-          emit('redraw');
+            emit('redraw');
         }
       },
       rotateRight: () => {
         if (conf.canRotateRight(board, game.state.activePiece)) {
           updateBlock(
-            board, game.state.activePiece, buffer, conf.enableShadow,
-            () => rotateRight(game.state.activePiece)
+            board,
+            game.state.activePiece,
+            buffer,
+            conf.enableShadow,
+            () => rotateRight(game.state.activePiece),
           ),
-          emit('redraw');
+            emit('redraw');
         }
       },
     },
     addBlock,
     board,
-    clearCheck: (offset: number = 0) => clearCheck(
-      buffer, board, game.detectAndClear, false, offset
-    ),
+    clearCheck: (offset: number = 0) =>
+      clearCheck(buffer, board, game.detectAndClear, false, offset),
     clearNonSolids: () => {
       let didClear = 0;
       for (let i = 0; i < buffer.length; i += 1) {
@@ -145,9 +138,8 @@ export function createGame1(
       }
       return didClear;
     },
-    detectAndClear: (markOffset = 0) => detectAndClear(
-      board, conf.connectedBlocks, markOffset 
-    ),
+    detectAndClear: (markOffset = 0) =>
+      detectAndClear(board, conf.connectedBlocks, markOffset),
     emit,
     gameOver,
     gravityDrop: () => {
@@ -156,13 +148,14 @@ export function createGame1(
     },
     moveBlock: (axis: 'x' | 'y', quantity: number) => {
       updateBlock(
-        board, 
-        game.state.activePiece, 
-        buffer, 
-        conf.enableShadow, 
+        board,
+        game.state.activePiece,
+        buffer,
+        conf.enableShadow,
         () => {
-        move(game.state.activePiece, axis, quantity);
-      });
+          move(game.state.activePiece, axis, quantity);
+        },
+      );
     },
     newBlock: () => {
       game.state.activePiece = game.nextBlock();
@@ -173,6 +166,6 @@ export function createGame1(
     },
     nextBlock,
     tick: (delta: number) => conf.tick(game, delta),
-  }; 
+  };
   return game;
 }

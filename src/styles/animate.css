@@ -1,27 +1,26 @@
 .animated {
-    animation-duration: var(--animate-speed);
-    animation-fill-mode: both;
+  animation-duration: var(--animate-speed);
+  animation-fill-mode: both;
 }
 .animated.infinite {
-    animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
 }
 
 @keyframes bounceOut {
-    20% {
-        transform: scale3d(0.9, 0.9, 0.9);
-    }
-    50%,
-    55% {
-        opacity: 1;
-        transform: scale3d(1.1, 1.1, 1.1);
-    }
-    to {
-        opacity: 0;
-        transform: scale3d(0.3, 0.3, 0.3);
-    }
+  20% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+  50%,
+  55% {
+    opacity: 1;
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  to {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
 }
-  
+
 .bounceOut {
-      animation-name: bounceOut;
+  animation-name: bounceOut;
 }
-  

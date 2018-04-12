@@ -28,6 +28,9 @@ export class Select {
   @Input() model: number;
   @Input() options: string[];
   @Input() byValue: boolean = false;
-  @Output() update: EventEmitter<{ index: number, value: string}> =
-    new EventEmitter<{ index: number, value: string}>();
+  @Output()
+  update: EventEmitter<{ index: number; value: string }> = new EventEmitter<{
+    index: number;
+    value: string;
+  }>();
 }

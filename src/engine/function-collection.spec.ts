@@ -1,11 +1,6 @@
-import {
-  registerTo,
-  getFunctionFrom,
-} from './function-collection';
+import { registerTo, getFunctionFrom } from './function-collection';
 
-import {
-  noop
-} from '../util';
+import { noop } from '../util';
 
 describe('function collection functions', () => {
   describe('getFunctionFrom', () => {
@@ -14,17 +9,19 @@ describe('function collection functions', () => {
       expect(getFunctionFrom(noop, collection, 'test')).toBe(noop);
     });
 
-    it('should return the default random function if requested function does ' +
-      'not exist', () => {
-      const defaultFn = noop;
-      expect(getFunctionFrom(defaultFn, {})).toBe(defaultFn);
-    });
+    it(
+      'should return the default random function if requested function does ' +
+        'not exist',
+      () => {
+        const defaultFn = noop;
+        expect(getFunctionFrom(defaultFn, {})).toBe(defaultFn);
+      },
+    );
   });
 
   describe('registerTo function', () => {
     it('should throw if not given a function', () => {
-      expect(() => registerTo({}, 'test', <() => number>{}))
-        .toThrowError();
+      expect(() => registerTo({}, 'test', <() => number>{})).toThrowError();
     });
 
     it('should throw if not given a truthy prop', () => {
@@ -32,16 +29,20 @@ describe('function collection functions', () => {
     });
 
     it('should throw if prop is not a string', () => {
-      expect(() => registerTo({}, <string>{}, <() => number>noop))
-        .toThrowError();
+      expect(() =>
+        registerTo({}, <string>{}, <() => number>noop),
+      ).toThrowError();
     });
 
-    it('should not add the function to the collection if a truthy prop ' +
-      'already exists', () => {
-      const collection = { test: 'taken' };
-      registerTo(collection, 'test', <() => number>noop);
-      expect(collection.test).toBe('taken');
-    });
+    it(
+      'should not add the function to the collection if a truthy prop ' +
+        'already exists',
+      () => {
+        const collection = { test: 'taken' };
+        registerTo(collection, 'test', <() => number>noop);
+        expect(collection.test).toBe('taken');
+      },
+    );
 
     it('should add a function to a collection', () => {
       const collection = { test: false };

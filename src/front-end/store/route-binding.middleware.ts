@@ -1,6 +1,4 @@
-import {
-  routerActions,
-} from '../reducers/route-binding.reducer';
+import { routerActions } from '../reducers/route-binding.reducer';
 import { BD_ROUTE_UPDATE } from '../constants';
 
 export function routeBindingMiddleware(store) {

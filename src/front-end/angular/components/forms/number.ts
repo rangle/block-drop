@@ -6,10 +6,7 @@ import {
   Output,
 } from '@angular/core';
 
-import {
-  clamp,
-  numberFromString,
-} from '../../../../util';
+import { clamp, numberFromString } from '../../../../util';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

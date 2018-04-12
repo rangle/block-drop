@@ -1,12 +1,7 @@
 import { nextConfigProp } from '../../actions/game.actions';
 import { configInterfaces } from '../../../engine/configs/config-interfaces';
 import { identity, isObject } from '../../../util';
-import {
-  Button,
-  InputNumber,
-  InputSelect,
-  InputString,
-} from '../components';
+import { Button, InputNumber, InputSelect, InputString } from '../components';
 
 export const Config = () => ({
   components: {

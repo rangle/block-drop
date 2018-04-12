@@ -30,7 +30,7 @@ export const InputSelect = () => ({
       </option> 
     </select>
   `,
-  watch: { 
+  watch: {
     inputValue(newVal: number | string, oldVal: number | string) {
       this.$emit('change', {
         index: this.inputValue,

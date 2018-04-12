@@ -1,18 +1,14 @@
-import {
-  CHANGE_FRAMEWORK,
-  CHANGE_MULTI_FRAMEWORK,
-} from '../constants';
+import { CHANGE_FRAMEWORK, CHANGE_MULTI_FRAMEWORK } from '../constants';
 import { deepFreeze, mergeProp, partial } from '../../util';
 import { BD_ROUTE_UPDATE, ROUTES } from '../constants';
 
 export interface IAppState {
-  boardLandscapeLimits: { x: number, y: number };
-  boardPortraitLimits: { x: number, y: number };
+  boardLandscapeLimits: { x: number; y: number };
+  boardPortraitLimits: { x: number; y: number };
   currentFramework: number; // matches index in frameworkDescriptions
   routes: { path: string }[];
   useMultiFrameworks: boolean;
 }
-
 
 const INIT: IAppState = deepFreeze({
   boardLandscapeLimits: { x: 0.25, y: 0 },
@@ -28,8 +24,7 @@ export function app(state = INIT, { payload, type }) {
   switch (type) {
     case BD_ROUTE_UPDATE:
       return Object.assign({}, state, {
-        routes: ROUTES
-          .filter(partial(routesFilter, payload)),
+        routes: ROUTES.filter(partial(routesFilter, payload)),
       });
 
     case CHANGE_FRAMEWORK:

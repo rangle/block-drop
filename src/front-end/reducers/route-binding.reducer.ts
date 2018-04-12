@@ -25,8 +25,8 @@ const NG_UPDATE_LOCATION = THIRD_PARTY_TYPES[1];
 
 export interface RouterAction<S, P> {
   newState(path: string, state: S): S; // calculates new route state based on
-                                       // pathname
-  fromPayload(payload: P): string;     // gets pathname from payload
+  // pathname
+  fromPayload(payload: P): string; // gets pathname from payload
 }
 
 export type RouterActions = Dictionary<RouterAction<any, any>>;
@@ -95,13 +95,18 @@ export function newState_LOCATION_CHANGE(path, state) {
     };
     return state;
   }
-  state.react.locationBeforeTransitions = Object
-    .assign({}, state.react.locationBeforeTransitions, { pathname: path });
+  state.react.locationBeforeTransitions = Object.assign(
+    {},
+    state.react.locationBeforeTransitions,
+    { pathname: path },
+  );
   return state;
 }
 
 export const routeBinding = partial<(state: any, action: { type: any }) => any>(
-  routeBindingOn, routerActions);
+  routeBindingOn,
+  routerActions,
+);
 
 /**
  * Note I, onus is on the routerAction's newState method to return a new
@@ -112,18 +117,16 @@ export const routeBinding = partial<(state: any, action: { type: any }) => any>(
  */
 export function routeBindingOn(actions: RouterActions, reducer) {
   return (state, action) => {
-
     let newState = state;
     if (actions[action.type]) {
       const path = actions[action.type].fromPayload(action.payload);
-      Object.keys(actions)
-        .forEach((type) => {
-          if (type === action.type) {
-            return;
-          }
+      Object.keys(actions).forEach(type => {
+        if (type === action.type) {
+          return;
+        }
 
-          newState = actions[type].newState(path, newState);
-        });
+        newState = actions[type].newState(path, newState);
+      });
     }
 
     return reducer(newState, action);

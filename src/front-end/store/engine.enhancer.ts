@@ -42,11 +42,8 @@ export interface EngineStore<T> extends Store<T> {
 }
 
 // this is not super permanent
-export function createGame(references: EngineReferences,
-                           store: Store<IState>) {
-
-  references.engine =
-    create1(Object.assign({}, store.getState().nextConfig));
+export function createGame(references: EngineReferences, store: Store<IState>) {
+  references.engine = create1(Object.assign({}, store.getState().nextConfig));
 
   (<any>store).dispatch(replaceNextConfig(references.engine.config));
   (<any>store).dispatch(replaceConfig(references.engine.config));
@@ -77,9 +74,10 @@ export function createGame(references: EngineReferences,
 /**
  * The enhancer
  */
-export function blockDropEngine(references: EngineReferences,
-                                createStore: StoreCreator) {
-
+export function blockDropEngine(
+  references: EngineReferences,
+  createStore: StoreCreator,
+) {
   return (reducer: Reducer<IState>, state?: IState): EngineStore<IState> => {
     const vanillaStore = createStore<IState>(reducer, state);
 
@@ -116,7 +114,7 @@ export function blockDropEngine(references: EngineReferences,
     return Object.assign({}, vanillaStore, {
       game: {
         controls: () => references.engine.controls,
-        create:  partial(createGame, references, vanillaStore),
+        create: partial(createGame, references, vanillaStore),
         on: (event: string, cb: Function) => references.engine.on(event, cb),
         pause: pauseGame,
         resume: () => {
