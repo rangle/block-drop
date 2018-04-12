@@ -28,7 +28,7 @@ export class Block {
     return index;
   }
 
-  trackRow(index: number, value: number) {
+  trackRow(_, value: number) {
     return value;
   }
 }

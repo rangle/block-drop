@@ -10,14 +10,14 @@ describe('routeBinding reducer', () => {
     'should given reducerA return a reducerB that returns the result of ' +
       'reducerA',
     () => {
-      const reducerA = (state, action) => 5;
+      const reducerA = () => 5;
       const reducerB = routeBindingOn({}, reducerA);
       expect(reducerB({}, {})).toBe(5);
     },
   );
 
   it('should ignore actions not in given RouterActions', () => {
-    const reducerA = (state, action) => 5;
+    const reducerA = () => 5;
     const reducerB = routeBindingOn(
       {
         testAction: {
@@ -42,7 +42,7 @@ describe('routeBinding reducer', () => {
       "action's payload and the routerActions' fromPayload and every _other_ " +
       "action's newState methods",
     () => {
-      const reducerA = (state, action) => state;
+      const reducerA = state => state;
       const reducerB = routeBindingOn(
         {
           testAction: {

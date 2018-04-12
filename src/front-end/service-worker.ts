@@ -1,4 +1,4 @@
-self.addEventListener('install', event => {
+self.addEventListener('install', () => {
   // Perform install steps
 });
 

@@ -2,20 +2,20 @@ import { up } from './block';
 
 import { canMoveDown, DC2MAX } from './board';
 
-import { Block, Board, Game } from '../interfaces';
+import { Block, Game } from '../interfaces';
 
 import { intMidFloor, invertBoolean } from '../util';
 
 const CLEAR_OFFSET = 1;
 
-export function gameOver1(engine: { gameOver: () => any }, board?: Board) {
+export function gameOver1(engine: { gameOver: () => any }) {
   // must call game over when done
   engine.gameOver();
 }
 
 export const checkForLoss1 = invertBoolean(canMoveDown);
 
-export function spawn1(width: number, height: number, block: Block): Block {
+export function spawn1(width: number, _, block: Block): Block {
   up(block);
   block.x = intMidFloor(width);
   block.y = 0;

@@ -27,7 +27,7 @@ export function addBlock(
   addShadow: boolean = false,
 ) {
   if (addShadow) {
-    forEach(block, (el, x, y, i, j) => {
+    forEach(block, (_, x, y, i, j) => {
       const index = indexFromPoint(board.width, x, y);
       if (block.desc[i][j] === 0) {
         return;
@@ -43,7 +43,7 @@ export function addBlock(
     clearShadow(buffer);
   }
 
-  forEach(block, (el, x, y, i, j) => {
+  forEach(block, (_, x, y, i, j) => {
     const index = indexFromPoint(board.width, x, y);
     if (block.desc[i][j] === 0) {
       return;
@@ -440,7 +440,7 @@ export function removeBlock(
   buffer: Uint8Array = board.desc,
   hasShadow: boolean = false,
 ) {
-  forEach(block, (el, x, y, i, j) => {
+  forEach(block, (_, x, y, i, j) => {
     const index = indexFromPoint(board.width, x, y);
     if (block.desc[i][j] === 0) {
       return;

@@ -15,7 +15,7 @@ export function columnsFromBlock(block: Block) {
   let desc = [];
   let lastJ = 0;
 
-  forEach(block, (el, x, y, i, j) => {
+  forEach(block, (el, _, __, ___, j) => {
     if (j !== lastJ) {
       cols.push(desc);
       desc = [];

@@ -31,13 +31,13 @@ export const InputSelect = () => ({
     </select>
   `,
   watch: {
-    inputValue(newVal: number | string, oldVal: number | string) {
+    inputValue() {
       this.$emit('change', {
         index: this.inputValue,
         value: this.byValue ? this.inputValue : this.options[this.inputValue],
       });
     },
-    value(newVal: number | string, oldVal: number | string) {
+    value(newVal: number | string) {
       this.inputValue = newVal;
     },
   },

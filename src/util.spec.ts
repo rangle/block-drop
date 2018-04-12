@@ -305,7 +305,7 @@ describe('utility functions', () => {
     });
 
     it('should take variadic argument', () => {
-      expect(invertBoolean((a, b, c) => c)(null, null, true)).toBe(false);
+      expect(invertBoolean((_, __, c) => c)(null, null, true)).toBe(false);
     });
   });
 

@@ -19,11 +19,11 @@ export const InputNumber = () => ({
     >
   `,
   watch: {
-    inputValue(newVal: number, oldVal: number) {
+    inputValue() {
       const val = clamp(this.inputValue, this.min, this.max);
       this.$emit('change', val);
     },
-    value(newVal: number, oldVal: number) {
+    value(newVal: number) {
       this.inputValue = newVal;
     },
   },

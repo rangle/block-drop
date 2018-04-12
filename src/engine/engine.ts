@@ -212,7 +212,7 @@ export function create1(optionsConfig: GameConfig = {}) {
       tick: state.tick,
       control: 'gameOver',
     });
-    board.desc.forEach((el, i) => {
+    board.desc.forEach((_, i) => {
       board.desc[i] = 0;
       state.buffer[i] = 0;
     });

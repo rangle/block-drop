@@ -100,7 +100,7 @@ export function computeAspectRatioDimensions(
 }
 
 export function copyBuffer(from, to) {
-  from.forEach((el, i) => (to[i] = from[i]));
+  from.forEach((_, i) => (to[i] = from[i]));
 }
 /**
  * Links `state` such that it is a reference to a read only API

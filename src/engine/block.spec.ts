@@ -98,7 +98,7 @@ describe('block functions', () => {
     it('should call back with board positions', () => {
       let result = [];
       const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 0, 0);
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, x, y) => {
         result.push({ x, y });
       });
       expect(result).toEqual([
@@ -121,7 +121,7 @@ describe('block functions', () => {
         0,
         0,
       );
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, x, y) => {
         result.push({ x, y });
       });
       expect(result).toEqual([
@@ -147,7 +147,7 @@ describe('block functions', () => {
         0,
         0,
       );
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, x, y) => {
         result.push({ x, y });
       });
       expect(result).toEqual([
@@ -172,7 +172,7 @@ describe('block functions', () => {
     it('should call back with iterator positions', () => {
       let result = [];
       const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, __, ___, i, j) => {
         result.push({ x: i, y: j });
       });
       expect(result).toEqual([
@@ -191,7 +191,7 @@ describe('block functions', () => {
     it('should handle four lengths iterator positions', () => {
       let result = [];
       const block = createBlock([[1, 2, 3], [4, 5, 6], [7, 8, 9], [0, 1, 2]]);
-      forEach(block, (el, x, y, i, j) => {
+      forEach(block, (_, __, ___, i, j) => {
         result.push({ x: i, y: j });
       });
       expect(result).toEqual([
