@@ -35,6 +35,7 @@ export interface StoreGameExtensions {
   resume: () => void;
   stop: () => void;
   start: () => void;
+  restart: () => void;
 }
 
 export interface EngineStore<T> extends Store<T> {
@@ -100,6 +101,13 @@ export function blockDropEngine(references: EngineReferences,
         };
       }
     }
+    
+    function restartGame() {
+      if (startGame === noop) {
+        references.engine.restart();
+        (<any>vanillaStore).dispatch(updateGameStatus(false));
+      }
+    }
 
     function stopGame() {
       if (startGame === noop) {
@@ -123,6 +131,7 @@ export function blockDropEngine(references: EngineReferences,
           resumeGame();
           resumeGame = noop;
         },
+        restart: restartGame,
         stop: stopGame,
         start: () => {
           startGame();

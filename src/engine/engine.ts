@@ -271,6 +271,10 @@ export function create1(optionsConfig: GameConfig = {}) {
         };
       },
     },
+    restart: {
+      configurable: false,
+      value: gameOver
+    },
     preview: {
       configurable: false,
       value: state.preview,

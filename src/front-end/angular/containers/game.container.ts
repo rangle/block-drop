@@ -47,6 +47,11 @@ import { Resizer } from '../../aspect-resizer';
         </bd-button>
         <bd-button 
           class="flex-auto ma1 ma2-ns"
+          value="Restart"
+          [onClick]="restart">
+        </bd-button>
+        <bd-button 
+          class="flex-auto ma1 ma2-ns"
           value="Done"
           [onClick]="done">
         </bd-button>
@@ -73,6 +78,7 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   preview: { name: string; cols: number[][] }[] = [];
   resume: Function;
   resumeLabel = 'Resume';
+  restart: Function;
 
   constructor(
     @Inject(Store) private store: EngineStore,
@@ -83,6 +89,7 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
     this.pause = this.store.game.pause;
     this.resume = this.store.game.resume;
     this.done = this.store.game.stop;
+    this.restart = this.store.game.restart;
   }
 
   ngAfterViewInit() {
