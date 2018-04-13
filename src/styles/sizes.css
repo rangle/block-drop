@@ -24,6 +24,10 @@
   height: 6rem;
 }
 
+.f-xl {
+  font-size: 7rem;
+}
+
 @media (--breakpoint-not-small) {
   .w2-5-ns {
     width: 2.5rem;

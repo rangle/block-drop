@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -55,17 +56,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </nav>
     </header>
 
-    <div id="bd-splash" class="h-100">
-      <div class="flex-column justify-center pt6">
-        <div class="flex flex-column justify-center items-center">
-          <h1 class="calibre f2 f-subheadline-ns mb2">Block Drop</h1>
-          <button onclick="BLOCK_DROP.mount()" class="calibre-medium bg-angular-red white br-pill pt2 ph3 b--white f3 mb3 dim">Play</button>
-          <a href="https://rangle.io/" class="dib h-10 w-10 mt3 grow">
-            <img src="assets/rangle-logo.png" alt="Rangle lolo">
-          </a>
-        </div>
+  <div id="bd-splash" class="h-100 flex-column">
+    <hr class="ma0 bn shadow-vue-green bg-vue-green h0-25 h0-5-l">
+    <main class="pa3 pa5-ns">
+      <h2 class="f-xl vue-green mv4 text-shadow-vue-green">Ask us for a demo of our JavaScript game</h2>
+      <hr class="ma0 bn shadow-vue-green bg-vue-green h0-25 h0-5-l w5">
+      <p class="f1">
+        <span class="vue-green">Block Drop</span> is a game our developers designed to dynamically switch between JavaScript frameworks. It supports
+        Vue, Angular, and React.
+      </p>
+      <p class="f1">Go ahead and play it. But be careful, it's addictive.</p>
+      <div class="mt5">
+        <button onclick="BLOCK_DROP.mount()" class="bg-vue-green shadow-vue-green blue-black f1 pt4 pb3 ph5 br4 calibre-medium ttu">
+          Play
+        </button>
       </div>
-    </div>
+    </main>
+  </div>
 
     <div id="bd-root-react" class="h-100 flex-column"></div>
     <div id="bd-root-vue" class="h-100 flex-column">
@@ -81,4 +88,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <bd-angular></bd-angular>
     </div>
   </body>
+
 </html>
