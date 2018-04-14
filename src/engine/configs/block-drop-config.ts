@@ -2,15 +2,10 @@
  * Block Drop
  */
 
-import { createBlock } from '../block';
-
-import { canRotateLeft1, canRotateRight1, createBoard1 } from '../board';
-
-import { checkForLoss1, gameOver1, spawn1, tick1 } from '../rules';
-
 import { deepFreeze } from '../../util';
+import { GameConfigOptions } from '../../interfaces';
 
-export const DEFAULT_CONFIG_1 = deepFreeze({
+export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   width: 11,
   height: 25,
   blockDescriptions: [
@@ -51,18 +46,15 @@ export const DEFAULT_CONFIG_1 = deepFreeze({
       name: 'عصا الهوكي',
     },
   ],
-  canRotateLeft: canRotateLeft1,
-  canRotateRight: canRotateRight1,
-  checkForLoss: checkForLoss1,
-  createBoard: createBoard1,
-  createBlock: createBlock,
-  gameOver: gameOver1,
-  detectAndClear: 'detectAndClear1',
+  canRotateLeft: 'canRotateLeft1',
+  canRotateRight: 'canRotateRight1',
+  createBoard: 'createBoard1',
+  createBlock: 'createBlock',
   forceBufferUpdateOnClear: false,
   preview: 0,
   randomMethod: 'randomFromSet',
   seedRandom: 'xor4096',
-  spawn: spawn1,
+  spawn: 'spawn1',
   speed: 1000,
-  tick: tick1,
+  tick: 'tick1',
 });

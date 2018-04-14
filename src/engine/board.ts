@@ -12,13 +12,57 @@ import { throwOutOfBounds } from '../util';
 export const SHADOW_OFFSET = 9;
 export const DC2MAX = 9;
 
-export const functionsDetectClear = makeCollection(
-  {
+export default {
+  canMoveDown: makeCollection<(board: Board, block: Block) => boolean>(
+    {
+      canMoveDown1: canMoveDown,
+    },
+    canMoveDown,
+  ),
+  canMoveLeft: makeCollection<(board: Board, block: Block) => boolean>(
+    {
+      canMoveLeft1: canMoveLeft,
+    },
+    canMoveLeft,
+  ),
+  canMoveRight: makeCollection<(board: Board, block: Block) => boolean>(
+    {
+      canMoveRight1: canMoveRight,
+    },
+    canMoveRight,
+  ),
+  canMoveUp: makeCollection<(board: Board, block: Block) => boolean>(
+    {
+      canMoveUp1: canMoveUp,
+    },
+    canMoveUp,
+  ),
+  canRotateLeft: makeCollection<(board: Board, block: Block) => boolean>(
+    {
+      canRotateLeft1: canRotateLeft1,
+    },
+    canRotateLeft1,
+  ),
+  canRotateRight: makeCollection<(board: Board, block: Block) => boolean>(
+    {
+      canRotateRight1: canRotateRight1,
+    },
+    canRotateRight1,
+  ),
+  createBoard: makeCollection<(x: number, y: number) => Board>(
+    {
+      createBoard1,
+    },
+    createBoard1,
+  ),
+  detectAndClear: makeCollection<(board: Board) => number>(
+    {
+      detectAndClear1,
+      detectAndClear2,
+    },
     detectAndClear1,
-    detectAndClear2,
-  },
-  detectAndClear1,
-);
+  ),
+};
 
 export function addBlock(
   board: Board,
@@ -39,8 +83,6 @@ export function addBlock(
       width: board.width,
       height: board.height,
     });
-  } else {
-    clearShadow(buffer);
   }
 
   forEach(block, (_, x, y, i, j) => {

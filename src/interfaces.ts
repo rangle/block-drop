@@ -54,46 +54,48 @@ export interface FunctionsCollection<T extends Function> {
 }
 
 export interface MapBaseConfig {
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
   depth?: number;
 }
 
 export interface NextBlockConfig extends MapBaseConfig {
-  blockDescriptions?: BlockDescription[];
-  createBlock?: (desc: Matrix, x?: number, y?: number, name?: string) => Block;
-  preview?: number;
-  seedRandom?: string;
-  randomMethod?: RandomMethod;
-  seed?: string;
-  spawn?: (boardWidth: number, boardHeight: number, block: Block) => Block;
+  blockDescriptions: BlockDescription[];
+  createBlock: string;
+  preview: number;
+  seedRandom: string;
+  randomMethod: RandomMethod | string;
+  seed: string;
+  spawn: string;
 }
 
-export interface GameConfig extends NextBlockConfig {
-  board?: Uint8Array;
-  debug?: boolean;
-  canMoveUp?: (board: Board, block: Block) => boolean;
-  canMoveDown?: (board: Board, block: Block) => boolean;
-  canMoveLeft?: (board: Board, block: Block) => boolean;
-  canMoveRight?: (board: Board, block: Block) => boolean;
-  canRotateLeft?: (board: Board, block: Block) => boolean;
-  canRotateRight?: (board: Board, block: Block) => boolean;
-  checkForLoss?: (board: Board, block: Block) => boolean;
-  clearDelay?: number;
-  connectedBlocks?: number;
-  createBoard?: (width: number, height: number) => Board;
-  detectAndClear?: string;
-  dropOnUp?: boolean;
-  enableShadow?: boolean;
-  forceBufferUpdateOnClear?: boolean;
-  name?: string;
-  baseLevelScore?: number;
-  tileScoreMultiplier?: number;
-  nextLevelMultiplier?: number;
-  speed?: number;
-  speedMultiplier?: number;
-  tick?: (game, delta: number) => any;
+export interface GameRules {
+  clearDelay: number;
+  connectedBlocks: number;
+  dropOnUp: boolean;
+  enableShadow: boolean;
+  baseLevelScore: number;
+  tileScoreMultiplier: number;
+  nextLevelMultiplier: number;
+  speed: number;
+  speedMultiplier: number;
 }
+export interface GameConfig extends NextBlockConfig, GameRules {
+  debug: boolean;
+  canMoveUp: string;
+  canMoveDown: string;
+  canMoveLeft: string;
+  canMoveRight: string;
+  canRotateLeft: string;
+  canRotateRight: string;
+  checkForLoss: string;
+  createBoard: string;
+  detectAndClear: string;
+  name: string;
+  tick: string;
+}
+
+export type GameConfigOptions = { [P in keyof GameConfig]?: GameConfig[P] };
 
 export type Matrix = Array<number[]>;
 
@@ -107,7 +109,6 @@ export type TypedArray = UnsignedTypedArray | SignedTypedArray;
 
 export interface GameState {
   activePiece: Block;
-  buffer: TypedArray;
   cascadeCount: number;
   conf: GameConfig;
   isEnded: boolean;
@@ -135,13 +136,13 @@ export interface GameControls {
 export interface Game {
   state: GameState;
   controls: GameControls;
-  addBlock(
-    board: Board,
-    block: Block,
-    buffer: TypedArray,
-    addShadow: boolean,
-  ): any;
   board: Board;
+  canMoveDown(): boolean;
+  canMoveLeft(): boolean;
+  canMoveRight(): boolean;
+  canMoveUp(): boolean;
+  canRotateLeft(): boolean;
+  canRotateRight(): boolean;
   clearCheck(markOffset?: number): number;
   clearNonSolids(): void;
   detectAndClear: (markOffset?: number) => number;

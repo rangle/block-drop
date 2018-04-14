@@ -19,7 +19,7 @@
     "node": ">=4.0.0"
   },
   "scripts": {
-    "prebuild": "npm run clean",
+    "prebuild": "yarn run clean",
     "build":
       "yarn build:angular && yarn build:complete && yarn build:engine && yarn build:react && yarn build:vue",
     "build:angular":

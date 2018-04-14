@@ -1,22 +1,13 @@
-import { gameOver1, tick1 } from './rules';
+import { tick1 } from './rules';
 import { noop } from '../util';
 
 describe('rules functions', () => {
-  describe('gameOver1 function', () => {
-    it("calls engine's game over method", () => {
-      let wasCalled = false;
-      gameOver1({
-        gameOver: () => (wasCalled = true),
-      });
-      expect(wasCalled).toBe(true);
-    });
-  });
-
   describe('tick1 function', () => {
     let state: any;
 
     beforeEach(() => {
       state = {
+        activePiece: { centreY: 0, height: 1, y: 0 },
         buffer: new Uint8Array([]),
         level: 1,
         conf: {
@@ -47,6 +38,7 @@ describe('rules functions', () => {
       let didRun = false;
       tick1(
         {
+          canMoveDown: () => true,
           emit: noop,
           state,
           moveBlock: () => (didRun = true),
@@ -58,14 +50,15 @@ describe('rules functions', () => {
 
     it('ends the game if it cannot move down and checkForLoss returns true', () => {
       let didRun = false;
-      state.conf.canMoveDown = () => false;
-      state.conf.checkForLoss = () => true;
+      state.activePiece.y = 25;
       tick1(
         {
           addBlock: noop,
           board: {
             desc: new Uint8Array([]),
+            height: 1,
           },
+          canMoveDown: () => false,
           clearCheck: noop,
           emit: noop,
           gameOver: () => (didRun = true),
@@ -83,14 +76,13 @@ describe('rules functions', () => {
         'false',
       () => {
         let didRun = false;
-        state.conf.canMoveDown = () => false;
-        state.conf.checkForLoss = () => false;
         tick1(
           {
             addBlock: noop,
             board: {
               desc: new Uint8Array([]),
             },
+            canMoveDown: () => false,
             clearCheck: noop,
             emit: noop,
             gameOver: () => (didRun = true),

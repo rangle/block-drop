@@ -11,25 +11,36 @@
  * - Facilitate realtime game play (ie control iteration/steps)
  * - Validate historical game play
  */
-import { functionsDetectClear } from './board';
+import boardFunctions, { addBlock } from './board';
+
+import blockFunctions from './block';
 
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
 import { createEventEmitter } from '../event';
 
-import { Block, GameConfig, NextBlockConfig } from '../interfaces';
+import {
+  Block,
+  GameConfig,
+  GameConfigOptions,
+  NextBlockConfig,
+} from '../interfaces';
 
 import '../license';
 
-import { between, functions as randomFunctions, randomSet } from './random';
+import randomFunctions, { between, randomSet } from './random';
 
-import { deepFreeze, noop, partial } from '../util';
+import rulesFunctions from './rules';
+
+import { deepFreeze, noop, partial, copyBuffer } from '../util';
+
 import { createGame1 } from './game';
 
 export { configInterfaces } from './configs/config-interfaces';
 
 export function create1state(conf: GameConfig) {
-  const board = conf.createBoard(conf.width, conf.height);
+  const createBoard = boardFunctions.createBoard.get(conf.createBoard);
+  const board = createBoard(conf.width, conf.height);
   const buffer = Uint8Array.from(board.desc);
 
   return {
@@ -45,13 +56,27 @@ export function create1state(conf: GameConfig) {
   };
 }
 
-export function create1Controls(state, getActiveGameCtrl) {
+export function create1Controls(
+  state,
+  getActiveGameCtrl,
+  emit,
+  enableShadow = false,
+) {
   const invoke = (prop: string) => {
     state.history.push({
       tick: state.tick,
       control: prop,
     });
-    getActiveGameCtrl()[prop]();
+    if (getActiveGameCtrl()[prop]()) {
+      copyBuffer(state.board.desc, state.buffer);
+      addBlock(
+        state.board,
+        state.games[0].state.activePiece,
+        state.buffer,
+        enableShadow,
+      );
+      emit('redraw');
+    }
   };
 
   return Object.create(null, {
@@ -82,12 +107,11 @@ export function create1Controls(state, getActiveGameCtrl) {
   });
 }
 
-function manageNewGame(conf, state, emit, nextBlock, gameOver) {
-  const detectAndClear = functionsDetectClear.get(conf.detectAndClear);
+function manageNewGame(conf: GameConfig, state, emit, nextBlock, gameOver) {
+  const detectAndClear = boardFunctions.detectAndClear.get(conf.detectAndClear);
   const game = createGame1(
     conf,
     emit,
-    state.buffer,
     state.board,
     detectAndClear,
     nextBlock,
@@ -170,6 +194,15 @@ function manageNewGame(conf, state, emit, nextBlock, gameOver) {
       if (didTick) {
         state.tick += 1;
         then = now;
+        // stuff happened, flip it!
+        copyBuffer(state.board.desc, state.buffer);
+        addBlock(
+          state.board,
+          state.games[0].state.activePiece,
+          state.buffer,
+          conf.enableShadow,
+        );
+        game.emit('redraw');
       }
       loop();
     });
@@ -180,7 +213,7 @@ function manageNewGame(conf, state, emit, nextBlock, gameOver) {
  * Creates an Engine.  Engines are responsible for holding onto
  * the random seed and orchestrating games
  */
-export function create1(optionsConfig: GameConfig = {}) {
+export function create1(optionsConfig: GameConfigOptions = {}) {
   const obj = Object.create(null);
   const conf = deepFreeze(forceValidateConfig(DEFAULT_CONFIG_1, optionsConfig));
   const state = create1state(conf);
@@ -237,7 +270,12 @@ export function create1(optionsConfig: GameConfig = {}) {
     },
     controls: {
       configurable: false,
-      value: create1Controls(state, () => activeGameControl),
+      value: create1Controls(
+        state,
+        () => activeGameControl,
+        events.emit,
+        conf.enableShadow,
+      ),
     },
     endGame: {
       configurable: false,
@@ -282,7 +320,7 @@ export function create1(optionsConfig: GameConfig = {}) {
 }
 
 export function forceValidateConfig(
-  defaults: GameConfig,
+  defaults: GameConfigOptions,
   config: any = {},
 ): GameConfig {
   Object.keys(defaults).forEach(prop => {
@@ -298,11 +336,13 @@ export function createNextBlock(
   c: NextBlockConfig,
   previewContainer: Block[] = [],
 ) {
+  const createBlock = blockFunctions.createBlock.get(c.createBlock);
   const blocks = c.blockDescriptions.map(el =>
-    c.createBlock(el.desc, 0, 0, el.name),
+    createBlock(el.desc, 0, 0, el.name),
   );
   const rand = randomFunctions.get(c.seedRandom)(c.seed);
-  const spawn: (block: Block) => Block = partial(c.spawn, c.width, c.height);
+  const spawnF = rulesFunctions.spawns.get(c.spawn);
+  const spawn: (block: Block) => Block = partial(spawnF, c.width, c.height);
 
   const randomBlock: () => Block =
     c.randomMethod === 'random'

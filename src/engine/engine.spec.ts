@@ -8,14 +8,32 @@ import {
 } from './engine';
 
 import { spawn1 } from './rules';
+import { noop } from '../util';
 
 describe('engine functions', () => {
   describe('create1Controls', () => {
     it('should map controls to the current game', () => {
       let didRun = false;
-      const c = create1Controls({ history: [] }, () => ({
-        moveDown: () => (didRun = true),
-      }));
+      const c = create1Controls(
+        {
+          board: { desc: [] },
+          games: [
+            {
+              state: {
+                activePiece: {},
+              },
+            },
+          ],
+          history: [],
+        },
+        () => ({
+          moveDown: () => {
+            didRun = true;
+            return true;
+          },
+        }),
+        noop,
+      );
       c.moveDown();
       expect(didRun).toBe(true);
     });

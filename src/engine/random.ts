@@ -7,7 +7,7 @@ const seedRandom = require('seedrandom');
 
 export const defaultRandom = seedRandom.xor4096;
 
-export const functions = makeCollection<(seed: string) => () => number>(
+const functions = makeCollection<(seed: string) => () => number>(
   {
     alea: seedRandom.alea,
     quick: seedRandom.quick,
@@ -19,6 +19,7 @@ export const functions = makeCollection<(seed: string) => () => number>(
   },
   seedRandom.xor4096,
 );
+export default functions;
 
 /**
  * Generates a random integer using the given random function, assumes between
