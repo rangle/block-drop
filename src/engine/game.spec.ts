@@ -8,7 +8,7 @@ describe('game functions', () => {
     it('should return an object', () => {
       expect(
         createGame1(
-          {},
+          {} as any,
           noop,
           new Uint8Array([]),
           createBoard1(1, 1),

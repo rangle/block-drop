@@ -9,7 +9,8 @@
  * - Keep Score
  * - Track Level
  */
-import { addBlock, removeBlock, gravityDrop } from './board';
+import rulesFunctions from './rules';
+import boardFunctions, { addBlock, removeBlock, gravityDrop } from './board';
 import { debugBlock, move } from './block';
 import { Block, Board, Game, GameConfig } from '../interfaces';
 import { copyBuffer } from '../util';
@@ -66,6 +67,13 @@ export function createGame1(
   nextBlock,
   gameOver,
 ): Game {
+  const tick = rulesFunctions.ticks.get(conf.tick);
+  const canMoveDown = boardFunctions.canMoveDown.get(conf.canMoveDown);
+  const canMoveLeft = boardFunctions.canMoveLeft.get(conf.canMoveLeft);
+  const canMoveRight = boardFunctions.canMoveRight.get(conf.canMoveRight);
+  const canMoveUp = boardFunctions.canMoveUp.get(conf.canMoveUp);
+  const canRotateLeft = boardFunctions.canRotateLeft.get(conf.canRotateLeft);
+  const canRotateRight = boardFunctions.canRotateRight.get(conf.canRotateRight);
   const game: Game = {
     state: {
       activePiece: nextBlock(),
@@ -87,17 +95,17 @@ export function createGame1(
       endGame: () => {
         game.state.isEnded = true;
       },
-      moveDown: () => cartesianControl(game, 'y', 1, conf.canMoveDown),
-      moveLeft: () => cartesianControl(game, 'x', -1, conf.canMoveLeft),
-      moveRight: () => cartesianControl(game, 'x', 1, conf.canMoveRight),
+      moveDown: () => cartesianControl(game, 'y', 1, canMoveDown),
+      moveLeft: () => cartesianControl(game, 'x', -1, canMoveLeft),
+      moveRight: () => cartesianControl(game, 'x', 1, canMoveRight),
       moveUp: () => {
-        while (conf.canMoveDown(board, game.state.activePiece)) {
+        while (canMoveDown(board, game.state.activePiece)) {
           game.moveBlock('y', 1);
         }
         emit('redraw');
       },
       rotateLeft: () => {
-        if (conf.canRotateLeft(board, game.state.activePiece)) {
+        if (canRotateLeft(board, game.state.activePiece)) {
           updateBlock(
             board,
             game.state.activePiece,
@@ -109,7 +117,7 @@ export function createGame1(
         }
       },
       rotateRight: () => {
-        if (conf.canRotateRight(board, game.state.activePiece)) {
+        if (canRotateRight(board, game.state.activePiece)) {
           updateBlock(
             board,
             game.state.activePiece,
@@ -123,6 +131,12 @@ export function createGame1(
     },
     addBlock,
     board,
+    canMoveDown: () => canMoveDown(game.board, game.state.activePiece),
+    canMoveLeft: () => canMoveLeft(game.board, game.state.activePiece),
+    canMoveRight: () => canMoveRight(game.board, game.state.activePiece),
+    canMoveUp: () => canMoveUp(game.board, game.state.activePiece),
+    canRotateLeft: () => canRotateLeft(game.board, game.state.activePiece),
+    canRotateRight: () => canRotateRight(game.board, game.state.activePiece),
     clearCheck: (offset: number = 0) =>
       clearCheck(buffer, board, game.detectAndClear, false, offset),
     clearNonSolids: () => {
@@ -165,7 +179,7 @@ export function createGame1(
       addBlock(board, game.state.activePiece, buffer, conf.enableShadow);
     },
     nextBlock,
-    tick: (delta: number) => conf.tick(game, delta),
+    tick: (delta: number) => tick(game, delta),
   };
   return game;
 }

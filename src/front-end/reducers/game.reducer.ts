@@ -1,6 +1,6 @@
 import { Block } from '../../interfaces';
 
-import { GameConfig } from '../../interfaces';
+import { GameConfigOptions } from '../../interfaces';
 
 import { deepFreeze } from '../../util';
 
@@ -32,7 +32,7 @@ import { mergeProp, partial } from '../../util';
 export interface IGameState {
   activePiece: Block;
   buffer: Uint8Array;
-  config: GameConfig;
+  config: GameConfigOptions;
   currentGameViewportDimensions: {
     x: number;
     y: number;

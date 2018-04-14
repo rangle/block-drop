@@ -1,6 +1,6 @@
-import { functionsDetectClear } from '../board';
+import boardFunctions from '../board';
 
-import { functions as functionsRandom } from '../random';
+import functionsRandom from '../random';
 
 import { deepFreeze, isNumber, isString } from '../../util';
 
@@ -18,8 +18,8 @@ export const stringWithLength = deepFreeze({
 export const configInterfaces = deepFreeze([
   {
     label: 'Detect/Clear Function',
-    default: functionsDetectClear.default,
-    options: () => functionsDetectClear.list(),
+    default: boardFunctions.detectAndClear.default,
+    options: () => boardFunctions.detectAndClear.list(),
     prop: 'detectAndClear',
     type: 'select',
   },

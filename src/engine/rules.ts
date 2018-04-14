@@ -1,17 +1,29 @@
 import { up } from './block';
 
+import { makeCollection } from './function-collection';
+
 import { canMoveDown, DC2MAX } from './board';
 
 import { Block, Game } from '../interfaces';
 
 import { intMidFloor, invertBoolean } from '../util';
 
-const CLEAR_OFFSET = 1;
+export default {
+  spawns: makeCollection<(width: number, _: any, block: Block) => Block>(
+    {
+      spawn1,
+    },
+    spawn1,
+  ),
+  ticks: makeCollection<(game: Game, delta: number) => boolean>(
+    {
+      tick1,
+    },
+    tick1,
+  ),
+};
 
-export function gameOver1(engine: { gameOver: () => any }) {
-  // must call game over when done
-  engine.gameOver();
-}
+const CLEAR_OFFSET = 1;
 
 export const checkForLoss1 = invertBoolean(canMoveDown);
 
@@ -66,7 +78,7 @@ export function tick1(game: Game, delta: number) {
     return false;
   }
 
-  if (game.state.conf.canMoveDown(game.board, game.state.activePiece)) {
+  if (game.canMoveDown()) {
     game.moveBlock('y', 1);
     game.emit('redraw');
   } else {
@@ -75,7 +87,7 @@ export function tick1(game: Game, delta: number) {
       game.state.isClearDelay = true;
     }
     game.newBlock();
-    if (conf.checkForLoss(game.board, game.state.activePiece)) {
+    if (checkForLoss1(game.board, game.state.activePiece)) {
       // game over
       game.gameOver();
     } else {

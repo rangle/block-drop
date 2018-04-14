@@ -9,6 +9,18 @@ import {
 } from './matrix';
 
 import { deepFreeze, intMidCeil, intMidFloor } from '../util';
+import { makeCollection } from './function-collection';
+
+export default {
+  createBlock: makeCollection<
+    (desc: Matrix, posX: number, posY: number, name: string) => Block
+  >(
+    {
+      createBlock1: createBlock,
+    },
+    createBlock,
+  ),
+};
 
 export function columnsFromBlock(block: Block) {
   const cols = [];
