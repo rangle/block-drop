@@ -681,7 +681,7 @@ describe('game-board functions', () => {
       expect(adj.length).toBe(0);
     });
 
-    it('should match the following case study', () => {
+    it('should match the following case study (1)', () => {
       board = createBoard1(7, 4);
       board.desc[5] = 10;
       board.desc[11] = 10;

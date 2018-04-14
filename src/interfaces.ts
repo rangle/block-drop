@@ -109,7 +109,6 @@ export type TypedArray = UnsignedTypedArray | SignedTypedArray;
 
 export interface GameState {
   activePiece: Block;
-  buffer: TypedArray;
   cascadeCount: number;
   conf: GameConfig;
   isEnded: boolean;
@@ -137,12 +136,6 @@ export interface GameControls {
 export interface Game {
   state: GameState;
   controls: GameControls;
-  addBlock(
-    board: Board,
-    block: Block,
-    buffer: TypedArray,
-    addShadow: boolean,
-  ): any;
   board: Board;
   canMoveDown(): boolean;
   canMoveLeft(): boolean;

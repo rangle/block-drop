@@ -83,8 +83,6 @@ export function addBlock(
       width: board.width,
       height: board.height,
     });
-  } else {
-    clearShadow(buffer);
   }
 
   forEach(block, (_, x, y, i, j) => {

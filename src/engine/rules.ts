@@ -2,7 +2,7 @@ import { up } from './block';
 
 import { makeCollection } from './function-collection';
 
-import { canMoveDown, DC2MAX } from './board';
+import { canMoveDown, DC2MAX, addBlock } from './board';
 
 import { Block, Game } from '../interfaces';
 
@@ -55,7 +55,6 @@ function tick1ClearDelay(game: Game, delta: number) {
       game.state.cascadeCount = 1;
       game.state.isClearDelay = false;
     }
-    game.emit('redraw');
   } else {
     console.warn('tick1ClearDelay: no non solids cleared');
     // No non slids
@@ -80,9 +79,8 @@ export function tick1(game: Game, delta: number) {
 
   if (game.canMoveDown()) {
     game.moveBlock('y', 1);
-    game.emit('redraw');
   } else {
-    game.addBlock(game.board, game.state.activePiece, game.board.desc, false);
+    addBlock(game.board, game.state.activePiece, game.board.desc, false);
     if (tick1tryAndScore(game)) {
       game.state.isClearDelay = true;
     }
@@ -93,7 +91,6 @@ export function tick1(game: Game, delta: number) {
     } else {
       game.moveBlock('y', 1);
     }
-    game.emit('redraw');
     game.emit('drop');
   }
   return true;

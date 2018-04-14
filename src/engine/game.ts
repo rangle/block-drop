@@ -10,40 +10,18 @@
  * - Track Level
  */
 import rulesFunctions from './rules';
-import boardFunctions, { addBlock, removeBlock, gravityDrop } from './board';
+import boardFunctions, { gravityDrop } from './board';
 import { debugBlock, move } from './block';
 import { Block, Board, Game, GameConfig } from '../interfaces';
-import { copyBuffer } from '../util';
 import { rotateLeft, rotateRight } from './block';
 
 const CLEAR_OFFSET = 1;
 
 export function clearCheck(
-  buffer: Uint8Array,
-  board: Board,
   detectAndClear: (markOffset?: number) => number,
-  forceBufferCopy: boolean,
   offset = CLEAR_OFFSET,
 ) {
-  const cleared = detectAndClear(offset);
-
-  if (cleared || forceBufferCopy) {
-    copyBuffer(board.desc, buffer);
-  }
-
-  return cleared;
-}
-
-export function updateBlock(
-  board: Board,
-  block: Block,
-  buffer: Uint8Array,
-  enableShadow: boolean,
-  updateFn: () => any,
-) {
-  removeBlock(board, block, buffer, enableShadow);
-  updateFn();
-  addBlock(board, block, buffer, enableShadow);
+  return detectAndClear(offset);
 }
 
 function cartesianControl(
@@ -54,14 +32,14 @@ function cartesianControl(
 ) {
   if (can(game.board, game.state.activePiece)) {
     game.moveBlock(axis, magnitude);
-    game.emit('redraw');
+    return true;
   }
+  return false;
 }
 
 export function createGame1(
   conf: GameConfig,
   emit,
-  buffer: Uint8Array,
   board: Board,
   detectAndClear,
   nextBlock,
@@ -77,7 +55,6 @@ export function createGame1(
   const game: Game = {
     state: {
       activePiece: nextBlock(),
-      buffer,
       cascadeCount: 1,
       conf,
       isEnded: false,
@@ -99,37 +76,28 @@ export function createGame1(
       moveLeft: () => cartesianControl(game, 'x', -1, canMoveLeft),
       moveRight: () => cartesianControl(game, 'x', 1, canMoveRight),
       moveUp: () => {
+        let happened = false;
         while (canMoveDown(board, game.state.activePiece)) {
+          happened = true;
           game.moveBlock('y', 1);
         }
-        emit('redraw');
+        return happened;
       },
       rotateLeft: () => {
         if (canRotateLeft(board, game.state.activePiece)) {
-          updateBlock(
-            board,
-            game.state.activePiece,
-            buffer,
-            conf.enableShadow,
-            () => rotateLeft(game.state.activePiece),
-          ),
-            emit('redraw');
+          rotateLeft(game.state.activePiece);
+          return true;
         }
+        return false;
       },
       rotateRight: () => {
         if (canRotateRight(board, game.state.activePiece)) {
-          updateBlock(
-            board,
-            game.state.activePiece,
-            buffer,
-            conf.enableShadow,
-            () => rotateRight(game.state.activePiece),
-          ),
-            emit('redraw');
+          rotateRight(game.state.activePiece);
+          return true;
         }
+        return false;
       },
     },
-    addBlock,
     board,
     canMoveDown: () => canMoveDown(game.board, game.state.activePiece),
     canMoveLeft: () => canMoveLeft(game.board, game.state.activePiece),
@@ -137,16 +105,14 @@ export function createGame1(
     canMoveUp: () => canMoveUp(game.board, game.state.activePiece),
     canRotateLeft: () => canRotateLeft(game.board, game.state.activePiece),
     canRotateRight: () => canRotateRight(game.board, game.state.activePiece),
-    clearCheck: (offset: number = 0) =>
-      clearCheck(buffer, board, game.detectAndClear, false, offset),
+    clearCheck: (offset: number = 0) => clearCheck(game.detectAndClear, offset),
     clearNonSolids: () => {
       let didClear = 0;
-      for (let i = 0; i < buffer.length; i += 1) {
+      for (let i = 0; i < board.desc.length; i += 1) {
         if (board.desc[i] % 10 === 0) {
           continue;
         }
         board.desc[i] = 0;
-        buffer[i] = 0;
 
         didClear += 1;
       }
@@ -156,27 +122,15 @@ export function createGame1(
       detectAndClear(board, conf.connectedBlocks, markOffset),
     emit,
     gameOver,
-    gravityDrop: () => {
-      gravityDrop(board);
-      copyBuffer(board.desc, buffer);
-    },
+    gravityDrop: () => gravityDrop(board),
     moveBlock: (axis: 'x' | 'y', quantity: number) => {
-      updateBlock(
-        board,
-        game.state.activePiece,
-        buffer,
-        conf.enableShadow,
-        () => {
-          move(game.state.activePiece, axis, quantity);
-        },
-      );
+      move(game.state.activePiece, axis, quantity);
     },
     newBlock: () => {
       game.state.activePiece = game.nextBlock();
       if (conf.debug) {
         debugBlock('New Piece:', game.state.activePiece);
       }
-      addBlock(board, game.state.activePiece, buffer, conf.enableShadow);
     },
     nextBlock,
     tick: (delta: number) => tick(game, delta),

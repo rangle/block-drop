@@ -11,7 +11,7 @@
  * - Facilitate realtime game play (ie control iteration/steps)
  * - Validate historical game play
  */
-import boardFunctions from './board';
+import boardFunctions, { addBlock } from './board';
 
 import blockFunctions from './block';
 
@@ -32,7 +32,7 @@ import randomFunctions, { between, randomSet } from './random';
 
 import rulesFunctions from './rules';
 
-import { deepFreeze, noop, partial } from '../util';
+import { deepFreeze, noop, partial, copyBuffer } from '../util';
 
 import { createGame1 } from './game';
 
@@ -56,13 +56,27 @@ export function create1state(conf: GameConfig) {
   };
 }
 
-export function create1Controls(state, getActiveGameCtrl) {
+export function create1Controls(
+  state,
+  getActiveGameCtrl,
+  emit,
+  enableShadow = false,
+) {
   const invoke = (prop: string) => {
     state.history.push({
       tick: state.tick,
       control: prop,
     });
-    getActiveGameCtrl()[prop]();
+    if (getActiveGameCtrl()[prop]()) {
+      copyBuffer(state.board.desc, state.buffer);
+      addBlock(
+        state.board,
+        state.games[0].state.activePiece,
+        state.buffer,
+        enableShadow,
+      );
+      emit('redraw');
+    }
   };
 
   return Object.create(null, {
@@ -98,7 +112,6 @@ function manageNewGame(conf: GameConfig, state, emit, nextBlock, gameOver) {
   const game = createGame1(
     conf,
     emit,
-    state.buffer,
     state.board,
     detectAndClear,
     nextBlock,
@@ -181,6 +194,15 @@ function manageNewGame(conf: GameConfig, state, emit, nextBlock, gameOver) {
       if (didTick) {
         state.tick += 1;
         then = now;
+        // stuff happened, flip it!
+        copyBuffer(state.board.desc, state.buffer);
+        addBlock(
+          state.board,
+          state.games[0].state.activePiece,
+          state.buffer,
+          conf.enableShadow,
+        );
+        game.emit('redraw');
       }
       loop();
     });
@@ -248,7 +270,12 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     },
     controls: {
       configurable: false,
-      value: create1Controls(state, () => activeGameControl),
+      value: create1Controls(
+        state,
+        () => activeGameControl,
+        events.emit,
+        conf.enableShadow,
+      ),
     },
     endGame: {
       configurable: false,

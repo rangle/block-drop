@@ -32,6 +32,7 @@ export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   clearDelay: 1000,
   createBoard: 'createBoard1',
   createBlock: 'createBlock1',
+  detectAndClear: 'detectAndClear2',
   dropOnUp: true,
   enableShadow: true,
   preview: 0,
