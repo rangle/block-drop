@@ -55,10 +55,20 @@ export function createGame(references: EngineReferences, store: Store<IState>) {
   /** be sure to keep the references fresh, a partial would bind to ref */
   references.engine.on('redraw', updateState);
   references.engine.on('score', updateLastScore);
+  references.engine.on('pause', dispatchPause);
+  references.engine.on('resume', dispatchResume);
 
   function updateLastScore(scoreData) {
     console.log.bind(console, 'Debug: Score:', scoreData)();
     (<any>store).dispatch(updateScoreData(scoreData));
+  }
+
+  function dispatchResume() {
+    (<any>store).dispatch(resume());
+  }
+
+  function dispatchPause() {
+    (<any>store).dispatch(pause());
   }
 
   function updateState() {
@@ -84,20 +94,7 @@ export function blockDropEngine(
     // start default game
     createGame(references, vanillaStore);
 
-    let resumeGame = noop;
     let startGame = noop;
-
-    function pauseGame() {
-      if (resumeGame === noop) {
-        const resumeRef = references.engine.pause();
-        (<any>vanillaStore).dispatch(pause());
-
-        resumeGame = () => {
-          (<any>vanillaStore).dispatch(resume());
-          resumeRef();
-        };
-      }
-    }
 
     function stopGame() {
       if (startGame === noop) {
@@ -116,10 +113,11 @@ export function blockDropEngine(
         controls: () => references.engine.controls,
         create: partial(createGame, references, vanillaStore),
         on: (event: string, cb: Function) => references.engine.on(event, cb),
-        pause: pauseGame,
+        pause: () => {
+          references.engine.pause();
+        },
         resume: () => {
-          resumeGame();
-          resumeGame = noop;
+          references.engine.pause();
         },
         stop: stopGame,
         start: () => {
