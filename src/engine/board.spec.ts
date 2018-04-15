@@ -17,6 +17,7 @@ import {
   indexFromPoint,
   isOverlapping,
   removeBlock,
+  SHADOW_OFFSET,
 } from './board';
 
 describe('game-board functions', () => {
@@ -791,6 +792,20 @@ describe('game-board functions', () => {
       const block = createBlock([[0, 1, 1], [0, 1, 1], [0, 1, 1]]);
 
       expect(isOverlapping(board, block, 5, 1)).toBe(false);
+    });
+
+    it('should treat shadow offsets as zeros', () => {
+      for (let i = 0; i < board.desc.length; i += 1) {
+        if (board.desc[i] === 0) {
+          if (i % 2 === 0) {
+            board.desc[i] = SHADOW_OFFSET + 10;
+          } else {
+            board.desc[i] = SHADOW_OFFSET + 20;
+          }
+        }
+      }
+      const block = createBlock([[1, 1, 1]]);
+      expect(isOverlapping(board, block, 4, 7)).toBe(false);
     });
   });
 
