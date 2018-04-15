@@ -106,6 +106,7 @@ export function updateScoreData(levelData: {
   fwBonus: number;
   overflowBonus: number;
   score: number;
+  fw: number;
 }) {
   return {
     type: UPDATE_SCORE_DATA,

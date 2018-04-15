@@ -127,11 +127,12 @@ function tick1tryAndScore(game: Game, multiplier = 1) {
   game.state.tilesCleared += cleared.total;
 
   // compute score for clearing tiles
+  const fw = game.activeFramework();
   const overflow = cleared.total - DC2MAX;
   const clearScore = game.state.level * game.state.conf.tileScoreMultiplier;
   const overflowBonus = clearScore * overflow;
   const fwBonus = cleared.breakdown.reduce((s: number, el) => {
-    if (el.fw === game.activeFramework()) {
+    if (el.fw === fw) {
       s += el.total * 2;
     }
     return s;
@@ -165,6 +166,7 @@ function tick1tryAndScore(game: Game, multiplier = 1) {
     cleared,
     clearScore,
     levelScore,
+    fw,
     fwBonus,
     overflowBonus,
     score: game.state.score,

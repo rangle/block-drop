@@ -25,6 +25,15 @@ import { Resizer } from '../../aspect-resizer';
       [board]="(board$ | async)"
       [level]="level$ | async"
       [width]="boardWidth$ | async"
+      [height]="boardHeight$ | async"
+      [lastOverflowBonus]="lastOverflowBonus$ | async"
+      [lastFwBonus]="lastFwBonus$ | async"
+      [lastFwBonusFw]="lastFwBonusFw$ | async"
+      [lastClearScore]="lastClearScore$ | async"
+      [lastLevelScore]="lastLevelScore$ | async"
+      [lastScoreUpdate]="lastScoreUpdate$ | async"
+      [scoreDuration]="scoreAnimationDelay$ | async"
+      [firstAnimationBlock]="firstAnimationBlock$ | async"
     ></board> 
     <div class="w-third">
       <score [score]="score$ | async"></score>
@@ -65,7 +74,26 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
   score$;
   @select(s => s.game.level)
   level$;
+  @select(s => s.game.lastClearScore)
+  lastClearScore$;
+  @select(s => s.game.lastLevelScore)
+  lastLevelScore$;
+  @select(s => s.game.lastFwBonus)
+  lastFwBonus$;
+  @select(s => s.game.lastFwBonusFw)
+  lastFwBonusFw$;
+  @select(s => s.game.lastOverflowBonus)
+  lastOverflowBonus$;
+  @select(s => s.game.lastScoreUpdate)
+  lastScoreUpdate$;
+  @select(s => s.game.scoreAnimationDelay)
+  scoreAnimationDelay$;
+  @select(s => s.game.firstAnimationBlock)
+  firstAnimationBlock$;
+  @select(s => s.game.config.width)
   boardWidth$: number;
+  @select(s => s.game.config.height)
+  boardHeight$: number;
   deRegister: Function[] = [];
   pause: Function;
   done: Function;
