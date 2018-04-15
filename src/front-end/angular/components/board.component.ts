@@ -6,11 +6,11 @@ import { board, emptyTile, flexGrowRow, tileByNumber } from '../../styles';
   selector: 'board',
   host: {
     class:
-      'ba bw2 b--angular-red mr2 mr4-ns flex flex-column shadow-angular-red w-two-thirds relative',
+      'ba bw2 b--angular-red mr2 mr4-ns flex flex-column shadow-angular-red w-two-thirds',
   },
   template: `
     <h3 class="blue-black bg-angular-red f4 f2-m f1-l ma0 pt1 pt2-m pt3-l tc">LEVEL {{level}}</h3>
-    <div class="${board}">
+    <div class="${board} relative">
       <score-hint-cloud
         [lastOverflowBonus]="lastOverflowBonus"
         [lastFwBonus]="lastFwBonus"

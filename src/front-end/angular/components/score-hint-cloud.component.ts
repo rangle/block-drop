@@ -12,8 +12,7 @@ function yFromIndex(width: number, index: number) {
 @Component({
   selector: 'score-hint-cloud',
   host: {
-    class: '',
-    style: 'position: absolute;',
+    class: 'db absolute w-100 h-100',
   },
   template: `
       <score-hint 
