@@ -116,6 +116,8 @@ export function game(state = INIT, { payload, type }) {
         ...state,
         lastLevelScore: payload.levelScore,
         lastClearScore: payload.clearScore,
+        lastOverflowBonus: payload.overflowBonus,
+        lastFwBonus: payload.fwBonus,
       };
 
     default:
