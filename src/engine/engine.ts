@@ -35,7 +35,7 @@ import randomFunctions, { between, randomSet } from './random';
 
 import rulesFunctions from './rules';
 
-import { deepFreeze, noop, partial, copyBuffer } from '../util';
+import { deepFreeze, noop, partial, copyBuffer, throttle } from '../util';
 
 import { createGame1 } from './game';
 
@@ -64,6 +64,7 @@ export function create1Controls(
   state,
   getActiveGameCtrl,
   emit,
+  throttleInterval: number,
   enableShadow = false,
 ) {
   const invoke = (prop: string) => {
@@ -86,51 +87,59 @@ export function create1Controls(
   return Object.create(null, {
     incrementFramework: {
       configurable: false,
-      value: () => {
-        if (state.activeFramework === 10) {
-          emit('fw-switch', 20);
-        } else if (state.activeFramework === 20) {
-          emit('fw-switch', 30);
-        } else {
-          emit('fw-switch', 10);
-        }
-      },
+      value: throttle(
+        throttleInterval,
+        () => {
+          if (state.activeFramework === 10) {
+            emit('fw-switch', 20);
+          } else if (state.activeFramework === 20) {
+            emit('fw-switch', 30);
+          } else {
+            emit('fw-switch', 10);
+          }
+        },
+        true,
+      ),
     },
     decrementFramework: {
       configurable: false,
-      value: () => {
-        if (state.activeFramework === 10) {
-          emit('fw-switch', 30);
-        } else if (state.activeFramework === 20) {
-          emit('fw-switch', 10);
-        } else {
-          emit('fw-switch', 20);
-        }
-      },
+      value: throttle(
+        throttleInterval,
+        () => {
+          if (state.activeFramework === 10) {
+            emit('fw-switch', 30);
+          } else if (state.activeFramework === 20) {
+            emit('fw-switch', 10);
+          } else {
+            emit('fw-switch', 20);
+          }
+        },
+        true,
+      ),
     },
     moveDown: {
       configurable: false,
-      value: partial(invoke, 'moveDown'),
+      value: throttle(throttleInterval, partial(invoke, 'moveDown'), true),
     },
     moveLeft: {
       configurable: false,
-      value: partial(invoke, 'moveLeft'),
+      value: throttle(throttleInterval, partial(invoke, 'moveLeft'), true),
     },
     moveRight: {
       configurable: false,
-      value: partial(invoke, 'moveRight'),
+      value: throttle(throttleInterval, partial(invoke, 'moveRight'), true),
     },
     moveUp: {
       configurable: false,
-      value: partial(invoke, 'moveUp'),
+      value: throttle(throttleInterval, partial(invoke, 'moveUp'), true),
     },
     rotateLeft: {
       configurable: false,
-      value: partial(invoke, 'rotateLeft'),
+      value: throttle(throttleInterval, partial(invoke, 'rotateLeft'), true),
     },
     rotateRight: {
       configurable: false,
-      value: partial(invoke, 'rotateRight'),
+      value: throttle(throttleInterval, partial(invoke, 'rotateRight'), true),
     },
     setFramework: {
       configurable: false,
@@ -280,6 +289,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     state,
     () => activeGameControl,
     events.emit,
+    conf.gamePadThrottleInterval,
     conf.enableShadow,
   );
   controls.pause = pause;
