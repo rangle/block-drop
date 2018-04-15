@@ -54,6 +54,16 @@ export function createPollGamePad(controls: GameControls, interval: number) {
           controls.pause();
         }
       }
+      if (pad.buttons[4].pressed) {
+        if (controls.decrementFramework) {
+          controls.decrementFramework();
+        }
+      }
+      if (pad.buttons[5].pressed) {
+        if (controls.incrementFramework) {
+          controls.incrementFramework();
+        }
+      }
     });
   };
 }

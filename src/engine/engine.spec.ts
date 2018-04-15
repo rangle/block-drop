@@ -17,13 +17,11 @@ describe('engine functions', () => {
       const c = create1Controls(
         {
           board: { desc: [] },
-          games: [
-            {
-              state: {
-                activePiece: {},
-              },
+          game: {
+            state: {
+              activePiece: {},
             },
-          ],
+          },
           history: [],
         },
         () => ({

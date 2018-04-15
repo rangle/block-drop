@@ -48,10 +48,11 @@ export function create1state(conf: GameConfig) {
 
   return {
     activePiece: null,
+    activeFramework: conf.startingFramework,
     board,
     buffer,
     conf,
-    games: [],
+    game: undefined,
     history: [],
     pauses: [],
     preview: [],
@@ -74,7 +75,7 @@ export function create1Controls(
       copyBuffer(state.board.desc, state.buffer);
       addBlock(
         state.board,
-        state.games[0].state.activePiece,
+        state.game.state.activePiece,
         state.buffer,
         enableShadow,
       );
@@ -83,6 +84,30 @@ export function create1Controls(
   };
 
   return Object.create(null, {
+    incrementFramework: {
+      configurable: false,
+      value: () => {
+        if (state.activeFramework === 10) {
+          emit('fw-switch', 20);
+        } else if (state.activeFramework === 20) {
+          emit('fw-switch', 30);
+        } else {
+          emit('fw-switch', 10);
+        }
+      },
+    },
+    decrementFramework: {
+      configurable: false,
+      value: () => {
+        if (state.activeFramework === 10) {
+          emit('fw-switch', 30);
+        } else if (state.activeFramework === 20) {
+          emit('fw-switch', 10);
+        } else {
+          emit('fw-switch', 20);
+        }
+      },
+    },
     moveDown: {
       configurable: false,
       value: partial(invoke, 'moveDown'),
@@ -107,6 +132,12 @@ export function create1Controls(
       configurable: false,
       value: partial(invoke, 'rotateRight'),
     },
+    setFramework: {
+      configurable: false,
+      value: (val: 10 | 20 | 30) => {
+        state.activeFramework = val;
+      },
+    },
   });
 }
 
@@ -119,15 +150,15 @@ function manageNewGame(
   gameOver,
 ) {
   const detectAndClear = boardFunctions.detectAndClear.get(conf.detectAndClear);
-  const game = createGame1(
+  state.game = createGame1(
     conf,
     emit,
     state.board,
     detectAndClear,
     nextBlock,
     gameOver,
+    () => state.activeFramework,
   );
-  state.games.unshift(game);
   /** This is grossly stateful, sorry */
   let isPaused = false;
   let then: number = performance.now();
@@ -141,7 +172,7 @@ function manageNewGame(
       configurable: false,
       value: () => {
         isEnded = true;
-        game.controls.endGame();
+        state.game.controls.endGame();
       },
     },
     isPaused: {
@@ -167,29 +198,43 @@ function manageNewGame(
     },
     moveDown: {
       configurable: false,
-      value: game.controls.moveDown,
+      value: state.game.controls.moveDown,
     },
     moveLeft: {
       configurable: false,
-      value: game.controls.moveLeft,
+      value: state.game.controls.moveLeft,
     },
     moveRight: {
       configurable: false,
-      value: game.controls.moveRight,
+      value: state.game.controls.moveRight,
     },
     moveUp: {
       configurable: false,
-      value: game.controls.moveUp,
+      value: state.game.controls.moveUp,
     },
     rotateLeft: {
       configurable: false,
-      value: game.controls.rotateLeft,
+      value: state.game.controls.rotateLeft,
     },
     rotateRight: {
       configurable: false,
-      value: game.controls.rotateRight,
+      value: state.game.controls.rotateRight,
     },
   });
+
+  function loopDidTick(now: number) {
+    state.tick += 1;
+    then = now;
+    // stuff happened, flip it!
+    copyBuffer(state.board.desc, state.buffer);
+    addBlock(
+      state.board,
+      state.game.state.activePiece,
+      state.buffer,
+      conf.enableShadow,
+    );
+    state.game.emit('redraw');
+  }
 
   function loop() {
     if (isEnded) {
@@ -202,19 +247,9 @@ function manageNewGame(
         return;
       }
       delta = now - then;
-      const didTick = game.tick(delta);
+      const didTick = state.game.tick(delta);
       if (didTick) {
-        state.tick += 1;
-        then = now;
-        // stuff happened, flip it!
-        copyBuffer(state.board.desc, state.buffer);
-        addBlock(
-          state.board,
-          state.games[0].state.activePiece,
-          state.buffer,
-          conf.enableShadow,
-        );
-        game.emit('redraw');
+        loopDidTick(now);
       }
       loop();
     });
@@ -271,7 +306,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
   }
 
   function gameOver() {
-    const { board } = state.games[0];
+    const { board } = state.game;
     state.history.push({
       tick: state.tick,
       control: 'gameOver',
@@ -317,7 +352,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     },
     level: {
       configurable: false,
-      get: () => state.games[0].state.level,
+      get: () => state.game.state.level,
       set: noop,
     },
     on: {
@@ -334,7 +369,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     },
     score: {
       configurable: false,
-      get: () => state.games[0].state.score,
+      get: () => state.game.state.score,
       set: noop,
     },
     startGame: {

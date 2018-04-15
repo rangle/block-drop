@@ -71,6 +71,8 @@ let unmountCurrent = noop;
 makeInvisible(nav);
 hideGame();
 
+store.game.on('fw-switch', loadFrameworkByNumber);
+
 if ((<any>window).BLOCK_DROP) {
   console.warn(
     'Block Drop currently only supports one installed instance per' +
@@ -107,7 +109,9 @@ function mount() {
   loadFramework(
     document.getElementById('angular-toggle') as HTMLButtonElement,
     initialFramework,
+    20,
   );
+  store.game.controls().setFramework(20);
 }
 
 function unmount() {
@@ -118,7 +122,34 @@ function unmount() {
   storeSub = noop;
 }
 
-function loadFramework(button: HTMLButtonElement, anchorId: string) {
+function loadFrameworkByNumber(number: number) {
+  switch (number) {
+    case 20:
+      return loadFramework(
+        document.getElementById('angular-toggle') as HTMLButtonElement,
+        'bd-root-angular',
+        20,
+      );
+    case 30:
+      return loadFramework(
+        document.getElementById('react-toggle') as HTMLButtonElement,
+        'bd-root-react',
+        30,
+      );
+    default:
+      return loadFramework(
+        document.getElementById('vue-toggle') as HTMLButtonElement,
+        'bd-root-vue',
+        10,
+      );
+  }
+}
+
+function loadFramework(
+  button: HTMLButtonElement,
+  anchorId: string,
+  fwNumber: 10 | 20 | 30,
+) {
   disableAll(navButtons);
   setAllInactive(navButtons);
   frameWorks[anchorId]().then(framework => {
@@ -131,6 +162,7 @@ function loadFramework(button: HTMLButtonElement, anchorId: string) {
     changeFramework(FRAMEWORK_DESCRIPTIONS.findIndex(fw => fw.id === anchorId));
     enableAll(navButtons);
     setActive(button);
+    store.game.controls().setFramework(fwNumber);
   });
 }
 

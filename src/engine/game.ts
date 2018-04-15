@@ -44,6 +44,7 @@ export function createGame1(
   detectAndClear,
   nextBlock,
   gameOver,
+  activeFramework: () => 10 | 20 | 30,
 ): Game {
   const tick = rulesFunctions.ticks.get(conf.tick);
   const canMoveDown = boardFunctions.canMoveDown.get(conf.canMoveDown);
@@ -96,6 +97,7 @@ export function createGame1(
         return false;
       },
     },
+    activeFramework,
     board,
     canMoveDown: () => canMoveDown(game.board, game.state.activePiece),
     canMoveLeft: () => canMoveLeft(game.board, game.state.activePiece),

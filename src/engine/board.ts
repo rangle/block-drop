@@ -370,6 +370,9 @@ export function detectAndClearTile1(
 
 export function gravityDropTile(board: Board, offset: number) {
   throwOutOfBounds(board.desc, offset, 'detectAndClearTile1');
+  if (offset < 0) {
+    return;
+  }
 
   // don't drop empty tiles
   if (board[offset] === 0) {

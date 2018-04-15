@@ -99,6 +99,7 @@ export interface GameConfig
   createBoard: string;
   detectAndClear: string;
   name: string;
+  startingFramework: 10 | 20 | 30;
   tick: string;
 }
 
@@ -132,6 +133,8 @@ export interface GameState {
 
 export interface GameControls {
   endGame(): void;
+  incrementFramework?: () => void;
+  decrementFramework?: () => void;
   moveDown(): void;
   moveLeft(): void;
   moveRight(): void;
@@ -139,11 +142,13 @@ export interface GameControls {
   pause?: () => void;
   rotateLeft(): void;
   rotateRight(): void;
+  setFramework?: (fw: number) => void;
 }
 
 export interface Game {
   state: GameState;
   controls: GameControls;
+  activeFramework: () => 10 | 20 | 30;
   board: Board;
   canMoveDown(): boolean;
   canMoveLeft(): boolean;
