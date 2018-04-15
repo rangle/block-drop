@@ -375,7 +375,7 @@ export function gravityDropTile(board: Board, offset: number) {
   }
 
   // don't drop empty tiles
-  if (board[offset] === 0) {
+  if (board.desc[offset] === 0) {
     return;
   }
 

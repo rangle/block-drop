@@ -76,7 +76,11 @@ function tick1Main(game: Game) {
   if (game.canMoveDown()) {
     game.moveBlock('y', 1);
   } else {
+    // commit the block
     addBlock(game.board, game.state.activePiece, game.board.desc, false);
+    game.gravityDrop();
+
+    // check for score
     if (tick1tryAndScore(game)) {
       game.state.isClearDelay = true;
     }
@@ -84,8 +88,6 @@ function tick1Main(game: Game) {
     if (checkForLoss1(game.board, game.state.activePiece)) {
       // game over
       game.gameOver();
-    } else {
-      game.moveBlock('y', 1);
     }
     game.emit('drop');
   }

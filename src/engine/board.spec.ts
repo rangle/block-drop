@@ -736,7 +736,7 @@ describe('game-board functions', () => {
     it('should execute against the above tile', () => {
       board.desc[5] = 1;
       expect(board.desc[15]).toBe(0);
-      gravityDropTile(board, 15);
+      gravityDropTile(board, 5);
       expect(board.desc[15]).toBe(1);
     });
   });
