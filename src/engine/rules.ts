@@ -35,7 +35,27 @@ export function spawn1(width: number, _, block: Block): Block {
   return block;
 }
 
-function tick1ClearDelay(game: Game, delta: number) {
+function tick1ClearDelayHadAnimationArtifacts(game: Game) {
+  game.gravityDrop();
+
+  if (tick1tryAndScore(game, game.state.cascadeCount * 3)) {
+    // if we have score, increment the cascade count
+    game.state.cascadeCount += 1;
+  } else {
+    // if we have no more score end the animation
+    game.state.cascadeCount = 1;
+    game.state.isClearDelay = false;
+  }
+}
+
+function tick1ClearDelayReset(game: Game) {
+  console.warn('tick1ClearDelay: no non solids cleared');
+  // No non slids
+  game.state.cascadeCount = 1;
+  game.state.isClearDelay = false;
+}
+
+function tick1ClearAnimationDelay(game: Game, delta: number) {
   if (
     delta <
     game.state.conf.clearDelay *
@@ -43,40 +63,16 @@ function tick1ClearDelay(game: Game, delta: number) {
   ) {
     return false;
   }
-  const cleared = game.clearNonSolids();
-  if (cleared) {
-    game.gravityDrop();
-
-    if (tick1tryAndScore(game, game.state.cascadeCount * 3)) {
-      // if we have score, increment the cascade count
-      game.state.cascadeCount += 1;
-    } else {
-      // if we have no more score end the animation
-      game.state.cascadeCount = 1;
-      game.state.isClearDelay = false;
-    }
+  const animationArtifacts = game.clearNonSolids();
+  if (animationArtifacts) {
+    tick1ClearDelayHadAnimationArtifacts(game);
   } else {
-    console.warn('tick1ClearDelay: no non solids cleared');
-    // No non slids
-    game.state.cascadeCount = 1;
-    game.state.isClearDelay = false;
+    tick1ClearDelayReset(game);
   }
   return true;
 }
 
-export function tick1(game: Game, delta: number) {
-  if (game.state.isEnded) {
-    return;
-  }
-  if (game.state.isClearDelay) {
-    return tick1ClearDelay(game, delta);
-  }
-  const { conf, level } = game.state;
-  const interval = deriveMultiple(level, conf.speedMultiplier, conf.speed);
-  if (delta < interval) {
-    return false;
-  }
-
+function tick1Main(game: Game) {
   if (game.canMoveDown()) {
     game.moveBlock('y', 1);
   } else {
@@ -93,6 +89,23 @@ export function tick1(game: Game, delta: number) {
     }
     game.emit('drop');
   }
+}
+
+export function tick1(game: Game, delta: number) {
+  if (game.state.isEnded) {
+    return;
+  }
+  if (game.state.isClearDelay) {
+    return tick1ClearAnimationDelay(game, delta);
+  }
+  const { conf, level } = game.state;
+  const interval = deriveMultiple(level, conf.speedMultiplier, conf.speed);
+  if (delta < interval) {
+    return false;
+  }
+
+  tick1Main(game);
+
   return true;
 }
 
