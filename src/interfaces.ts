@@ -89,6 +89,7 @@ export interface GameControlConfig {
   canRotateLeft: string;
   canRotateRight: string;
   gamePadPollInterval: number;
+  gamePadThrottleInterval: number;
 }
 export interface GameConfig
   extends NextBlockConfig,

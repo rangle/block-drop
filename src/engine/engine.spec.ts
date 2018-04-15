@@ -31,6 +31,7 @@ describe('engine functions', () => {
           },
         }),
         noop,
+        0,
       );
       c.moveDown();
       expect(didRun).toBe(true);
