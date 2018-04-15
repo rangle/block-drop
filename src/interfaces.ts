@@ -156,9 +156,13 @@ export interface Game {
   canMoveUp(): boolean;
   canRotateLeft(): boolean;
   canRotateRight(): boolean;
-  clearCheck(markOffset?: number): number;
+  clearCheck(
+    markOffset?: number,
+  ): { total: number; breakdown: { fw: 10 | 20 | 30; total: number }[] };
   clearNonSolids(): void;
-  detectAndClear: (markOffset?: number) => number;
+  detectAndClear: (
+    markOffset?: number,
+  ) => { breakdown: { fw: 10 | 20 | 30; total: number }[]; total: number };
   emit: <T>(channel: string, payload?: T) => any;
   gameOver: () => any;
   gravityDrop: () => any;

@@ -18,7 +18,9 @@ import { rotateLeft, rotateRight } from './block';
 const CLEAR_OFFSET = 1;
 
 export function clearCheck(
-  detectAndClear: (markOffset?: number) => number,
+  detectAndClear: (
+    markOffset?: number,
+  ) => { breakdown: { fw: 10 | 20 | 30; total: number }[]; total: number },
   offset = CLEAR_OFFSET,
 ) {
   return detectAndClear(offset);

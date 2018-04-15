@@ -118,16 +118,22 @@ function deriveMultiple(level: number, multiplier: number, value: number) {
 
 function tick1tryAndScore(game: Game, multiplier = 1) {
   const cleared = game.clearCheck(CLEAR_OFFSET);
-  if (!cleared) {
+  if (!cleared.total) {
     return false;
   }
   // increment tilesCleared
-  game.state.tilesCleared += cleared;
+  game.state.tilesCleared += cleared.total;
 
   // compute score for clearing tiles
-  const overflow = cleared - DC2MAX;
-  const clearScore =
-    overflow * game.state.level * game.state.conf.tileScoreMultiplier;
+  const overflow = cleared.total - DC2MAX;
+  const clearScore = game.state.level * game.state.conf.tileScoreMultiplier;
+  const overflowBonus = clearScore * overflow;
+  const fwBonus = cleared.breakdown.reduce((s: number, el) => {
+    if (el.fw === game.activeFramework()) {
+      s += el.total * 2;
+    }
+    return s;
+  }, 0);
 
   const {
     conf,
@@ -142,22 +148,24 @@ function tick1tryAndScore(game: Game, multiplier = 1) {
   if (tilesClearedSinceLevel > nextLevelThreshold) {
     levelScore += conf.baseLevelScore;
     game.state.level += 1;
-    levelScore +=
-      (tilesClearedSinceLevel - game.state.level) *
-      conf.tileScoreMultiplier *
-      game.state.level;
+    levelScore += tilesClearedSinceLevel - game.state.level;
     game.state.nextLevelThreshold *= conf.nextLevelMultiplier;
     game.state.tilesClearedPrev =
       game.state.tilesClearedPrev + nextLevelThreshold;
   }
 
-  game.state.score += (clearScore + levelScore) * multiplier;
+  game.state.score += Math.floor(
+    (clearScore + levelScore + overflowBonus + fwBonus) * multiplier,
+  );
 
   game.emit('score', {
     animationDelay: game.state.conf.clearDelay,
     cleared,
     clearScore,
     levelScore,
+    fwBonus,
+    overflowBonus,
+    score: game.state.score,
   });
 
   return true;
