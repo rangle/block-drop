@@ -50,6 +50,7 @@ export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   canRotateRight: 'canRotateRight1',
   createBoard: 'createBoard1',
   createBlock: 'createBlock',
+  gamePadPollInterval: 110,
   forceBufferUpdateOnClear: false,
   preview: 0,
   randomMethod: 'randomFromSet',

@@ -15,6 +15,8 @@ import boardFunctions, { addBlock } from './board';
 
 import blockFunctions from './block';
 
+import { createPollGamePad } from './controls';
+
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
 import { createEventEmitter } from '../event';
@@ -24,6 +26,7 @@ import {
   GameConfig,
   GameConfigOptions,
   NextBlockConfig,
+  GameControls,
 } from '../interfaces';
 
 import '../license';
@@ -107,7 +110,14 @@ export function create1Controls(
   });
 }
 
-function manageNewGame(conf: GameConfig, state, emit, nextBlock, gameOver) {
+function manageNewGame(
+  conf: GameConfig,
+  controls: GameControls,
+  state,
+  emit,
+  nextBlock,
+  gameOver,
+) {
   const detectAndClear = boardFunctions.detectAndClear.get(conf.detectAndClear);
   const game = createGame1(
     conf,
@@ -124,6 +134,7 @@ function manageNewGame(conf: GameConfig, state, emit, nextBlock, gameOver) {
   let delta: number = 0;
   let isEnded = false;
   loop();
+  const pollGamePad = createPollGamePad(controls, conf.gamePadPollInterval);
 
   return Object.create(null, {
     endGame: {
@@ -189,6 +200,7 @@ function manageNewGame(conf: GameConfig, state, emit, nextBlock, gameOver) {
         loop();
         return;
       }
+      pollGamePad(now);
       delta = now - then;
       const didTick = game.tick(delta);
       if (didTick) {
@@ -219,8 +231,16 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
   const state = create1state(conf);
   const events = createEventEmitter();
   const nextBlock = createNextBlock(conf, state.preview);
-  let activeGameControl = manageNewGame(
+  let activeGameControl;
+  const controls = create1Controls(
+    state,
+    () => activeGameControl,
+    events.emit,
+    conf.enableShadow,
+  );
+  activeGameControl = manageNewGame(
     conf,
+    controls,
     state,
     events.emit,
     nextBlock,
@@ -231,6 +251,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     if (!activeGameControl) {
       activeGameControl = manageNewGame(
         conf,
+        controls,
         state,
         events.emit,
         nextBlock,
@@ -270,12 +291,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     },
     controls: {
       configurable: false,
-      value: create1Controls(
-        state,
-        () => activeGameControl,
-        events.emit,
-        conf.enableShadow,
-      ),
+      value: controls,
     },
     endGame: {
       configurable: false,

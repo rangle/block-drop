@@ -35,6 +35,7 @@ export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   detectAndClear: 'detectAndClear2',
   dropOnUp: true,
   enableShadow: true,
+  gamePadPollInterval: 110,
   preview: 0,
   randomMethod: 'randomFromSet',
   seedRandom: 'xor4096',
