@@ -80,14 +80,21 @@ export interface GameRules {
   speed: number;
   speedMultiplier: number;
 }
-export interface GameConfig extends NextBlockConfig, GameRules {
-  debug: boolean;
+
+export interface GameControlConfig {
   canMoveUp: string;
   canMoveDown: string;
   canMoveLeft: string;
   canMoveRight: string;
   canRotateLeft: string;
   canRotateRight: string;
+  gamePadPollInterval: number;
+}
+export interface GameConfig
+  extends NextBlockConfig,
+    GameRules,
+    GameControlConfig {
+  debug: boolean;
   checkForLoss: string;
   createBoard: string;
   detectAndClear: string;
