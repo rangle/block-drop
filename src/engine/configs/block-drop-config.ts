@@ -57,5 +57,6 @@ export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   seedRandom: 'xor4096',
   spawn: 'spawn1',
   speed: 1000,
+  startingFramework: 20 as 20,
   tick: 'tick1',
 });

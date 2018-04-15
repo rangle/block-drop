@@ -20,6 +20,7 @@ import {
   updateLevelProgress,
   updateGameStatus,
 } from '../actions/game.actions';
+import { GameControls } from '../../interfaces';
 
 export interface EngineReferences {
   _int?: any;
@@ -28,7 +29,7 @@ export interface EngineReferences {
 }
 
 export interface StoreGameExtensions {
-  controls(): any;
+  controls(): GameControls;
   create(): void;
   on(event: string, cb: Function);
   pause: () => void;

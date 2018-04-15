@@ -45,5 +45,6 @@ export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   nextLevelMultiplier: 1.61803398875,
   speed: 750,
   speedMultiplier: 0.8,
+  startingFramework: 20 as 20,
   tick: 'tick1',
 });

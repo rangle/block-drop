@@ -55,7 +55,7 @@ export default {
     },
     createBoard1,
   ),
-  detectAndClear: makeCollection<(board: Board) => number>(
+  detectAndClear: makeCollection<(board: Board) => { total: number }>(
     {
       detectAndClear1,
       detectAndClear2,
@@ -235,7 +235,7 @@ export function createBoard1(x: number, y: number): Board1 {
  * alternate algorithms will be considered in the future as well as alternate
  * rules
  */
-export function detectAndClear1(board: Board1): number {
+export function detectAndClear1(board: Board1): { total: number } {
   let clearedRows = 0;
   let newRowOffset = 0;
   let completeRow = true;
@@ -268,7 +268,7 @@ export function detectAndClear1(board: Board1): number {
   // swap buffer
   [board.desc, board.descBuffer] = [board.descBuffer, board.desc];
 
-  return clearedRows;
+  return { total: clearedRows };
 }
 
 export function detectAndClearTile1(
@@ -370,6 +370,9 @@ export function detectAndClearTile1(
 
 export function gravityDropTile(board: Board, offset: number) {
   throwOutOfBounds(board.desc, offset, 'detectAndClearTile1');
+  if (offset < 0) {
+    return;
+  }
 
   // don't drop empty tiles
   if (board[offset] === 0) {
@@ -405,13 +408,18 @@ export function gravityDrop(board: Board) {
 }
 
 export function detectAndClear2(board: Board, max = DC2MAX, markOffset = 0) {
-  let clearedTiles = 0;
+  let total = 0;
+  const breakdown = [];
 
   for (let i = 0; i < board.desc.length; i += 1) {
     const adjacentTiles = detectAndClearTile1(board, i);
     const len = adjacentTiles.length;
     if (len >= max) {
-      clearedTiles += len;
+      breakdown.push({
+        fw: board.desc[i],
+        total: len,
+      });
+      total += len;
       if (markOffset) {
         adjacentTiles.forEach(offset => (board.desc[offset] += markOffset));
       } else {
@@ -420,7 +428,10 @@ export function detectAndClear2(board: Board, max = DC2MAX, markOffset = 0) {
     }
   }
 
-  return clearedTiles;
+  return {
+    total,
+    breakdown,
+  };
 }
 
 export function indexFromPoint(width: number, x: number, y: number): number {

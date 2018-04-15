@@ -99,6 +99,7 @@ export interface GameConfig
   createBoard: string;
   detectAndClear: string;
   name: string;
+  startingFramework: 10 | 20 | 30;
   tick: string;
 }
 
@@ -132,6 +133,8 @@ export interface GameState {
 
 export interface GameControls {
   endGame(): void;
+  incrementFramework?: () => void;
+  decrementFramework?: () => void;
   moveDown(): void;
   moveLeft(): void;
   moveRight(): void;
@@ -139,11 +142,13 @@ export interface GameControls {
   pause?: () => void;
   rotateLeft(): void;
   rotateRight(): void;
+  setFramework?: (fw: number) => void;
 }
 
 export interface Game {
   state: GameState;
   controls: GameControls;
+  activeFramework: () => 10 | 20 | 30;
   board: Board;
   canMoveDown(): boolean;
   canMoveLeft(): boolean;
@@ -151,9 +156,13 @@ export interface Game {
   canMoveUp(): boolean;
   canRotateLeft(): boolean;
   canRotateRight(): boolean;
-  clearCheck(markOffset?: number): number;
+  clearCheck(
+    markOffset?: number,
+  ): { total: number; breakdown: { fw: 10 | 20 | 30; total: number }[] };
   clearNonSolids(): void;
-  detectAndClear: (markOffset?: number) => number;
+  detectAndClear: (
+    markOffset?: number,
+  ) => { breakdown: { fw: 10 | 20 | 30; total: number }[]; total: number };
   emit: <T>(channel: string, payload?: T) => any;
   gameOver: () => any;
   gravityDrop: () => any;

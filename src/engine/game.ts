@@ -18,7 +18,9 @@ import { rotateLeft, rotateRight } from './block';
 const CLEAR_OFFSET = 1;
 
 export function clearCheck(
-  detectAndClear: (markOffset?: number) => number,
+  detectAndClear: (
+    markOffset?: number,
+  ) => { breakdown: { fw: 10 | 20 | 30; total: number }[]; total: number },
   offset = CLEAR_OFFSET,
 ) {
   return detectAndClear(offset);
@@ -44,6 +46,7 @@ export function createGame1(
   detectAndClear,
   nextBlock,
   gameOver,
+  activeFramework: () => 10 | 20 | 30,
 ): Game {
   const tick = rulesFunctions.ticks.get(conf.tick);
   const canMoveDown = boardFunctions.canMoveDown.get(conf.canMoveDown);
@@ -96,6 +99,7 @@ export function createGame1(
         return false;
       },
     },
+    activeFramework,
     board,
     canMoveDown: () => canMoveDown(game.board, game.state.activePiece),
     canMoveLeft: () => canMoveLeft(game.board, game.state.activePiece),

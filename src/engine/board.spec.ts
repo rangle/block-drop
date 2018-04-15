@@ -278,7 +278,7 @@ describe('game-board functions', () => {
         });
 
         expect(next).toEqual(Uint8Array.from([0, 0, 0, 0, 1, 0, 1, 0, 1]));
-        expect(result).toBe(1);
+        expect(result.total).toBe(1);
       });
 
       it('should solve a simple 5x5', () => {
@@ -347,7 +347,7 @@ describe('game-board functions', () => {
           ]),
         );
 
-        expect(result).toBe(1);
+        expect(result.total).toBe(1);
       });
     });
 
@@ -363,7 +363,7 @@ describe('game-board functions', () => {
         });
 
         expect(next).toEqual(Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 1, 0]));
-        expect(result).toBe(2);
+        expect(result.total).toBe(2);
       });
 
       it('should solve a simple 5x5', () => {
@@ -432,7 +432,7 @@ describe('game-board functions', () => {
           ]),
         );
 
-        expect(result).toBe(2);
+        expect(result.total).toBe(2);
       });
     });
 
@@ -448,7 +448,7 @@ describe('game-board functions', () => {
         });
 
         expect(next).toEqual(Uint8Array.from([0, 0, 0, 0, 0, 0, 0, 0, 0]));
-        expect(result).toBe(3);
+        expect(result.total).toBe(3);
       });
 
       it('should solve a simple 5x5', () => {
@@ -517,7 +517,7 @@ describe('game-board functions', () => {
           ]),
         );
 
-        expect(result).toBe(3);
+        expect(result.total).toBe(3);
       });
     });
   });
@@ -709,12 +709,12 @@ describe('game-board functions', () => {
     });
 
     it('should return 0 if given an empty board', () => {
-      expect(detectAndClear2(board)).toBe(0);
+      expect(detectAndClear2(board).total).toBe(0);
     });
 
     it('should return 0 if given a checkerboard', () => {
       board = checkerboard();
-      expect(detectAndClear2(board)).toBe(0);
+      expect(detectAndClear2(board).total).toBe(0);
     });
   });
 
