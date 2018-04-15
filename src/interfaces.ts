@@ -136,6 +136,7 @@ export interface GameControls {
   moveLeft(): void;
   moveRight(): void;
   moveUp(): void;
+  pause?: () => void;
   rotateLeft(): void;
   rotateRight(): void;
 }

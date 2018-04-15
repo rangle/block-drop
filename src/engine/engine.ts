@@ -146,7 +146,7 @@ function manageNewGame(
     },
     isPaused: {
       configurable: false,
-      get: () => false,
+      get: () => isPaused,
       set: (value: boolean) => {
         // ignore pausing a paused game
         if (isPaused && value) {
@@ -196,11 +196,11 @@ function manageNewGame(
       return;
     }
     requestAnimationFrame(now => {
+      pollGamePad(now, isPaused);
       if (isPaused) {
         loop();
         return;
       }
-      pollGamePad(now);
       delta = now - then;
       const didTick = game.tick(delta);
       if (didTick) {
@@ -232,12 +232,22 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
   const events = createEventEmitter();
   const nextBlock = createNextBlock(conf, state.preview);
   let activeGameControl;
+  const pause = () => {
+    if (activeGameControl.isPaused) {
+      activeGameControl.isPaused = false;
+      events.emit('resume');
+    } else {
+      activeGameControl.isPaused = true;
+      events.emit('pause');
+    }
+  };
   const controls = create1Controls(
     state,
     () => activeGameControl,
     events.emit,
     conf.enableShadow,
   );
+  controls.pause = pause;
   activeGameControl = manageNewGame(
     conf,
     controls,
@@ -300,6 +310,11 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
         activeGameControl = undefined;
       },
     },
+    isPaused: {
+      configurable: false,
+      get: () => (activeGameControl ? activeGameControl.isPaused : false),
+      set: noop,
+    },
     level: {
       configurable: false,
       get: () => state.games[0].state.level,
@@ -311,12 +326,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     },
     pause: {
       configurable: false,
-      value: () => {
-        activeGameControl.isPaused = true;
-        return () => {
-          activeGameControl.isPaused = false;
-        };
-      },
+      value: pause,
     },
     preview: {
       configurable: false,

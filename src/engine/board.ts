@@ -456,6 +456,10 @@ export function isOverlapping(
     for (let i = 0; i < block.width; i += 1) {
       let testX;
 
+      if (block.desc[i][j] === 0) {
+        continue;
+      }
+
       if (i < block.centreX) {
         testX = newX - block.centreX + i;
       } else if (i === block.centreX) {
@@ -466,8 +470,18 @@ export function isOverlapping(
 
       const index = indexFromPoint(board.width, testX, testY);
       if (board.desc[index] !== 0) {
-        if (block.desc[i][j] !== 0) {
-          return true;
+        if (board.desc[index] !== 0) {
+          if (board.desc[index] % 10 === 0) {
+            // shortcut for the likely non-zero case
+            return true;
+          }
+          const digits = board.desc[index].toString(10).split('');
+
+          const val = parseInt(digits[digits.length - 1], 10);
+
+          if (val !== SHADOW_OFFSET) {
+            return true;
+          }
         }
       }
     }

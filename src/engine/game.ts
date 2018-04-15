@@ -69,9 +69,7 @@ export function createGame1(
       tilesClearedPrev: 0,
     },
     controls: {
-      endGame: () => {
-        game.state.isEnded = true;
-      },
+      endGame: gameOver,
       moveDown: () => cartesianControl(game, 'y', 1, canMoveDown),
       moveLeft: () => cartesianControl(game, 'x', -1, canMoveLeft),
       moveRight: () => cartesianControl(game, 'x', 1, canMoveRight),
