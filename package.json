@@ -43,6 +43,7 @@
     "format": "prettier --write \"**/*.*(ts|js|css|json|md)\"",
     "lint": "tslint ./src/**/*.ts",
     "precommit": "lint-staged",
+    "start": "superstatic",
     "test": "yarn lint && jest",
     "test:ci": "jest --ci --runInBand",
     "test:watch": "jest --watch",
@@ -120,5 +121,8 @@
     "webpack-cli": "^2.0.12",
     "webpack-dev-server": "^3.1.1",
     "zone.js": "^0.8.20"
+  },
+  "dependencies": {
+    "superstatic": "^5.0.1"
   }
 }
