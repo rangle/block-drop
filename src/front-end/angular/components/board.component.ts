@@ -21,8 +21,7 @@ import { board, emptyTile, flexGrowRow, tileByNumber } from '../../styles';
         [firstAnimationBlock]="firstAnimationBlock"
         [scoreDuration]="scoreDuration"
         [width]="width"
-        [height]="height"
-      >
+        [height]="height">
       </score-hint-cloud>
       <div class="${flexGrowRow}" *ngFor="let row of board; trackBy: trackCol;">
         <tile [ngClass]="tile === 0 ? emptyTile : tileByNumber(tile)"

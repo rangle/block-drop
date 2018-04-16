@@ -116,3 +116,9 @@
 .man2-ns {
   margin: -0.5rem;
 }
+.mbn-50 {
+  margin-bottom: -50%;
+}
+.mln-50 {
+  margin-left: -50%;
+}

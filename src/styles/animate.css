@@ -2,29 +2,31 @@
   animation-duration: var(--animate-speed);
   animation-fill-mode: both;
 }
+.animate-slow {
+  animation-duration: calc(var(--animate-speed) * 2);
+}
 .animated.infinite {
   animation-iteration-count: infinite;
 }
 
-.fadeOut {
-  animation-name: fadeOut;
+.fadeOutUp {
+  animation-name: fadeOutUp;
 }
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+  }
 
-@keyframes fadeOut {
-  0% {
+  to {
     opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
   }
 }
 
+.bounceOut {
+  animation-name: bounceOut;
+}
 @keyframes bounceOut {
   20% {
     transform: scale3d(0.9, 0.9, 0.9);
@@ -38,8 +40,4 @@
     opacity: 0;
     transform: scale3d(0.3, 0.3, 0.3);
   }
-}
-
-.bounceOut {
-  animation-name: bounceOut;
 }

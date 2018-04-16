@@ -1,42 +1,45 @@
 import { Component, Input, HostBinding } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 
 function xFromIndex(width: number, index: number) {
-  return index % width;
+  return ;
 }
 
-function yFromIndex(width: number, index: number) {
-  return Math.floor(index / width);
-}
 
 @Component({
   selector: 'score-hint-cloud',
-  host: {
-    class: 'db absolute w-100 h-100',
-  },
   template: `
       <score-hint 
+        [text]="'Score'"
+        [startTime]="lastScoreUpdate + 10"
+        [score]="lastClearScore"
+        [position]="position"
         [duration]="scoreDuration"
-        [startTime]="lastScoreUpdate"
-        [score]="lastClearScore" 
-      ></score-hint>
+        [colour]="-1">
+      </score-hint>
       <score-hint 
+        [text]="'Bonus'"
+        [startTime]="lastScoreUpdate + 100"
+        [score]="lastFwBonus"
+        [position]="position"
         [duration]="scoreDuration"
-        [startTime]="lastScoreUpdate"
-        [score]="lastLevelScore" 
-      ></score-hint>
+        [colour]="-1">
+      </score-hint>
       <score-hint 
+        [text]="'Extra Bonus'"
+        [startTime]="lastScoreUpdate + 200"
+        [score]="lastFwBonusFw"
+        [position]="position"
         [duration]="scoreDuration"
-        [startTime]="lastScoreUpdate"
-        [score]="lastOverflowBonus" 
-        colour="-10"
-      ></score-hint>
+        [colour]="-1">
+      </score-hint>
       <score-hint 
+        [text]="'Overflow Bonus'"
+        [startTime]="lastScoreUpdate + 300"
+        [score]="lastOverflowBonus"
+        [position]="position"
         [duration]="scoreDuration"
-        [startTime]="lastScoreUpdate"
-        [score]="lastFwBonus" 
-        [colour]="lastFwBonusFw"
-      ></score-hint>
+        [colour]="-1">
+      </score-hint>
 `,
 })
 export class ScoreHintCloud {
@@ -50,24 +53,11 @@ export class ScoreHintCloud {
   @Input() firstAnimationBlock: number = -1;
   @Input() width: number = 0;
   @Input() height: number = 0;
-  @HostBinding('style')
-  get style() {
-    if (this.firstAnimationBlock <= 0) {
-      return '';
-    }
-    const x = xFromIndex(this.width, this.firstAnimationBlock);
-    const y = yFromIndex(this.width, this.firstAnimationBlock);
-    const style = `
-      position: absolute; 
-      bottom: ${x / this.width * 100}%; 
-      right: ${y / this.height * 100}%
-      z-index: 1000;
-    `;
 
-    console.log('style', style);
+  get position() {
+    const x = 50;
+    const y = 50;
 
-    /** Hope this isn't a problem := */
-    return this.sanitizer.bypassSecurityTrustStyle(style);
+    return { xPercent: x , yPercent: y };
   }
-  constructor(private sanitizer: DomSanitizer) {}
 }
