@@ -1,0 +1,4 @@
+{
+  "public": "dist/block-drop",
+  "rewrites": [{ "source": "**", "destination": "/index.html" }]
+}
