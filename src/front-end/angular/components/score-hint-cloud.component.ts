@@ -10,7 +10,7 @@ function xFromIndex(width: number, index: number) {
   template: `
       <score-hint 
         [text]="'Score'"
-        [startTime]="lastScoreUpdate + 10"
+        [startTime]="lastScoreUpdate"
         [score]="lastClearScore"
         [position]="position"
         [duration]="scoreDuration"
@@ -18,7 +18,8 @@ function xFromIndex(width: number, index: number) {
       </score-hint>
       <score-hint 
         [text]="'Bonus'"
-        [startTime]="lastScoreUpdate + 100"
+        [startTime]="lastScoreUpdate"
+        [delay]="1"
         [score]="lastFwBonus"
         [position]="position"
         [duration]="scoreDuration"
@@ -26,7 +27,8 @@ function xFromIndex(width: number, index: number) {
       </score-hint>
       <score-hint 
         [text]="'Extra Bonus'"
-        [startTime]="lastScoreUpdate + 200"
+        [startTime]="lastScoreUpdate"
+        [delay]="2"
         [score]="lastFwBonusFw"
         [position]="position"
         [duration]="scoreDuration"
@@ -34,7 +36,8 @@ function xFromIndex(width: number, index: number) {
       </score-hint>
       <score-hint 
         [text]="'Overflow Bonus'"
-        [startTime]="lastScoreUpdate + 300"
+        [startTime]="lastScoreUpdate"
+        [delay]="3"
         [score]="lastOverflowBonus"
         [position]="position"
         [duration]="scoreDuration"

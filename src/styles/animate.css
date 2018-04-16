@@ -2,12 +2,28 @@
   animation-duration: var(--animate-speed);
   animation-fill-mode: both;
 }
-.animate-slow {
+.animated.animate-slow {
   animation-duration: calc(var(--animate-speed) * 2);
 }
 .animated.infinite {
   animation-iteration-count: infinite;
 }
+.animated.animate-delay-1 {
+  animation-delay: 100ms;
+}
+.animated.animate-delay-2 {
+  animation-delay: 200ms;
+}
+.animated.animate-delay-3 {
+  animation-delay: 300ms;
+}
+.animated.animate-delay-4 {
+  animation-delay: 400ms;
+}
+.animated.animate-delay-5 {
+  animation-delay: 500ms;
+}
+
 
 .fadeOutUp {
   animation-name: fadeOutUp;
