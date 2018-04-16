@@ -87,7 +87,7 @@ function tick1Main(game: Game) {
     game.newBlock();
     if (checkForLoss1(game.board, game.state.activePiece)) {
       // game over
-      game.gameOver();
+      game.gameOver(true);
     }
     game.emit('drop');
   }

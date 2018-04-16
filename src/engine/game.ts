@@ -14,6 +14,7 @@ import boardFunctions, { gravityDrop } from './board';
 import { debugBlock, move } from './block';
 import { Block, Board, Game, GameConfig } from '../interfaces';
 import { rotateLeft, rotateRight } from './block';
+import { noop } from '../util';
 
 const CLEAR_OFFSET = 1;
 
@@ -72,7 +73,7 @@ export function createGame1(
       tilesClearedPrev: 0,
     },
     controls: {
-      endGame: gameOver,
+      endGame: noop,
       moveDown: () => cartesianControl(game, 'y', 1, canMoveDown),
       moveLeft: () => cartesianControl(game, 'x', -1, canMoveLeft),
       moveRight: () => cartesianControl(game, 'x', 1, canMoveRight),

@@ -181,7 +181,6 @@ function manageNewGame(
       configurable: false,
       value: () => {
         isEnded = true;
-        state.game.controls.endGame();
       },
     },
     isPaused: {
@@ -315,7 +314,7 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
     }
   }
 
-  function gameOver() {
+  function gameOver(doRestart = false) {
     const { board } = state.game;
     state.history.push({
       tick: state.tick,
@@ -325,8 +324,12 @@ export function create1(optionsConfig: GameConfigOptions = {}) {
       board.desc[i] = 0;
       state.buffer[i] = 0;
     });
+    obj.endGame();
     events.emit('game-over');
-    newGame();
+
+    if (doRestart) {
+      obj.startGame();
+    }
   }
 
   /** Public API */

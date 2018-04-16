@@ -165,7 +165,7 @@ export interface Game {
     markOffset?: number,
   ) => { breakdown: { fw: 10 | 20 | 30; total: number }[]; total: number };
   emit: <T>(channel: string, payload?: T) => any;
-  gameOver: () => any;
+  gameOver: (restartGame?: boolean) => any;
   gravityDrop: () => any;
   moveBlock(axis: 'x' | 'y', quantity: number): any;
   newBlock: () => any;
