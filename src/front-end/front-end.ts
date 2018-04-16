@@ -45,6 +45,16 @@ const vue = memoPromise(() =>
   import(/* webpackChunkName: "vue" */ './vue/vue'),
 );
 
+/**
+ * Pre-Load Lazy bundles
+ *
+ * One day we could make a scheduler or something for this
+ * for now loadAll works just as well :P
+ */
+angular();
+react();
+vue();
+
 const frameWorks = deepFreeze({
   'bd-root-angular': angular,
   'bd-root-react': react,
