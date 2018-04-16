@@ -51,7 +51,7 @@ export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   createBoard: 'createBoard1',
   createBlock: 'createBlock',
   gamePadPollInterval: 0,
-  gamePadThrottleInterval: 85,
+  gamePadThrottleInterval: 95,
   forceBufferUpdateOnClear: false,
   preview: 0,
   randomMethod: 'randomFromSet',
