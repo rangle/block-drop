@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const isProd = process.env.NODE_ENV === 'production';
 
 const mode = isProd ? 'production' : 'development';
-const devtool = isProd ? 'hidden-source-map' : 'cheap-module-eval-source-map';
+const devtool = isProd ? 'hidden-source-map' : 'cheap-module-source-map';
 
 console.log(`building for ${mode}`);
 

@@ -7,14 +7,16 @@ import {
   multiply4_4,
   lookAt4_4,
 } from './matrix/matrix-4';
-import { Matrix3_1 } from './interfaces';
+import { Matrix3_1, ShapeConfig, Shape } from './interfaces';
+import { createProgramFromConfig } from './gl/program';
 import {
   ProgramContextConfig,
-  createProgramFromConfig,
   ProgramContext,
   ShaderDictionary,
-} from './gl/program';
-import { fColours, fPositions } from './shape-generator';
+} from './interfaces';
+import { fColours, fPositions } from './gl/shape-generator';
+import { shapeConfigToShape } from './gl/shape';
+import { objEach } from '@ch1/utility';
 
 const shaderDict: ShaderDictionary = {
   simple: {
@@ -28,10 +30,15 @@ const dataDict = {
   fPositions: fPositions(),
 };
 
+const fConfig: ShapeConfig = {
+  coloursDataName: 'fColours',
+  positionsDataName: 'fPositions',
+  programName: 'simple',
+};
+
 const simpleConfig: ProgramContextConfig = {
   attributes: [
     {
-      dataName: 'fColours',
       name: 'a_colour',
       size: 3,
       type: 'UNSIGNED_BYTE',
@@ -40,7 +47,6 @@ const simpleConfig: ProgramContextConfig = {
       offset: 0,
     },
     {
-      dataName: 'fPositions',
       name: 'a_position',
       size: 3,
       type: 'FLOAT',
@@ -67,11 +73,12 @@ interface DrawContext {
   cameraAngle: number;
   gl: WebGLRenderingContext;
   programs: ProgramContext[];
+  shapes: Shape[];
 }
 
 function main() {
   try {
-    const context = setup([simpleConfig]);
+    const context = setup([simpleConfig], [fConfig]);
     draw(context);
 
     setInterval(() => {
@@ -88,12 +95,19 @@ function main() {
   }
 }
 
-function setup(programConfigs: ProgramContextConfig[]) {
+function setup(
+  programConfigs: ProgramContextConfig[],
+  shapeConfigs: ShapeConfig[]
+) {
   const tree = body();
   const gl = getContext(tree.canvas);
 
   const programs = programConfigs.map(config => {
-    return createProgramFromConfig(shaderDict, dataDict, gl, config);
+    return createProgramFromConfig(shaderDict, gl, config);
+  });
+
+  const shapes = shapeConfigs.map(shapeConfig => {
+    return shapeConfigToShape(dataDict, { simple: programs[0] }, shapeConfig);
   });
 
   const context = {
@@ -101,6 +115,7 @@ function setup(programConfigs: ProgramContextConfig[]) {
     canvas: tree.canvas,
     gl,
     programs,
+    shapes,
   };
   // set the clear colour
   gl.clearColor(0, 0, 0, 0);
@@ -114,7 +129,7 @@ function setup(programConfigs: ProgramContextConfig[]) {
   return context;
 }
 
-function draw({ cameraAngle, canvas, gl, programs }: DrawContext) {
+function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
   // resize/reset the viewport
   resize(gl.canvas as HTMLCanvasElement);
 
@@ -124,60 +139,61 @@ function draw({ cameraAngle, canvas, gl, programs }: DrawContext) {
   // Clear the canvas
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const context = programs[0];
-
-  // Tell it to use our program (pair of shaders)
-  gl.useProgram(context.program);
-  context.attributes.forEach(attribute => {
-    const { location, normalize, offset, size, stride, type } = attribute;
-    gl.enableVertexAttribArray(location);
-    gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer);
-    gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
-  });
-
+  const up: Matrix3_1 = [0, 1, 0];
   const identityMatrix = identity4_4();
 
-  const numFs = 5;
-  const radius = 200;
-  const fPosition: Matrix3_1 = [radius, 0, 0];
+  shapes.forEach(({ colours, context, positions }) => {
+    // check/cache this
+    gl.useProgram(context.program);
 
-  let cameraMatrix = yRotate4_4(identityMatrix, cameraAngle);
-  cameraMatrix = translate4_4(cameraMatrix, 0, 0, radius * 1.5);
+    // setup positions (check cache)
+    // check/cache buffer data
+    gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_position.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
-  const cameraPosition: Matrix3_1 = [
-    cameraMatrix[12],
-    cameraMatrix[13],
-    cameraMatrix[14],
-  ];
+    // setup colours (check cache)
+    // check/cache buffer data
+    gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_colour.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, colours, gl.STATIC_DRAW);
 
-  const up: Matrix3_1 = [0, 1, 0];
-  cameraMatrix = lookAt4_4(cameraPosition, fPosition, up);
+    objEach(context.attributes, attribute => {
+      const { location, normalize, offset, size, stride, type } = attribute;
+      gl.enableVertexAttribArray(location);
+      gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer);
+      gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
+    });
 
-  let viewMatrix = inverse4_4(cameraMatrix);
+    let cameraMatrix = yRotate4_4(identityMatrix, cameraAngle);
+    cameraMatrix = translate4_4(cameraMatrix, 0, 0, 300);
 
-  let projectionMatrix = perspective4_4(
-    (90 * Math.PI) / 180,
-    canvas.clientWidth / canvas.clientHeight,
-    1,
-    2000
-  );
+    const cameraPosition: Matrix3_1 = [
+      cameraMatrix[12],
+      cameraMatrix[13],
+      cameraMatrix[14],
+    ];
 
-  let viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix);
+    cameraMatrix = lookAt4_4(cameraPosition, [200, 0, 0], up);
 
-  for (let i = 0; i < numFs; i += 1) {
-    const angle = (i * Math.PI * 2) / numFs;
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
+    let viewMatrix = inverse4_4(cameraMatrix);
 
-    const matrix = translate4_4(viewProjectionMatrix, x, 0, y);
-    gl.uniformMatrix4fv(context.uniforms[0].location, false, matrix);
+    let projectionMatrix = perspective4_4(
+      (90 * Math.PI) / 180,
+      canvas.clientWidth / canvas.clientHeight,
+      1,
+      2000
+    );
+
+    let viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix);
+
+    const matrix = translate4_4(viewProjectionMatrix, 200, 0, 0);
+    gl.uniformMatrix4fv(context.uniforms.u_matrix.location, false, matrix);
 
     // run the program
     const primitiveType = gl.TRIANGLES;
     const count = 16 * 6;
 
     gl.drawArrays(primitiveType, 0, count);
-  }
+  });
 }
 
 function body() {

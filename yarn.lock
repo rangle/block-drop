@@ -673,6 +673,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@ch1/utility@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@ch1/utility/-/utility-0.8.0.tgz#28630b5aa2c5703033a2e44439ec7024ecb670aa"
+  integrity sha512-W3/4+j5LgHu88jT3xnz9ejcyYVF0QzA59aQj2WT0fTJiXY9OqBarv/3Ic9wN0k/hgoKYHWEj2pGxm8uCPV80UQ==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"

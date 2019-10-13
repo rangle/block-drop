@@ -58,5 +58,8 @@
       "prettier --write --single-quote --trailing-comma es5",
       "git add"
     ]
+  },
+  "dependencies": {
+    "@ch1/utility": "^0.8.0"
   }
 }

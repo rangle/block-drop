@@ -3,7 +3,7 @@ import {
   identity4_4,
   translate4_4,
   vectorMultiply,
-} from './matrix/matrix-4';
+} from '../matrix/matrix-4';
 
 export function fPositions() {
   const positions = new Float32Array([
