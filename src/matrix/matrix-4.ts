@@ -1,5 +1,5 @@
 import { multiply3_1, normalize3_1, subtract3_1 } from './matrix-3';
-import { Matrix3_1, Matrix4_4 } from './interfaces';
+import { Matrix3_1, Matrix4_4 } from '../interfaces';
 
 export function copy4_4(
   source: Matrix4_4,

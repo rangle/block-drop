@@ -5,40 +5,73 @@ import {
   perspective4_4,
   inverse4_4,
   multiply4_4,
-  xRotate4_4,
-  vectorMultiply,
   lookAt4_4,
-} from './matrix-4';
+} from './matrix/matrix-4';
 import { Matrix3_1 } from './interfaces';
+import {
+  ProgramContextConfig,
+  createProgramFromConfig,
+  ProgramContext,
+  ShaderDictionary,
+} from './gl/program';
+import { fColours, fPositions } from './shape-generator';
 
-const fragment = require('./fragment.glsl');
-const vertex = require('./vertex.glsl');
+const shaderDict: ShaderDictionary = {
+  simple: {
+    fragment: require('./shaders/simple-fragment.glsl'),
+    vertex: require('./shaders/simple-vertex.glsl'),
+  },
+};
+
+const dataDict = {
+  fColours: fColours(),
+  fPositions: fPositions(),
+};
+
+const simpleConfig: ProgramContextConfig = {
+  attributes: [
+    {
+      dataName: 'fColours',
+      name: 'a_colour',
+      size: 3,
+      type: 'UNSIGNED_BYTE',
+      normalize: true,
+      stride: 0,
+      offset: 0,
+    },
+    {
+      dataName: 'fPositions',
+      name: 'a_position',
+      size: 3,
+      type: 'FLOAT',
+      normalize: false,
+      stride: 0,
+      offset: 0,
+    },
+  ],
+  shaderNames: {
+    fragment: 'simple',
+    vertex: 'simple',
+  },
+  uniforms: [
+    {
+      name: 'u_matrix',
+    },
+  ],
+};
 
 main();
 
 interface DrawContext {
-  attributes: {
-    colour: number;
-    position: number;
-  };
-  buffers: {
-    colour: WebGLBuffer;
-    position: WebGLBuffer;
-  };
-  cameraAngle: number;
   canvas: HTMLCanvasElement;
-  fragmentShader: WebGLShader;
+  cameraAngle: number;
   gl: WebGLRenderingContext;
-  program: WebGLProgram;
-  uniforms: {
-    matrix: WebGLUniformLocation;
-  };
-  vertexShader: WebGLShader;
+  programs: ProgramContext[];
 }
 
 function main() {
   try {
-    const context = setup();
+    const context = setup([simpleConfig]);
     draw(context);
 
     setInterval(() => {
@@ -55,78 +88,22 @@ function main() {
   }
 }
 
-// interface ProgramContextConfig {
-//   attributes: {
-//     name: string,
-//   }[],
-//   shaderPaths: {
-//     fragment: string
-//     vertex: string;
-//   };
-//   uniforms: {
-//     name: string,
-//   }[]
-// }
-
-// interface ProgramContext {
-
-// }
-
-function setup() {
+function setup(programConfigs: ProgramContextConfig[]) {
   const tree = body();
   const gl = getContext(tree.canvas);
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertex);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragment);
-  const program = createProgram(gl, vertexShader, fragmentShader);
-  const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-  const colourAttributeLocation = gl.getAttribLocation(program, 'a_colour');
 
-  const matrixUniformLocation = gl.getUniformLocation(program, 'u_matrix');
-
-  const positionBuffer = gl.createBuffer();
-  const colourBuffer = gl.createBuffer();
-
-  if (!positionBuffer) {
-    throw new Error('unable to create position buffer');
-  }
-
-  if (!colourBuffer) {
-    throw new Error('unable to create colour buffer');
-  }
-
-  if (!matrixUniformLocation) {
-    throw new Error('unable to find matrix location');
-  }
+  const programs = programConfigs.map(config => {
+    return createProgramFromConfig(shaderDict, dataDict, gl, config);
+  });
 
   const context = {
-    attributes: {
-      colour: colourAttributeLocation,
-      position: positionAttributeLocation,
-    },
-    buffers: {
-      colour: colourBuffer,
-      position: positionBuffer,
-    },
     cameraAngle: 0,
     canvas: tree.canvas,
     gl,
-    fragmentShader,
-    program,
-    uniforms: {
-      matrix: matrixUniformLocation,
-    },
-    vertexShader,
+    programs,
   };
   // set the clear colour
   gl.clearColor(0, 0, 0, 0);
-
-  // set the colours
-  gl.bindBuffer(gl.ARRAY_BUFFER, colourBuffer);
-  setColours(gl);
-
-  // set the geometry
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  setGeometry(gl);
 
   // enable cull face
   gl.enable(gl.CULL_FACE);
@@ -137,15 +114,7 @@ function setup() {
   return context;
 }
 
-function draw({
-  attributes,
-  buffers,
-  cameraAngle,
-  canvas,
-  gl,
-  program,
-  uniforms,
-}: DrawContext) {
+function draw({ cameraAngle, canvas, gl, programs }: DrawContext) {
   // resize/reset the viewport
   resize(gl.canvas as HTMLCanvasElement);
 
@@ -155,53 +124,16 @@ function draw({
   // Clear the canvas
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  const context = programs[0];
+
   // Tell it to use our program (pair of shaders)
-  gl.useProgram(program);
-
-  const positionAttrib = () => {
-    // enable the position attribute
-    gl.enableVertexAttribArray(attributes.position);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-
-    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-    const size = 3; // 3 components per iteration
-    const type = gl.FLOAT; // the data is 32bit floats
-    const normalize = false; // don't normalize the data
-    const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-    const offset = 0; // start at the beginning of the buffer
-    gl.vertexAttribPointer(
-      attributes.position,
-      size,
-      type,
-      normalize,
-      stride,
-      offset
-    );
-  };
-
-  const colourAttrib = () => {
-    // enable the colour attribute
-    gl.enableVertexAttribArray(attributes.colour);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colour);
-
-    // Tell the attribute how to get data out of colourBuffer (ARRAY_BUFFER)
-    const size = 3; // 3 components per iteration
-    const type = gl.UNSIGNED_BYTE; // the data is 32bit floats
-    const normalize = true; // don't normalize the data
-    const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next colour
-    const offset = 0; // start at the beginning of the buffer
-    gl.vertexAttribPointer(
-      attributes.colour,
-      size,
-      type,
-      normalize,
-      stride,
-      offset
-    );
-  };
-
-  positionAttrib();
-  colourAttrib();
+  gl.useProgram(context.program);
+  context.attributes.forEach(attribute => {
+    const { location, normalize, offset, size, stride, type } = attribute;
+    gl.enableVertexAttribArray(location);
+    gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer);
+    gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
+  });
 
   const identityMatrix = identity4_4();
 
@@ -238,7 +170,7 @@ function draw({
     const y = Math.sin(angle) * radius;
 
     const matrix = translate4_4(viewProjectionMatrix, x, 0, y);
-    gl.uniformMatrix4fv(uniforms.matrix, false, matrix);
+    gl.uniformMatrix4fv(context.uniforms[0].location, false, matrix);
 
     // run the program
     const primitiveType = gl.TRIANGLES;
@@ -269,49 +201,6 @@ function error(message: string) {
   err.innerHTML = message;
 
   return err;
-}
-
-function createShader(gl: WebGLRenderingContext, type: number, source: string) {
-  const shader = gl.createShader(type);
-  if (!shader) {
-    throw new Error('could not create shader: ' + source);
-  }
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-
-  const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  if (success) {
-    return shader;
-  }
-
-  const log = gl.getShaderInfoLog(shader);
-  gl.deleteShader(shader);
-  throw new Error('shader error: ' + log);
-}
-
-function createProgram(
-  gl: WebGLRenderingContext,
-  vertexShader: WebGLShader,
-  fragmentShader: WebGLShader
-) {
-  const program = gl.createProgram();
-  if (!program) {
-    throw new Error('could not create GL program');
-  }
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-
-  const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (success) {
-    return program;
-  }
-
-  const log = gl.getProgramInfoLog(program);
-
-  gl.deleteProgram(program);
-
-  throw new Error('could not compile GL: ' + log);
 }
 
 function resize(canvas: HTMLCanvasElement) {
@@ -352,670 +241,3 @@ function resize(canvas: HTMLCanvasElement) {
 // function randomInt(range: number) {
 //   return Math.floor(Math.random() * range);
 // }
-
-function setGeometry(gl: WebGLRenderingContext) {
-  const positions = new Float32Array([
-    // left column front
-    0,
-    0,
-    0,
-    0,
-    150,
-    0,
-    30,
-    0,
-    0,
-    0,
-    150,
-    0,
-    30,
-    150,
-    0,
-    30,
-    0,
-    0,
-
-    // top rung front
-    30,
-    0,
-    0,
-    30,
-    30,
-    0,
-    100,
-    0,
-    0,
-    30,
-    30,
-    0,
-    100,
-    30,
-    0,
-    100,
-    0,
-    0,
-
-    // middle rung front
-    30,
-    60,
-    0,
-    30,
-    90,
-    0,
-    67,
-    60,
-    0,
-    30,
-    90,
-    0,
-    67,
-    90,
-    0,
-    67,
-    60,
-    0,
-
-    // left column back
-    0,
-    0,
-    30,
-    30,
-    0,
-    30,
-    0,
-    150,
-    30,
-    0,
-    150,
-    30,
-    30,
-    0,
-    30,
-    30,
-    150,
-    30,
-
-    // top rung back
-    30,
-    0,
-    30,
-    100,
-    0,
-    30,
-    30,
-    30,
-    30,
-    30,
-    30,
-    30,
-    100,
-    0,
-    30,
-    100,
-    30,
-    30,
-
-    // middle rung back
-    30,
-    60,
-    30,
-    67,
-    60,
-    30,
-    30,
-    90,
-    30,
-    30,
-    90,
-    30,
-    67,
-    60,
-    30,
-    67,
-    90,
-    30,
-
-    // top
-    0,
-    0,
-    0,
-    100,
-    0,
-    0,
-    100,
-    0,
-    30,
-    0,
-    0,
-    0,
-    100,
-    0,
-    30,
-    0,
-    0,
-    30,
-
-    // top rung right
-    100,
-    0,
-    0,
-    100,
-    30,
-    0,
-    100,
-    30,
-    30,
-    100,
-    0,
-    0,
-    100,
-    30,
-    30,
-    100,
-    0,
-    30,
-
-    // under top rung
-    30,
-    30,
-    0,
-    30,
-    30,
-    30,
-    100,
-    30,
-    30,
-    30,
-    30,
-    0,
-    100,
-    30,
-    30,
-    100,
-    30,
-    0,
-
-    // between top rung and middle
-    30,
-    30,
-    0,
-    30,
-    60,
-    30,
-    30,
-    30,
-    30,
-    30,
-    30,
-    0,
-    30,
-    60,
-    0,
-    30,
-    60,
-    30,
-
-    // top of middle rung
-    30,
-    60,
-    0,
-    67,
-    60,
-    30,
-    30,
-    60,
-    30,
-    30,
-    60,
-    0,
-    67,
-    60,
-    0,
-    67,
-    60,
-    30,
-
-    // right of middle rung
-    67,
-    60,
-    0,
-    67,
-    90,
-    30,
-    67,
-    60,
-    30,
-    67,
-    60,
-    0,
-    67,
-    90,
-    0,
-    67,
-    90,
-    30,
-
-    // bottom of middle rung.
-    30,
-    90,
-    0,
-    30,
-    90,
-    30,
-    67,
-    90,
-    30,
-    30,
-    90,
-    0,
-    67,
-    90,
-    30,
-    67,
-    90,
-    0,
-
-    // right of bottom
-    30,
-    90,
-    0,
-    30,
-    150,
-    30,
-    30,
-    90,
-    30,
-    30,
-    90,
-    0,
-    30,
-    150,
-    0,
-    30,
-    150,
-    30,
-
-    // bottom
-    0,
-    150,
-    0,
-    0,
-    150,
-    30,
-    30,
-    150,
-    30,
-    0,
-    150,
-    0,
-    30,
-    150,
-    30,
-    30,
-    150,
-    0,
-
-    // left side
-    0,
-    0,
-    0,
-    0,
-    0,
-    30,
-    0,
-    150,
-    30,
-    0,
-    0,
-    0,
-    0,
-    150,
-    30,
-    0,
-    150,
-    0,
-  ]);
-
-  let matrix = xRotate4_4(identity4_4(), Math.PI);
-  matrix = translate4_4(matrix, -50, -75, -15);
-
-  for (var i = 0; i < positions.length; i += 3) {
-    var vector = vectorMultiply(
-      [positions[i + 0], positions[i + 1], positions[i + 2], 1],
-      matrix
-    );
-    positions[i + 0] = vector[0];
-    positions[i + 1] = vector[1];
-    positions[i + 2] = vector[2];
-  }
-
-  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-}
-
-function setColours(gl: WebGLRenderingContext) {
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Uint8Array([
-      // left column front
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-
-      // top rung front
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-
-      // middle rung front
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-      200,
-      70,
-      120,
-
-      // left column back
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-
-      // top rung back
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-
-      // middle rung back
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-      80,
-      70,
-      200,
-
-      // top
-      70,
-      200,
-      210,
-      70,
-      200,
-      210,
-      70,
-      200,
-      210,
-      70,
-      200,
-      210,
-      70,
-      200,
-      210,
-      70,
-      200,
-      210,
-
-      // top rung right
-      200,
-      200,
-      70,
-      200,
-      200,
-      70,
-      200,
-      200,
-      70,
-      200,
-      200,
-      70,
-      200,
-      200,
-      70,
-      200,
-      200,
-      70,
-
-      // under top rung
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-
-      // between top rung and middle
-      210,
-      160,
-      70,
-      210,
-      160,
-      70,
-      210,
-      160,
-      70,
-      210,
-      160,
-      70,
-      210,
-      160,
-      70,
-      210,
-      160,
-      70,
-
-      // top of middle rung
-      70,
-      180,
-      210,
-      70,
-      180,
-      210,
-      70,
-      180,
-      210,
-      70,
-      180,
-      210,
-      70,
-      180,
-      210,
-      70,
-      180,
-      210,
-
-      // right of middle rung
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-      100,
-      70,
-      210,
-
-      // bottom of middle rung.
-      76,
-      210,
-      100,
-      76,
-      210,
-      100,
-      76,
-      210,
-      100,
-      76,
-      210,
-      100,
-      76,
-      210,
-      100,
-      76,
-      210,
-      100,
-
-      // right of bottom
-      140,
-      210,
-      80,
-      140,
-      210,
-      80,
-      140,
-      210,
-      80,
-      140,
-      210,
-      80,
-      140,
-      210,
-      80,
-      140,
-      210,
-      80,
-
-      // bottom
-      90,
-      130,
-      110,
-      90,
-      130,
-      110,
-      90,
-      130,
-      110,
-      90,
-      130,
-      110,
-      90,
-      130,
-      110,
-      90,
-      130,
-      110,
-
-      // left side
-      160,
-      160,
-      220,
-      160,
-      160,
-      220,
-      160,
-      160,
-      220,
-      160,
-      160,
-      220,
-      160,
-      160,
-      220,
-      160,
-      160,
-      220,
-    ]),
-    gl.STATIC_DRAW
-  );
-}

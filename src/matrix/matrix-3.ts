@@ -1,4 +1,4 @@
-import { Matrix3_1, Matrix3_3 } from './interfaces';
+import { Matrix3_1, Matrix3_3 } from '../interfaces';
 
 export function identity3_3(): Matrix3_3 {
   return [1, 0, 0, 0, 1, 0, 0, 0, 1];
