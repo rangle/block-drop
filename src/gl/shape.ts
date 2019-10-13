@@ -25,5 +25,6 @@ export function shapeConfigToShape(
     colours: dataDict[config.coloursDataName],
     context: programDict[config.programName],
     positions: dataDict[config.positionsDataName],
+    vertexCount: dataDict[config.positionsDataName].length / 3,
   };
 }

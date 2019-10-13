@@ -43,6 +43,7 @@ export interface Shape {
   colours: Float32Array | Uint8Array;
   context: ProgramContext;
   positions: Float32Array | Uint8Array;
+  vertexCount: number;
 }
 
 /**

@@ -14,7 +14,12 @@ import {
   ProgramContext,
   ShaderDictionary,
 } from './interfaces';
-import { fColours, fPositions } from './gl/shape-generator';
+import {
+  fColours,
+  fPositions,
+  cubeColours,
+  cubePositions,
+} from './gl/shape-generator';
 import { shapeConfigToShape } from './gl/shape';
 import { objEach } from '@ch1/utility';
 
@@ -28,11 +33,19 @@ const shaderDict: ShaderDictionary = {
 const dataDict = {
   fColours: fColours(),
   fPositions: fPositions(),
+  cubeColours: cubeColours(),
+  cubePositions: cubePositions(),
 };
 
 const fConfig: ShapeConfig = {
   coloursDataName: 'fColours',
   positionsDataName: 'fPositions',
+  programName: 'simple',
+};
+
+const cubeConfig: ShapeConfig = {
+  coloursDataName: 'cubeColours',
+  positionsDataName: 'cubePositions',
   programName: 'simple',
 };
 
@@ -78,7 +91,7 @@ interface DrawContext {
 
 function main() {
   try {
-    const context = setup([simpleConfig], [fConfig]);
+    const context = setup([simpleConfig], [fConfig, cubeConfig]);
     draw(context);
 
     setInterval(() => {
@@ -142,7 +155,7 @@ function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
   const up: Matrix3_1 = [0, 1, 0];
   const identityMatrix = identity4_4();
 
-  shapes.forEach(({ colours, context, positions }) => {
+  shapes.forEach(({ colours, context, positions, vertexCount }) => {
     // check/cache this
     gl.useProgram(context.program);
 
@@ -164,7 +177,7 @@ function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
     });
 
     let cameraMatrix = yRotate4_4(identityMatrix, cameraAngle);
-    cameraMatrix = translate4_4(cameraMatrix, 0, 0, 300);
+    cameraMatrix = translate4_4(cameraMatrix, 0, -200, 300);
 
     const cameraPosition: Matrix3_1 = [
       cameraMatrix[12],
@@ -190,9 +203,8 @@ function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
 
     // run the program
     const primitiveType = gl.TRIANGLES;
-    const count = 16 * 6;
 
-    gl.drawArrays(primitiveType, 0, count);
+    gl.drawArrays(primitiveType, 0, vertexCount);
   });
 }
 
