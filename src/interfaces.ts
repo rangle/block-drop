@@ -110,3 +110,23 @@ export interface ProgramContext {
   };
   uniforms: Dictionary<ProgramContextUniform>;
 }
+
+/**
+ *
+ *
+ * Scene Graph
+ *
+ *
+ */
+export interface SceneGraph {
+  children: SceneGraph[];
+  localMatrix: Matrix4_4;
+  name: string;
+  parent: SceneGraph | null;
+  shape?: Shape;
+  worldMatrix: Matrix4_4;
+}
+
+export interface SceneGraphShape extends SceneGraph {
+  shape: Shape;
+}

@@ -1,13 +1,21 @@
 import {
-  identity4_4,
-  translate4_4,
-  yRotate4_4,
   perspective4_4,
   inverse4_4,
   multiply4_4,
   lookAt4_4,
+  createYRotation4_4,
+  translate4_4,
+  xRotate4_4,
+  yRotate4_4,
+  zRotate4_4,
+  scale4_4,
 } from './matrix/matrix-4';
-import { Matrix3_1, ShapeConfig, Shape } from './interfaces';
+import {
+  Matrix3_1,
+  ShapeConfig,
+  SceneGraph,
+  SceneGraphShape,
+} from './interfaces';
 import { createProgramFromConfig } from './gl/program';
 import {
   ProgramContextConfig,
@@ -21,7 +29,14 @@ import {
   cubePositions,
 } from './gl/shape-generator';
 import { shapeConfigToShape } from './gl/shape';
-import { objEach } from '@ch1/utility';
+import { objEach, Dictionary } from '@ch1/utility';
+import {
+  createSceneGraph,
+  setParent,
+  sceneGraphToSceneArray,
+  updateWorldMatrix,
+  walkScene,
+} from './gl/scene-graph';
 
 const shaderDict: ShaderDictionary = {
   simple: {
@@ -48,6 +63,112 @@ const cubeConfig: ShapeConfig = {
   positionsDataName: 'cubePositions',
   programName: 'simple',
 };
+
+interface SceneConfig {
+  children: SceneConfig[];
+  initialRotation?: Matrix3_1;
+  initialScale?: Matrix3_1;
+  initialTranslation?: Matrix3_1;
+  name: string;
+  shape?: ShapeConfig;
+}
+
+const sceneConfig: SceneConfig[] = [
+  {
+    children: [
+      {
+        children: [],
+        name: 'sun',
+        shape: fConfig,
+      },
+      {
+        children: [
+          {
+            children: [],
+            name: 'mercury',
+            shape: cubeConfig,
+          },
+        ],
+        initialTranslation: [300, 0, 0],
+        initialScale: [0.3, 0.3, 0.3],
+        name: 'mercury orbit',
+      },
+      {
+        children: [
+          {
+            children: [],
+            name: 'venus',
+            shape: cubeConfig,
+          },
+        ],
+        initialTranslation: [500, 0, 0],
+        initialScale: [0.5, 0.5, 0.5],
+        name: 'venus orbit',
+      },
+      {
+        children: [
+          {
+            children: [],
+            name: 'earth',
+            shape: cubeConfig,
+          },
+          {
+            children: [
+              {
+                children: [],
+                name: 'moon',
+                shape: fConfig,
+              },
+            ],
+            initialTranslation: [150, 0, 0],
+            initialScale: [0.2, 0.2, 0.2],
+            name: 'moon orbit',
+          },
+        ],
+        initialTranslation: [700, 0, 0],
+        initialScale: [0.6, 0.6, 0.6],
+        name: 'earth orbit',
+      },
+      {
+        children: [
+          {
+            children: [],
+            name: 'mars',
+            shape: cubeConfig,
+          },
+          {
+            children: [
+              {
+                children: [],
+                name: 'phobos',
+                shape: fConfig,
+              },
+            ],
+            initialTranslation: [150, 0, 0],
+            initialScale: [0.15, 0.15, 0.15],
+            name: 'phobos orbit',
+          },
+          {
+            children: [
+              {
+                children: [],
+                name: 'deimos',
+                shape: fConfig,
+              },
+            ],
+            initialTranslation: [200, 0, 0],
+            initialScale: [0.15, 0.15, 0.15],
+            name: 'deimos orbit',
+          },
+        ],
+        initialTranslation: [900, 0, 0],
+        initialScale: [0.35, 0.35, 0.35],
+        name: 'mars orbit',
+      },
+    ],
+    name: 'solar system',
+  },
+];
 
 const simpleConfig: ProgramContextConfig = {
   attributes: [
@@ -86,32 +207,65 @@ interface DrawContext {
   cameraAngle: number;
   gl: WebGLRenderingContext;
   programs: ProgramContext[];
-  shapes: Shape[];
+  scene: SceneGraph;
+  sceneList: SceneGraphShape[];
 }
 
 function main() {
   try {
-    const context = setup([simpleConfig], [fConfig, cubeConfig]);
+    const context = setup([simpleConfig]);
     draw(context);
+    const rot = createYRotation4_4(0.01);
 
-    setInterval(() => {
-      if (context.cameraAngle >= Math.PI * 2) {
-        context.cameraAngle = 0;
-      } else {
-        context.cameraAngle += Math.PI / 64;
-      }
-      draw(context);
-    }, 15);
+    const go = () => {
+      requestAnimationFrame(() => {
+        walkScene(context.scene, s => {
+          if (s.name.indexOf('orbit') >= 0) {
+            s.localMatrix = multiply4_4(rot, s.localMatrix);
+          }
+        });
+        updateWorldMatrix(context.scene);
+        draw(context);
+        go();
+      });
+    };
+    go();
   } catch (err) {
     console.log(err);
     window.document.body.appendChild(error(err.message));
   }
 }
 
-function setup(
-  programConfigs: ProgramContextConfig[],
-  shapeConfigs: ShapeConfig[]
-) {
+function sceneConfigToNode(
+  programDict: Dictionary<ProgramContext>,
+  sceneConfig: SceneConfig
+): SceneGraph {
+  const shape = sceneConfig.shape
+    ? shapeConfigToShape(dataDict, programDict, sceneConfig.shape)
+    : undefined;
+  const node = createSceneGraph(sceneConfig.name, shape);
+  if (sceneConfig.initialTranslation) {
+    const t = sceneConfig.initialTranslation;
+    node.localMatrix = translate4_4(node.localMatrix, t[0], t[1], t[2]);
+  }
+  if (sceneConfig.initialRotation) {
+    const r = sceneConfig.initialRotation;
+    node.localMatrix = xRotate4_4(node.localMatrix, r[0]);
+    node.localMatrix = yRotate4_4(node.localMatrix, r[1]);
+    node.localMatrix = zRotate4_4(node.localMatrix, r[2]);
+  }
+  if (sceneConfig.initialScale) {
+    const s = sceneConfig.initialScale;
+    node.localMatrix = scale4_4(node.localMatrix, s[0], s[1], s[2]);
+  }
+  sceneConfig.children.forEach(childConfig => {
+    const child = sceneConfigToNode(programDict, childConfig);
+    setParent(child, node);
+  });
+  return node;
+}
+
+function setup(programConfigs: ProgramContextConfig[]) {
   const tree = body();
   const gl = getContext(tree.canvas);
 
@@ -119,16 +273,27 @@ function setup(
     return createProgramFromConfig(shaderDict, gl, config);
   });
 
-  const shapes = shapeConfigs.map(shapeConfig => {
-    return shapeConfigToShape(dataDict, { simple: programs[0] }, shapeConfig);
+  const scenes: SceneGraph[] = sceneConfig.map(sceneConfig => {
+    return sceneConfigToNode({ simple: programs[0] }, sceneConfig);
   });
+
+  if (scenes.length > 1) {
+    throw new Error('only one scene allowed now');
+  }
+  if (scenes.length === 0) {
+    throw new Error('no scene provided');
+  }
+
+  updateWorldMatrix(scenes[0]);
+  const sceneList = sceneGraphToSceneArray(scenes[0]);
 
   const context = {
     cameraAngle: 0,
     canvas: tree.canvas,
     gl,
     programs,
-    shapes,
+    scene: scenes[0],
+    sceneList,
   };
   // set the clear colour
   gl.clearColor(0, 0, 0, 0);
@@ -142,7 +307,7 @@ function setup(
   return context;
 }
 
-function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
+function draw({ canvas, gl, sceneList }: DrawContext) {
   // resize/reset the viewport
   resize(gl.canvas as HTMLCanvasElement);
 
@@ -152,10 +317,23 @@ function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
   // Clear the canvas
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  const cameraPosition: Matrix3_1 = [0, 1200, -1200];
+  const target: Matrix3_1 = [0.5, 0.5, 0.5];
   const up: Matrix3_1 = [0, 1, 0];
-  const identityMatrix = identity4_4();
 
-  shapes.forEach(({ colours, context, positions, vertexCount }) => {
+  const projectionMatrix = perspective4_4(
+    (90 * Math.PI) / 180,
+    canvas.clientWidth / canvas.clientHeight,
+    1,
+    5000
+  );
+  const cameraMatrix = lookAt4_4(cameraPosition, target, up);
+
+  const viewMatrix = inverse4_4(cameraMatrix);
+  const viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix);
+
+  sceneList.forEach(scene => {
+    const { colours, context, positions, vertexCount } = scene.shape;
     // check/cache this
     gl.useProgram(context.program);
 
@@ -176,29 +354,7 @@ function draw({ cameraAngle, canvas, gl, shapes }: DrawContext) {
       gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
     });
 
-    let cameraMatrix = yRotate4_4(identityMatrix, cameraAngle);
-    cameraMatrix = translate4_4(cameraMatrix, 0, -200, 300);
-
-    const cameraPosition: Matrix3_1 = [
-      cameraMatrix[12],
-      cameraMatrix[13],
-      cameraMatrix[14],
-    ];
-
-    cameraMatrix = lookAt4_4(cameraPosition, [200, 0, 0], up);
-
-    let viewMatrix = inverse4_4(cameraMatrix);
-
-    let projectionMatrix = perspective4_4(
-      (90 * Math.PI) / 180,
-      canvas.clientWidth / canvas.clientHeight,
-      1,
-      2000
-    );
-
-    let viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix);
-
-    const matrix = translate4_4(viewProjectionMatrix, 200, 0, 0);
+    const matrix = multiply4_4(viewProjectionMatrix, scene.worldMatrix);
     gl.uniformMatrix4fv(context.uniforms.u_matrix.location, false, matrix);
 
     // run the program
