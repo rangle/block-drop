@@ -1,10 +1,21 @@
-import { multiply3_1, normalize3_1, subtract3_1 } from './matrix-3';
-import { Matrix3_1, Matrix4_4 } from '../interfaces';
+import {
+  multiply3_1,
+  normalize3_1,
+  subtract3_1,
+  createMatrix3_1,
+} from './matrix-3';
+import { Matrix3_1, Matrix4_4, ObjectPool } from '../interfaces';
+import { createObjectPool } from '../object-pool';
+
+export function createMatrix4_4(): Matrix4_4 {
+  return new Float32Array(16);
+}
 
 export function copy4_4(
   source: Matrix4_4,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
+  const v = op.malloc();
   for (let i = 0; i < source.length; i += 1) {
     v[i] = source[i];
   }
@@ -12,7 +23,10 @@ export function copy4_4(
   return v;
 }
 
-export function identity4_4(v: Matrix4_4 = new Float32Array(16)): Matrix4_4 {
+export function identity4_4(
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
+): Matrix4_4 {
+  const v = op.malloc();
   v[0] = 1;
   v[1] = 0;
   v[2] = 0;
@@ -36,8 +50,9 @@ export function identity4_4(v: Matrix4_4 = new Float32Array(16)): Matrix4_4 {
 export function multiply4_4(
   a: Matrix4_4,
   b: Matrix4_4,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
+  const v = op.malloc();
   const b00 = b[0 * 4 + 0];
   const b01 = b[0 * 4 + 1];
   const b02 = b[0 * 4 + 2];
@@ -94,8 +109,9 @@ export function createTranslation4_4(
   x: number,
   y: number,
   z: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
+  const v = op.malloc();
   v[0] = 1;
   v[1] = 0;
   v[2] = 0;
@@ -118,10 +134,11 @@ export function createTranslation4_4(
 
 export function createXRotation4_4(
   angleInRadians: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
   const c = Math.cos(angleInRadians);
   const s = Math.sin(angleInRadians);
+  const v = op.malloc();
 
   v[0] = 1;
   v[1] = 0;
@@ -145,10 +162,11 @@ export function createXRotation4_4(
 
 export function createYRotation4_4(
   angleInRadians: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
   const c = Math.cos(angleInRadians);
   const s = Math.sin(angleInRadians);
+  const v = op.malloc();
 
   v[0] = c;
   v[1] = 0;
@@ -172,10 +190,11 @@ export function createYRotation4_4(
 
 export function createZRotation4_4(
   angleInRadians: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
   const c = Math.cos(angleInRadians);
   const s = Math.sin(angleInRadians);
+  const v = op.malloc();
 
   v[0] = c;
   v[1] = s;
@@ -201,8 +220,9 @@ export function createScaling4_4(
   x: number,
   y: number,
   z: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
+  const v = op.malloc();
   v[0] = x;
   v[1] = 0;
   v[2] = 0;
@@ -228,37 +248,45 @@ export function translate4_4(
   x: number,
   y: number,
   z: number,
-  v: Matrix4_4 = new Float32Array(16),
-  tv: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
-  return multiply4_4(m, createTranslation4_4(x, y, z, tv), v);
+  const t = createTranslation4_4(x, y, z, op);
+  const result = multiply4_4(m, t, op);
+  op.free(t);
+  return result;
 }
 
 export function xRotate4_4(
   m: Matrix4_4,
   angleInRadians: number,
-  v: Matrix4_4 = new Float32Array(16),
-  tv: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
-  return multiply4_4(m, createXRotation4_4(angleInRadians, tv), v);
+  const t = createXRotation4_4(angleInRadians, op);
+  const result = multiply4_4(m, t, op);
+  op.free(t);
+  return result;
 }
 
 export function yRotate4_4(
   m: Matrix4_4,
   angleInRadians: number,
-  v: Matrix4_4 = new Float32Array(16),
-  tv: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
-  return multiply4_4(m, createYRotation4_4(angleInRadians, tv), v);
+  const t = createYRotation4_4(angleInRadians, op);
+  const result = multiply4_4(m, t, op);
+  op.free(t);
+  return result;
 }
 
 export function zRotate4_4(
   m: Matrix4_4,
   angleInRadians: number,
-  v: Matrix4_4 = new Float32Array(16),
-  tv: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
-  return multiply4_4(m, createZRotation4_4(angleInRadians, tv), v);
+  const t = createZRotation4_4(angleInRadians, op);
+  const result = multiply4_4(m, t, op);
+  op.free(t);
+  return result;
 }
 
 export function scale4_4(
@@ -266,10 +294,12 @@ export function scale4_4(
   x: number,
   y: number,
   z: number,
-  v: Matrix4_4 = new Float32Array(16),
-  tv: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
-  return multiply4_4(m, createScaling4_4(x, y, z, tv), v);
+  const t = createScaling4_4(x, y, z, op);
+  const result = multiply4_4(m, t, op);
+  op.free(t);
+  return result;
 }
 
 export function ortho4_4(
@@ -279,8 +309,9 @@ export function ortho4_4(
   top: number,
   near: number,
   far: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
+  const v = op.malloc();
   v[0] = 2 / (right - left);
   v[1] = 0;
   v[2] = 0;
@@ -306,10 +337,11 @@ export function perspective4_4(
   aspect: number,
   near: number,
   far: number,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ) {
   const f = Math.tan(Math.PI * 0.5 - 0.5 * fovRadians);
   const rangeInv = 1.0 / (near - far);
+  const v = op.malloc();
 
   v[0] = f / aspect;
   v[1] = 0;
@@ -333,8 +365,9 @@ export function perspective4_4(
 
 export function inverse4_4(
   m: Matrix4_4,
-  v: Matrix4_4 = new Float32Array(16)
+  op: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
 ): Matrix4_4 {
+  const v = op.malloc();
   const m00 = m[0 * 4 + 0];
   const m01 = m[0 * 4 + 1];
   const m02 = m[0 * 4 + 2];
@@ -487,17 +520,16 @@ export function lookAt4_4(
   cameraPosition: Matrix3_1,
   target: Matrix3_1,
   up: Matrix3_1,
-  v: Matrix4_4 = new Float32Array(16),
-  v3_s: Matrix3_1 = [0, 0, 0],
-  v3_n: Matrix3_1 = [0, 0, 0],
-  v3_m0: Matrix3_1 = [0, 0, 0],
-  v3_m1: Matrix3_1 = [0, 0, 0],
-  v3_m2: Matrix3_1 = [0, 0, 0],
-  v3_m3: Matrix3_1 = [0, 0, 0]
+  op4_4: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4),
+  op3_1: ObjectPool<Matrix3_1> = createObjectPool(createMatrix3_1)
 ): Matrix4_4 {
-  const z = normalize3_1(subtract3_1(cameraPosition, target, v3_s), v3_n);
-  const x = normalize3_1(multiply3_1(up, z, v3_m0), v3_m2);
-  const y = normalize3_1(multiply3_1(z, x, v3_m1), v3_m3);
+  const z1 = subtract3_1(cameraPosition, target, op3_1);
+  const z = normalize3_1(z1, op3_1);
+  const x1 = multiply3_1(up, z, op3_1);
+  const x = normalize3_1(x1, op3_1);
+  const y1 = multiply3_1(z, x, op3_1);
+  const y = normalize3_1(y1, op3_1);
+  const v = op4_4.malloc();
 
   v[0] = x[0];
   v[1] = x[1];
@@ -515,6 +547,13 @@ export function lookAt4_4(
   v[13] = cameraPosition[1];
   v[14] = cameraPosition[2];
   v[15] = 1;
+
+  op3_1.free(x1);
+  op3_1.free(x);
+  op3_1.free(y1);
+  op3_1.free(y);
+  op3_1.free(z1);
+  op3_1.free(z);
 
   return v;
 }

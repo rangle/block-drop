@@ -1,4 +1,9 @@
-import { Matrix3_1, Matrix3_3 } from '../interfaces';
+import { Matrix3_1, Matrix3_3, ObjectPool } from '../interfaces';
+import { createObjectPool } from '../object-pool';
+
+export function createMatrix3_1(): Matrix3_1 {
+  return [0, 0, 0];
+}
 
 export function identity3_3(): Matrix3_3 {
   return [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -7,8 +12,9 @@ export function identity3_3(): Matrix3_3 {
 export function multiply3_1(
   a: Matrix3_1,
   b: Matrix3_1,
-  v = new Array(3) as Matrix3_1
+  op: ObjectPool<Matrix3_1> = createObjectPool(createMatrix3_1)
 ) {
+  const v = op.malloc();
   v[0] = a[1] * b[2] - a[2] * b[1];
   v[1] = a[2] * b[0] - a[0] * b[2];
   v[2] = a[0] * b[1] - a[1] * b[0];
@@ -51,8 +57,9 @@ export function multiply3_3(a: Matrix3_3, b: Matrix3_3): Matrix3_3 {
 export function subtract3_1(
   a: Matrix3_1,
   b: Matrix3_1,
-  v = new Array(3) as Matrix3_1
+  op: ObjectPool<Matrix3_1> = createObjectPool(createMatrix3_1)
 ): Matrix3_1 {
+  const v = op.malloc();
   v[0] = a[0] - b[0];
   v[1] = a[1] - b[1];
   v[2] = a[2] - b[2];
@@ -61,8 +68,9 @@ export function subtract3_1(
 
 export function normalize3_1(
   m: Matrix3_1,
-  v = new Array(3) as Matrix3_1
+  op: ObjectPool<Matrix3_1> = createObjectPool(createMatrix3_1)
 ): Matrix3_1 {
+  const v = op.malloc();
   const length = Math.sqrt(m[0] * m[0] + m[1] * m[1] + m[2] * m[2]);
   // make sure we don't divide by 0.
   if (length > 0.00001) {

@@ -3,12 +3,6 @@ import {
   inverse4_4,
   multiply4_4,
   lookAt4_4,
-  createYRotation4_4,
-  translate4_4,
-  xRotate4_4,
-  yRotate4_4,
-  zRotate4_4,
-  scale4_4,
 } from './matrix/matrix-4';
 import {
   Matrix3_1,
@@ -30,13 +24,7 @@ import {
 } from './gl/shape-generator';
 import { shapeConfigToShape } from './gl/shape';
 import { objEach, Dictionary } from '@ch1/utility';
-import {
-  createSceneGraph,
-  setParent,
-  sceneGraphToSceneArray,
-  updateWorldMatrix,
-  walkScene,
-} from './gl/scene-graph';
+import { createSceneGraph } from './gl/scene-graph';
 
 const shaderDict: ShaderDictionary = {
   simple: {
@@ -86,11 +74,11 @@ const sceneConfig: SceneConfig[] = [
           {
             children: [],
             name: 'mercury',
+            initialScale: [0.3, 0.3, 0.3],
             shape: cubeConfig,
           },
         ],
         initialTranslation: [300, 0, 0],
-        initialScale: [0.3, 0.3, 0.3],
         name: 'mercury orbit',
       },
       {
@@ -98,11 +86,11 @@ const sceneConfig: SceneConfig[] = [
           {
             children: [],
             name: 'venus',
+            initialScale: [0.5, 0.5, 0.5],
             shape: cubeConfig,
           },
         ],
         initialTranslation: [500, 0, 0],
-        initialScale: [0.5, 0.5, 0.5],
         name: 'venus orbit',
       },
       {
@@ -110,6 +98,7 @@ const sceneConfig: SceneConfig[] = [
           {
             children: [],
             name: 'earth',
+            initialScale: [0.6, 0.6, 0.6],
             shape: cubeConfig,
           },
           {
@@ -117,16 +106,15 @@ const sceneConfig: SceneConfig[] = [
               {
                 children: [],
                 name: 'moon',
+                initialScale: [0.2, 0.2, 0.2],
                 shape: fConfig,
               },
             ],
-            initialTranslation: [150, 0, 0],
-            initialScale: [0.2, 0.2, 0.2],
+            initialTranslation: [75, 0, 0],
             name: 'moon orbit',
           },
         ],
         initialTranslation: [700, 0, 0],
-        initialScale: [0.6, 0.6, 0.6],
         name: 'earth orbit',
       },
       {
@@ -134,6 +122,7 @@ const sceneConfig: SceneConfig[] = [
           {
             children: [],
             name: 'mars',
+            initialScale: [0.35, 0.35, 0.35],
             shape: cubeConfig,
           },
           {
@@ -141,11 +130,11 @@ const sceneConfig: SceneConfig[] = [
               {
                 children: [],
                 name: 'phobos',
+                initialScale: [0.15, 0.15, 0.15],
                 shape: fConfig,
               },
             ],
-            initialTranslation: [150, 0, 0],
-            initialScale: [0.15, 0.15, 0.15],
+            initialTranslation: [75, 0, 0],
             name: 'phobos orbit',
           },
           {
@@ -153,20 +142,19 @@ const sceneConfig: SceneConfig[] = [
               {
                 children: [],
                 name: 'deimos',
+                initialScale: [0.15, 0.15, 0.15],
                 shape: fConfig,
               },
             ],
-            initialTranslation: [200, 0, 0],
-            initialScale: [0.15, 0.15, 0.15],
+            initialTranslation: [100, 0, 0],
             name: 'deimos orbit',
           },
         ],
         initialTranslation: [900, 0, 0],
-        initialScale: [0.35, 0.35, 0.35],
         name: 'mars orbit',
       },
     ],
-    name: 'solar system',
+    name: 'solar orbit',
   },
 ];
 
@@ -215,16 +203,30 @@ function main() {
   try {
     const context = setup([simpleConfig]);
     draw(context);
-    const rot = createYRotation4_4(0.01);
 
     const go = () => {
       requestAnimationFrame(() => {
-        walkScene(context.scene, s => {
+        context.scene.walk(s => {
           if (s.name.indexOf('orbit') >= 0) {
-            s.localMatrix = multiply4_4(rot, s.localMatrix);
+            s.rotation[1] += 0.01;
+            s.updateLocalMatrix();
           }
+          [
+            'mercury',
+            'venus',
+            'earth',
+            'moon',
+            'mars',
+            'phobos',
+            'deimos',
+          ].forEach(name => {
+            if (s.name === name) {
+              s.rotation[1] += 0.7;
+              s.updateLocalMatrix();
+            }
+          });
         });
-        updateWorldMatrix(context.scene);
+        context.scene.updateWorldMatrix();
         draw(context);
         go();
       });
@@ -244,23 +246,26 @@ function sceneConfigToNode(
     ? shapeConfigToShape(dataDict, programDict, sceneConfig.shape)
     : undefined;
   const node = createSceneGraph(sceneConfig.name, shape);
+  node.localMatrix = new Float32Array(16);
   if (sceneConfig.initialTranslation) {
-    const t = sceneConfig.initialTranslation;
-    node.localMatrix = translate4_4(node.localMatrix, t[0], t[1], t[2]);
+    node.translation = sceneConfig.initialTranslation;
+  } else {
+    node.translation = [0, 0, 0];
   }
   if (sceneConfig.initialRotation) {
-    const r = sceneConfig.initialRotation;
-    node.localMatrix = xRotate4_4(node.localMatrix, r[0]);
-    node.localMatrix = yRotate4_4(node.localMatrix, r[1]);
-    node.localMatrix = zRotate4_4(node.localMatrix, r[2]);
+    node.rotation = sceneConfig.initialRotation;
+  } else {
+    node.rotation = [0, 0, 0];
   }
   if (sceneConfig.initialScale) {
-    const s = sceneConfig.initialScale;
-    node.localMatrix = scale4_4(node.localMatrix, s[0], s[1], s[2]);
+    node.scale = sceneConfig.initialScale;
+  } else {
+    node.scale = [1, 1, 1];
   }
+  node.updateLocalMatrix();
   sceneConfig.children.forEach(childConfig => {
     const child = sceneConfigToNode(programDict, childConfig);
-    setParent(child, node);
+    child.setParent(node);
   });
   return node;
 }
@@ -284,8 +289,8 @@ function setup(programConfigs: ProgramContextConfig[]) {
     throw new Error('no scene provided');
   }
 
-  updateWorldMatrix(scenes[0]);
-  const sceneList = sceneGraphToSceneArray(scenes[0]);
+  scenes[0].updateWorldMatrix();
+  const sceneList = scenes[0].toArray();
 
   const context = {
     cameraAngle: 0,
@@ -399,27 +404,6 @@ function resize(canvas: HTMLCanvasElement) {
     canvas.height = displayHeight;
   }
 }
-// Fills the buffer with the values that define a rectangle.
-
-// function setRectangle(gl: WebGLRenderingContext, x: number, y: number, width: number, height: number) {
-//   const x1 = x;
-//   const x2 = x + width;
-//   const y1 = y;
-//   const y2 = y + height;
-
-//   // NOTE: gl.bufferData(gl.ARRAY_BUFFER, ...) will affect
-//   // whatever buffer is bound to the `ARRAY_BUFFER` bind point
-//   // but so far we only have one buffer. If we had more than one
-//   // buffer we'd want to bind that buffer to `ARRAY_BUFFER` first.
-
-//   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-//      x1, y1,
-//      x2, y1,
-//      x1, y2,
-//      x1, y2,
-//      x2, y1,
-//      x2, y2]), gl.STATIC_DRAW);
-// }
 
 // Returns a random integer from 0 to range - 1.
 // function randomInt(range: number) {

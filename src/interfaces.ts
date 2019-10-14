@@ -118,15 +118,38 @@ export interface ProgramContext {
  *
  *
  */
-export interface SceneGraph {
+export interface TRS {
+  rotation: Matrix3_1;
+  scale: Matrix3_1;
+  translation: Matrix3_1;
+}
+export interface SceneGraph extends TRS {
   children: SceneGraph[];
   localMatrix: Matrix4_4;
   name: string;
+  op3_1: ObjectPool<Matrix3_1>;
+  op4_4: ObjectPool<Matrix4_4>;
   parent: SceneGraph | null;
   shape?: Shape;
   worldMatrix: Matrix4_4;
+  setParent(parent: null | SceneGraph): void;
+  toArray(): SceneGraphShape[];
+  updateLocalMatrix(): void;
+  updateWorldMatrix(): void;
+  walk(callback: (s: SceneGraph) => void): void;
 }
 
 export interface SceneGraphShape extends SceneGraph {
   shape: Shape;
+}
+
+/**
+ *
+ *
+ * Object Pool
+ *
+ */
+export interface ObjectPool<T> {
+  free(obj: T): void;
+  malloc(): T;
 }
