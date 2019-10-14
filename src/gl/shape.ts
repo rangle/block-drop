@@ -3,6 +3,7 @@ import {
   ShapeConfig,
   DataDictionary,
   ProgramDictionary,
+  Matrix3_1,
 } from '../interfaces';
 
 export function shapeConfigToShape(
@@ -21,9 +22,24 @@ export function shapeConfigToShape(
   if (!programDict[config.programName]) {
     throw new Error('could not find program for ' + config.programName);
   }
+
+  let normals;
+  let lightDirection: Matrix3_1 = [10, 10, -10];
+  if (config.normalsDataName) {
+    if (!dataDict[config.normalsDataName]) {
+      throw new Error('could not find normals for ' + config.normalsDataName);
+    }
+    normals = dataDict[config.normalsDataName];
+    if (config.lightDirection) {
+      lightDirection = config.lightDirection;
+    }
+  }
+
   return {
     colours: dataDict[config.coloursDataName],
     context: programDict[config.programName],
+    lightDirection,
+    normals,
     positions: dataDict[config.positionsDataName],
     vertexCount: dataDict[config.positionsDataName].length / 3,
   };

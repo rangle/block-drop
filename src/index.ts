@@ -3,6 +3,7 @@ import {
   inverse4_4,
   multiply4_4,
   lookAt4_4,
+  transpose4_4,
 } from './matrix/matrix-4';
 import {
   Matrix3_1,
@@ -21,29 +22,55 @@ import {
   fPositions,
   cubeColours,
   cubePositions,
+  fNormals,
+  cubeNormals,
 } from './gl/shape-generator';
 import { shapeConfigToShape } from './gl/shape';
 import { objEach, Dictionary } from '@ch1/utility';
 import { createSceneGraph } from './gl/scene-graph';
+import { normalize3_1 } from './matrix/matrix-3';
+import { simpleConfig } from './gl/programs/simple';
+import { simpleDirectionalConfig } from './gl/programs/simple-directional';
 
 const shaderDict: ShaderDictionary = {
   simple: {
     fragment: require('./shaders/simple-fragment.glsl'),
     vertex: require('./shaders/simple-vertex.glsl'),
   },
+  'simple-directional': {
+    fragment: require('./shaders/simple-directional-fragment.glsl'),
+    vertex: require('./shaders/simple-directional-vertex.glsl'),
+  },
 };
 
 const dataDict = {
   fColours: fColours(),
+  fNormals: fNormals(),
   fPositions: fPositions(),
   cubeColours: cubeColours(),
+  cubeNormals: cubeNormals(),
   cubePositions: cubePositions(),
+};
+
+const fLightConfig: ShapeConfig = {
+  coloursDataName: 'fColours',
+  lightDirection: [0.2, -0.9, -1],
+  normalsDataName: 'fNormals',
+  positionsDataName: 'fPositions',
+  programName: 'simple-directional',
 };
 
 const fConfig: ShapeConfig = {
   coloursDataName: 'fColours',
   positionsDataName: 'fPositions',
   programName: 'simple',
+};
+
+const cubeLightConfig: ShapeConfig = {
+  coloursDataName: 'cubeColours',
+  positionsDataName: 'cubePositions',
+  programName: 'simple-directional',
+  normalsDataName: 'cubeNormals',
 };
 
 const cubeConfig: ShapeConfig = {
@@ -67,7 +94,7 @@ const sceneConfig: SceneConfig[] = [
       {
         children: [],
         name: 'sun',
-        shape: fConfig,
+        shape: fLightConfig,
       },
       {
         children: [
@@ -99,7 +126,7 @@ const sceneConfig: SceneConfig[] = [
             children: [],
             name: 'earth',
             initialScale: [0.6, 0.6, 0.6],
-            shape: cubeConfig,
+            shape: cubeLightConfig,
           },
           {
             children: [
@@ -158,36 +185,6 @@ const sceneConfig: SceneConfig[] = [
   },
 ];
 
-const simpleConfig: ProgramContextConfig = {
-  attributes: [
-    {
-      name: 'a_colour',
-      size: 3,
-      type: 'UNSIGNED_BYTE',
-      normalize: true,
-      stride: 0,
-      offset: 0,
-    },
-    {
-      name: 'a_position',
-      size: 3,
-      type: 'FLOAT',
-      normalize: false,
-      stride: 0,
-      offset: 0,
-    },
-  ],
-  shaderNames: {
-    fragment: 'simple',
-    vertex: 'simple',
-  },
-  uniforms: [
-    {
-      name: 'u_matrix',
-    },
-  ],
-};
-
 main();
 
 interface DrawContext {
@@ -201,7 +198,7 @@ interface DrawContext {
 
 function main() {
   try {
-    const context = setup([simpleConfig]);
+    const context = setup([simpleConfig, simpleDirectionalConfig]);
     draw(context);
 
     const go = () => {
@@ -221,7 +218,7 @@ function main() {
             'deimos',
           ].forEach(name => {
             if (s.name === name) {
-              s.rotation[1] += 0.7;
+              s.rotation[1] += 0.07;
               s.updateLocalMatrix();
             }
           });
@@ -279,7 +276,10 @@ function setup(programConfigs: ProgramContextConfig[]) {
   });
 
   const scenes: SceneGraph[] = sceneConfig.map(sceneConfig => {
-    return sceneConfigToNode({ simple: programs[0] }, sceneConfig);
+    return sceneConfigToNode(
+      { simple: programs[0], 'simple-directional': programs[1] },
+      sceneConfig
+    );
   });
 
   if (scenes.length > 1) {
@@ -343,14 +343,29 @@ function draw({ canvas, gl, sceneList }: DrawContext) {
     gl.useProgram(context.program);
 
     // setup positions (check cache)
-    // check/cache buffer data
+    // @todo check/cache buffer data
     gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_position.buffer);
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
     // setup colours (check cache)
-    // check/cache buffer data
+    // @todo check/cache buffer data
     gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_colour.buffer);
     gl.bufferData(gl.ARRAY_BUFFER, colours, gl.STATIC_DRAW);
+
+    // setup normals (check cache)
+    // @todo check/cache buffer data
+    if (scene.shape.normals) {
+      // setup colours (check cache)
+      // @todo check/cache buffer data
+      gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_normal.buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, scene.shape.normals, gl.STATIC_DRAW);
+
+      // @todo dynamic direction
+      gl.uniform3fv(
+        context.uniforms.u_reverseLightDirection.location,
+        normalize3_1(scene.shape.lightDirection)
+      );
+    }
 
     objEach(context.attributes, attribute => {
       const { location, normalize, offset, size, stride, type } = attribute;
@@ -361,6 +376,17 @@ function draw({ canvas, gl, sceneList }: DrawContext) {
 
     const matrix = multiply4_4(viewProjectionMatrix, scene.worldMatrix);
     gl.uniformMatrix4fv(context.uniforms.u_matrix.location, false, matrix);
+
+    if (scene.shape.normals) {
+      const worldInverseMatrix = inverse4_4(matrix);
+      const worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix);
+      // @todo dynamic direction
+      gl.uniformMatrix4fv(
+        context.uniforms.u_worldInverseTranspose.location,
+        false,
+        worldInverseTransposeMatrix
+      );
+    }
 
     // run the program
     const primitiveType = gl.TRIANGLES;

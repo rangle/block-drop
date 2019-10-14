@@ -558,6 +558,30 @@ export function lookAt4_4(
   return v;
 }
 
+export function transpose4_4(
+  m: Matrix4_4,
+  op = createObjectPool(createMatrix4_4)
+): Matrix4_4 {
+  const v = op.malloc();
+  v[0] = m[0];
+  v[1] = m[4];
+  v[2] = m[8];
+  v[3] = m[12];
+  v[4] = m[1];
+  v[5] = m[5];
+  v[6] = m[9];
+  v[7] = m[13];
+  v[8] = m[2];
+  v[9] = m[6];
+  v[10] = m[10];
+  v[11] = m[14];
+  v[12] = m[3];
+  v[13] = m[7];
+  v[14] = m[11];
+  v[15] = m[15];
+  return v;
+}
+
 export function vectorMultiply(v: number[], m: Matrix4_4) {
   const dst = [];
   for (let i = 0; i < 4; ++i) {

@@ -36,12 +36,16 @@ export interface DataDictionary {
 export interface ShapeConfig {
   positionsDataName: string;
   coloursDataName: string;
+  lightDirection?: Matrix3_1;
   programName: string;
+  normalsDataName?: string;
 }
 
 export interface Shape {
   colours: Float32Array | Uint8Array;
   context: ProgramContext;
+  lightDirection: Matrix3_1;
+  normals?: Float32Array | Uint8Array;
   positions: Float32Array | Uint8Array;
   vertexCount: number;
 }
