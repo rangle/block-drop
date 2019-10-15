@@ -4,6 +4,10 @@ import {
   Matrix4_4,
   SceneGraphShape,
   ObjectPool,
+  ProgramContext,
+  SceneConfig,
+  DataDictionary,
+  BufferMap,
 } from '../interfaces';
 import {
   identity4_4,
@@ -18,6 +22,8 @@ import {
 } from '../matrix/matrix-4';
 import { createObjectPool } from '../object-pool';
 import { createMatrix3_1 } from '../matrix/matrix-3';
+import { Dictionary } from '@ch1/utility';
+import { shapeConfigToShape } from './shape';
 
 export function createSceneGraph(
   name: string,
@@ -146,4 +152,53 @@ export function updateLocalMatrix(
   op.free(t3);
   op.free(t4);
   scene.localMatrix = t5;
+}
+
+export function sceneConfigToNode(
+  dataDict: DataDictionary,
+  programDict: Dictionary<ProgramContext>,
+  bufferMap: BufferMap,
+  gl: WebGLRenderingContext,
+  sceneConfig: SceneConfig,
+  op3_1 = createObjectPool(createMatrix3_1),
+  op4_4 = createObjectPool(createMatrix4_4)
+): SceneGraph {
+  const shape = sceneConfig.shape
+    ? shapeConfigToShape(
+        dataDict,
+        programDict,
+        bufferMap,
+        gl,
+        sceneConfig.shape
+      )
+    : undefined;
+  const node = createSceneGraph(sceneConfig.name, shape, op3_1, op4_4);
+  node.localMatrix = op4_4.malloc();
+  if (sceneConfig.initialTranslation) {
+    node.translation = sceneConfig.initialTranslation;
+  } else {
+    node.translation = [0, 0, 0];
+  }
+  if (sceneConfig.initialRotation) {
+    node.rotation = sceneConfig.initialRotation;
+  } else {
+    node.rotation = [0, 0, 0];
+  }
+  if (sceneConfig.initialScale) {
+    node.scale = sceneConfig.initialScale;
+  } else {
+    node.scale = [1, 1, 1];
+  }
+  node.updateLocalMatrix();
+  sceneConfig.children.forEach(childConfig => {
+    const child = sceneConfigToNode(
+      dataDict,
+      programDict,
+      bufferMap,
+      gl,
+      childConfig
+    );
+    child.setParent(node);
+  });
+  return node;
 }

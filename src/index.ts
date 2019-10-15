@@ -4,12 +4,17 @@ import {
   multiply4_4,
   lookAt4_4,
   transpose4_4,
+  createMatrix4_4,
 } from './matrix/matrix-4';
 import {
   Matrix3_1,
   ShapeConfig,
   SceneGraph,
   SceneGraphShape,
+  SceneConfig,
+  BufferMap,
+  ObjectPool,
+  Matrix4_4,
 } from './interfaces';
 import { createProgramFromConfig } from './gl/program';
 import {
@@ -25,12 +30,12 @@ import {
   fNormals,
   cubeNormals,
 } from './gl/shape-generator';
-import { shapeConfigToShape } from './gl/shape';
-import { objEach, Dictionary } from '@ch1/utility';
-import { createSceneGraph } from './gl/scene-graph';
-import { normalize3_1 } from './matrix/matrix-3';
+import { objEach } from '@ch1/utility';
+import { sceneConfigToNode } from './gl/scene-graph';
+import { normalize3_1, createMatrix3_1 } from './matrix/matrix-3';
 import { simpleConfig } from './gl/programs/simple';
 import { simpleDirectionalConfig } from './gl/programs/simple-directional';
+import { createObjectPool } from './object-pool';
 
 const shaderDict: ShaderDictionary = {
   simple: {
@@ -78,15 +83,6 @@ const cubeConfig: ShapeConfig = {
   positionsDataName: 'cubePositions',
   programName: 'simple',
 };
-
-interface SceneConfig {
-  children: SceneConfig[];
-  initialRotation?: Matrix3_1;
-  initialScale?: Matrix3_1;
-  initialTranslation?: Matrix3_1;
-  name: string;
-  shape?: ShapeConfig;
-}
 
 const sceneConfig: SceneConfig[] = [
   {
@@ -188,9 +184,15 @@ const sceneConfig: SceneConfig[] = [
 main();
 
 interface DrawContext {
+  bufferMap: BufferMap;
   canvas: HTMLCanvasElement;
-  cameraAngle: number;
+  cameraPosition: Matrix3_1;
+  cameraTarget: Matrix3_1;
+  cameraUp: Matrix3_1;
   gl: WebGLRenderingContext;
+  lastProgram?: WebGLProgram;
+  op3_1: ObjectPool<Matrix3_1>;
+  op4_4: ObjectPool<Matrix4_4>;
   programs: ProgramContext[];
   scene: SceneGraph;
   sceneList: SceneGraphShape[];
@@ -235,41 +237,13 @@ function main() {
   }
 }
 
-function sceneConfigToNode(
-  programDict: Dictionary<ProgramContext>,
-  sceneConfig: SceneConfig
-): SceneGraph {
-  const shape = sceneConfig.shape
-    ? shapeConfigToShape(dataDict, programDict, sceneConfig.shape)
-    : undefined;
-  const node = createSceneGraph(sceneConfig.name, shape);
-  node.localMatrix = new Float32Array(16);
-  if (sceneConfig.initialTranslation) {
-    node.translation = sceneConfig.initialTranslation;
-  } else {
-    node.translation = [0, 0, 0];
-  }
-  if (sceneConfig.initialRotation) {
-    node.rotation = sceneConfig.initialRotation;
-  } else {
-    node.rotation = [0, 0, 0];
-  }
-  if (sceneConfig.initialScale) {
-    node.scale = sceneConfig.initialScale;
-  } else {
-    node.scale = [1, 1, 1];
-  }
-  node.updateLocalMatrix();
-  sceneConfig.children.forEach(childConfig => {
-    const child = sceneConfigToNode(programDict, childConfig);
-    child.setParent(node);
-  });
-  return node;
-}
-
 function setup(programConfigs: ProgramContextConfig[]) {
   const tree = body();
   const gl = getContext(tree.canvas);
+  const bufferMap: BufferMap = new Map();
+
+  const op3_1 = createObjectPool(createMatrix3_1, 500);
+  const op4_4 = createObjectPool(createMatrix4_4, 1000);
 
   const programs = programConfigs.map(config => {
     return createProgramFromConfig(shaderDict, gl, config);
@@ -277,7 +251,10 @@ function setup(programConfigs: ProgramContextConfig[]) {
 
   const scenes: SceneGraph[] = sceneConfig.map(sceneConfig => {
     return sceneConfigToNode(
+      dataDict,
       { simple: programs[0], 'simple-directional': programs[1] },
+      bufferMap,
+      gl,
       sceneConfig
     );
   });
@@ -293,9 +270,14 @@ function setup(programConfigs: ProgramContextConfig[]) {
   const sceneList = scenes[0].toArray();
 
   const context = {
-    cameraAngle: 0,
+    bufferMap,
+    cameraPosition: [0, 1200, -1200] as Matrix3_1,
+    cameraTarget: [0.5, 0.5, 0.5] as Matrix3_1,
+    cameraUp: [0, 1, 0] as Matrix3_1,
     canvas: tree.canvas,
     gl,
+    op3_1,
+    op4_4,
     programs,
     scene: scenes[0],
     sceneList,
@@ -312,7 +294,17 @@ function setup(programConfigs: ProgramContextConfig[]) {
   return context;
 }
 
-function draw({ canvas, gl, sceneList }: DrawContext) {
+function draw(drawContext: DrawContext) {
+  const {
+    cameraPosition,
+    cameraTarget,
+    cameraUp,
+    canvas,
+    gl,
+    op3_1,
+    op4_4,
+    sceneList,
+  } = drawContext;
   // resize/reset the viewport
   resize(gl.canvas as HTMLCanvasElement);
 
@@ -322,69 +314,59 @@ function draw({ canvas, gl, sceneList }: DrawContext) {
   // Clear the canvas
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const cameraPosition: Matrix3_1 = [0, 1200, -1200];
-  const target: Matrix3_1 = [0.5, 0.5, 0.5];
-  const up: Matrix3_1 = [0, 1, 0];
-
   const projectionMatrix = perspective4_4(
     (90 * Math.PI) / 180,
     canvas.clientWidth / canvas.clientHeight,
     1,
-    5000
+    5000,
+    op4_4
   );
-  const cameraMatrix = lookAt4_4(cameraPosition, target, up);
 
-  const viewMatrix = inverse4_4(cameraMatrix);
-  const viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix);
+  const cameraMatrix = lookAt4_4(
+    cameraPosition,
+    cameraTarget,
+    cameraUp,
+    op4_4,
+    op3_1
+  );
+
+  const viewMatrix = inverse4_4(cameraMatrix, op4_4);
+  const viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix, op4_4);
 
   sceneList.forEach(scene => {
-    const { colours, context, positions, vertexCount } = scene.shape;
+    const { context, vertexCount } = scene.shape;
     // check/cache this
-    gl.useProgram(context.program);
-
-    // setup positions (check cache)
-    // @todo check/cache buffer data
-    gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_position.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-
-    // setup colours (check cache)
-    // @todo check/cache buffer data
-    gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_colour.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, colours, gl.STATIC_DRAW);
-
-    // setup normals (check cache)
-    // @todo check/cache buffer data
-    if (scene.shape.normals) {
-      // setup colours (check cache)
-      // @todo check/cache buffer data
-      gl.bindBuffer(gl.ARRAY_BUFFER, context.attributes.a_normal.buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, scene.shape.normals, gl.STATIC_DRAW);
-
-      // @todo dynamic direction
-      gl.uniform3fv(
-        context.uniforms.u_reverseLightDirection.location,
-        normalize3_1(scene.shape.lightDirection)
-      );
+    if (drawContext.lastProgram !== context.program) {
+      gl.useProgram(context.program);
+      drawContext.lastProgram = context.program;
     }
 
-    objEach(context.attributes, attribute => {
+    objEach(context.attributes, (attribute, name) => {
       const { location, normalize, offset, size, stride, type } = attribute;
       gl.enableVertexAttribArray(location);
-      gl.bindBuffer(gl.ARRAY_BUFFER, attribute.buffer);
+      gl.bindBuffer(gl.ARRAY_BUFFER, (scene.shape as any)[name as string]);
       gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
     });
 
-    const matrix = multiply4_4(viewProjectionMatrix, scene.worldMatrix);
+    const matrix = multiply4_4(viewProjectionMatrix, scene.worldMatrix, op4_4);
     gl.uniformMatrix4fv(context.uniforms.u_matrix.location, false, matrix);
 
-    if (scene.shape.normals) {
-      const worldInverseMatrix = inverse4_4(matrix);
-      const worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix);
-      // @todo dynamic direction
+    let worldInverseMatrix: Matrix4_4 | null = null;
+    let worldInverseTransposeMatrix: Matrix4_4 | null = null;
+    let normalizedLight: Matrix3_1 | null = null;
+    if (scene.shape.a_normal) {
+      worldInverseMatrix = inverse4_4(matrix, op4_4);
+      worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix, op4_4);
       gl.uniformMatrix4fv(
         context.uniforms.u_worldInverseTranspose.location,
         false,
         worldInverseTransposeMatrix
+      );
+
+      normalizedLight = normalize3_1(scene.shape.lightDirection, op3_1);
+      gl.uniform3fv(
+        context.uniforms.u_reverseLightDirection.location,
+        normalizedLight
       );
     }
 
@@ -392,7 +374,24 @@ function draw({ canvas, gl, sceneList }: DrawContext) {
     const primitiveType = gl.TRIANGLES;
 
     gl.drawArrays(primitiveType, 0, vertexCount);
+
+    // free scene memory
+    op4_4.free(matrix);
+    if (worldInverseMatrix) {
+      op4_4.free(worldInverseMatrix);
+    }
+    if (worldInverseTransposeMatrix) {
+      op4_4.free(worldInverseTransposeMatrix);
+    }
+    if (normalizedLight) {
+      op3_1.free(normalizedLight);
+    }
   });
+  // free memory
+  op4_4.free(projectionMatrix);
+  op4_4.free(cameraMatrix);
+  op4_4.free(viewMatrix);
+  op4_4.free(viewProjectionMatrix);
 }
 
 function body() {

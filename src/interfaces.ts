@@ -42,13 +42,15 @@ export interface ShapeConfig {
 }
 
 export interface Shape {
-  colours: Float32Array | Uint8Array;
+  a_colour: WebGLBuffer;
   context: ProgramContext;
   lightDirection: Matrix3_1;
-  normals?: Float32Array | Uint8Array;
-  positions: Float32Array | Uint8Array;
+  a_normal?: WebGLBuffer;
+  a_position: WebGLBuffer;
   vertexCount: number;
 }
+
+export type BufferMap = Map<Float32Array | Uint8Array, WebGLBuffer>;
 
 /**
  *
@@ -145,6 +147,15 @@ export interface SceneGraph extends TRS {
 
 export interface SceneGraphShape extends SceneGraph {
   shape: Shape;
+}
+
+export interface SceneConfig {
+  children: SceneConfig[];
+  initialRotation?: Matrix3_1;
+  initialScale?: Matrix3_1;
+  initialTranslation?: Matrix3_1;
+  name: string;
+  shape?: ShapeConfig;
 }
 
 /**
