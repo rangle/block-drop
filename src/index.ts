@@ -36,6 +36,7 @@ import { normalize3_1, createMatrix3_1 } from './matrix/matrix-3';
 import { simpleConfig } from './gl/programs/simple';
 import { simpleDirectionalConfig } from './gl/programs/simple-directional';
 import { createObjectPool } from './object-pool';
+import { create1 } from './engine/engine';
 
 const shaderDict: ShaderDictionary = {
   simple: {
@@ -189,6 +190,7 @@ interface DrawContext {
   cameraPosition: Matrix3_1;
   cameraTarget: Matrix3_1;
   cameraUp: Matrix3_1;
+  engine: any;
   gl: WebGLRenderingContext;
   lastProgram?: WebGLProgram;
   op3_1: ObjectPool<Matrix3_1>;
@@ -205,6 +207,7 @@ function main() {
 
     const go = () => {
       requestAnimationFrame(() => {
+        console.log(context.engine.buffer);
         context.scene.walk(s => {
           if (s.name.indexOf('orbit') >= 0) {
             s.rotation[1] += 0.01;
@@ -269,12 +272,19 @@ function setup(programConfigs: ProgramContextConfig[]) {
   scenes[0].updateWorldMatrix();
   const sceneList = scenes[0].toArray();
 
+  const engine = create1({
+    debug: true,
+    preview: 3,
+    seed: 'hello-world',
+  });
+
   const context = {
     bufferMap,
     cameraPosition: [0, 1200, -1200] as Matrix3_1,
     cameraTarget: [0.5, 0.5, 0.5] as Matrix3_1,
     cameraUp: [0, 1, 0] as Matrix3_1,
     canvas: tree.canvas,
+    engine: engine,
     gl,
     op3_1,
     op4_4,
