@@ -39,10 +39,15 @@ import { sceneConfigToNode, createEmptySceneGraph } from './gl/scene-graph';
 import { normalize3_1, createMatrix3_1 } from './matrix/matrix-3';
 import { simpleConfig } from './gl/programs/simple';
 import { simpleDirectionalConfig } from './gl/programs/simple-directional';
+import { advancedDirectionalConfig } from './gl/programs/advanced-directional';
 import { createObjectPool } from './object-pool';
 import { create1 } from './engine/engine';
 
 const shaderDict: ShaderDictionary = {
+  'advanced-directional': {
+    fragment: require('./shaders/advanced-directional-fragment.glsl'),
+    vertex: require('./shaders/advanced-directional-vertex.glsl'),
+  },
   simple: {
     fragment: require('./shaders/simple-fragment.glsl'),
     vertex: require('./shaders/simple-vertex.glsl'),
@@ -68,6 +73,11 @@ const dataDict = {
 
 const cubeBlackConfig: ShapeConfig = {
   coloursDataName: 'cubeBlack',
+  lightDirectionalConfigs: [
+    {
+      direction: [10, 10, -10],
+    },
+  ],
   positionsDataName: 'cubePositions',
   programName: 'simple-directional',
   normalsDataName: 'cubeNormals',
@@ -75,14 +85,26 @@ const cubeBlackConfig: ShapeConfig = {
 
 const cubeBlueConfig: ShapeConfig = {
   coloursDataName: 'cubeBlue',
-  lightDirection: [10, 20, -10],
+  lightDirectionalConfigs: [
+    {
+      direction: [0.3, 0.6, -1.0],
+      ambient: [0.1, 0.1, 0.1],
+      diffuse: [0.7, 0.7, 0.7],
+      specular: [0.5, 0.5, 0.5],
+    },
+  ],
   positionsDataName: 'cubePositions',
-  programName: 'simple-directional',
+  programName: 'advanced-directional',
   normalsDataName: 'cubeNormals',
 };
 
 const cubeGreenConfig: ShapeConfig = {
   coloursDataName: 'cubeGreen',
+  lightDirectionalConfigs: [
+    {
+      direction: [10, 10, -10],
+    },
+  ],
   positionsDataName: 'cubePositions',
   programName: 'simple-directional',
   normalsDataName: 'cubeNormals',
@@ -90,6 +112,11 @@ const cubeGreenConfig: ShapeConfig = {
 
 const cubeRedConfig: ShapeConfig = {
   coloursDataName: 'cubeRed',
+  lightDirectionalConfigs: [
+    {
+      direction: [10, 10, -10],
+    },
+  ],
   positionsDataName: 'cubePositions',
   programName: 'simple-directional',
   normalsDataName: 'cubeNormals',
@@ -132,6 +159,7 @@ export const blockConfig: Dictionary<SceneConfig> = {
 };
 
 const programConfigDict = {
+  'advanced-directional': advancedDirectionalConfig,
   simple: simpleConfig,
   'simple-directional': simpleDirectionalConfig,
 };
@@ -164,6 +192,8 @@ function main() {
     const go = () => {
       requestAnimationFrame(() => {
         if (context.doRedraw) {
+          context.scene.rotation[1] += 0.1;
+          context.scene.updateLocalMatrix();
           const newChildren: SceneGraph[] = [];
           for (let i = 0; i < context.engine.buffer.length; i += 1) {
             const el = context.engine.buffer[i];
@@ -302,7 +332,6 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
         engine.controls.rotateRight();
         break;
       default:
-        console.log('unsupportd', e.keyCode);
         break;
     }
   }
@@ -325,6 +354,27 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
     scene: scenes[0],
     sceneList,
   };
+
+  window.document.addEventListener('keypress', (e: KeyboardEvent) => {
+    switch (e.keyCode) {
+      case 106:
+        context.cameraPosition[0] += 10;
+        context.cameraPosition[2] -= 10;
+        break;
+      case 105:
+        context.cameraPosition[1] += 10;
+        break;
+      case 108:
+        context.cameraPosition[0] -= 10;
+        context.cameraPosition[2] += 10;
+        break;
+      case 107:
+        context.cameraPosition[1] -= 10;
+        break;
+      default:
+        break;
+    }
+  });
 
   engine.on('redraw', () => (context.doRedraw = true));
   // set the clear colour
@@ -398,9 +448,9 @@ function draw(drawContext: DrawContext) {
 
     let worldInverseMatrix: Matrix4_4 | null = null;
     let worldInverseTransposeMatrix: Matrix4_4 | null = null;
-    let normalizedLight: Matrix3_1 | null = null;
+    let normalizedDirection: Matrix3_1 | null = null;
     if (scene.shape.a_normal) {
-      worldInverseMatrix = inverse4_4(matrix, op4_4);
+      worldInverseMatrix = inverse4_4(scene.worldMatrix, op4_4);
       worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix, op4_4);
       gl.uniformMatrix4fv(
         context.uniforms.u_worldInverseTranspose.location,
@@ -408,11 +458,65 @@ function draw(drawContext: DrawContext) {
         worldInverseTransposeMatrix
       );
 
-      normalizedLight = normalize3_1(scene.shape.lightDirection, op3_1);
-      gl.uniform3fv(
-        context.uniforms.u_reverseLightDirection.location,
-        normalizedLight
-      );
+      if (context.uniforms.u_viewWorldPosition) {
+        gl.uniform3fv(
+          context.uniforms.u_viewWorldPosition.location,
+          cameraPosition
+        );
+      }
+
+      if (context.uniforms.u_world) {
+        gl.uniformMatrix4fv(
+          context.uniforms.u_world.location,
+          false,
+          scene.worldMatrix
+        );
+      }
+
+      if (scene.shape.lightDirectional.length) {
+        if (context.uniforms['u_dirLight.direction']) {
+          let normalized = normalize3_1(
+            scene.shape.lightDirectional[0].direction,
+            op3_1
+          );
+          gl.uniform3fv(
+            context.uniforms['u_dirLight.direction'].location,
+            normalized
+          );
+        }
+
+        if (context.uniforms['u_dirLight.ambient']) {
+          gl.uniform3fv(
+            context.uniforms['u_dirLight.ambient'].location,
+            scene.shape.lightDirectional[0].ambient
+          );
+        }
+
+        if (context.uniforms['u_dirLight.diffuse']) {
+          gl.uniform3fv(
+            context.uniforms['u_dirLight.diffuse'].location,
+            scene.shape.lightDirectional[0].diffuse
+          );
+        }
+
+        if (context.uniforms['u_dirLight.specular']) {
+          gl.uniform3fv(
+            context.uniforms['u_dirLight.specular'].location,
+            scene.shape.lightDirectional[0].specular
+          );
+        }
+
+        if (context.uniforms.u_reverseLightDirection) {
+          normalizedDirection = normalize3_1(
+            scene.shape.lightDirectional[0].direction,
+            op3_1
+          );
+          gl.uniform3fv(
+            context.uniforms.u_reverseLightDirection.location,
+            normalizedDirection
+          );
+        }
+      }
     }
 
     // run the program
@@ -428,8 +532,8 @@ function draw(drawContext: DrawContext) {
     if (worldInverseTransposeMatrix) {
       op4_4.free(worldInverseTransposeMatrix);
     }
-    if (normalizedLight) {
-      op3_1.free(normalizedLight);
+    if (normalizedDirection) {
+      op3_1.free(normalizedDirection);
     }
   });
   // free memory

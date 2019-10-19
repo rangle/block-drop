@@ -33,18 +33,30 @@ export interface DataDictionary {
  *
  *
  */
+export interface ShapeDirectionalLightConfig {
+  direction: Matrix3_1;
+  ambient?: Matrix3_1;
+  diffuse?: Matrix3_1;
+  specular?: Matrix3_1;
+}
 export interface ShapeConfig {
   positionsDataName: string;
   coloursDataName: string;
-  lightDirection?: Matrix3_1;
+  lightDirectionalConfigs?: ShapeDirectionalLightConfig[];
   programName: string;
   normalsDataName?: string;
 }
 
+export interface ShapeDirectionalLight {
+  direction: Matrix3_1;
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+}
 export interface Shape {
   a_colour: WebGLBuffer;
   context: ProgramContext;
-  lightDirection: Matrix3_1;
+  lightDirectional: ShapeDirectionalLight[];
   a_normal?: WebGLBuffer;
   a_position: WebGLBuffer;
   vertexCount: number;

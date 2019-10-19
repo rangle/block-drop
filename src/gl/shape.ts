@@ -3,8 +3,8 @@ import {
   ShapeConfig,
   DataDictionary,
   ProgramDictionary,
-  Matrix3_1,
   BufferMap,
+  ShapeDirectionalLight,
 } from '../interfaces';
 
 function getOrCreateBuffer(
@@ -57,7 +57,7 @@ export function shapeConfigToShape(
   );
 
   let normals;
-  let lightDirection: Matrix3_1 = [10, 10, -10];
+  const lightDirectional: ShapeDirectionalLight[] = [];
   if (config.normalsDataName) {
     normals = getOrCreateBuffer(
       gl,
@@ -65,15 +65,22 @@ export function shapeConfigToShape(
       dataDict,
       config.normalsDataName
     );
-    if (config.lightDirection) {
-      lightDirection = config.lightDirection;
+    if (config.lightDirectionalConfigs) {
+      config.lightDirectionalConfigs.forEach(ldConfig => {
+        lightDirectional.push({
+          direction: ldConfig.direction,
+          ambient: ldConfig.ambient || [1, 1, 1],
+          diffuse: ldConfig.diffuse || [1, 1, 1],
+          specular: ldConfig.specular || [1, 1, 1],
+        });
+      });
     }
   }
 
   return {
     a_colour: colours,
     context: programDict[config.programName],
-    lightDirection,
+    lightDirectional,
     a_normal: normals,
     a_position: positions,
     vertexCount: dataDict[config.positionsDataName].length / 3,
