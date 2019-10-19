@@ -29,9 +29,13 @@ import {
   cubePositions,
   fNormals,
   cubeNormals,
+  cubeBlack,
+  cubeBlue,
+  cubeGreen,
+  cubeRed,
 } from './gl/shape-generator';
-import { objEach } from '@ch1/utility';
-import { sceneConfigToNode } from './gl/scene-graph';
+import { objEach, Dictionary, objReduce } from '@ch1/utility';
+import { sceneConfigToNode, createEmptySceneGraph } from './gl/scene-graph';
 import { normalize3_1, createMatrix3_1 } from './matrix/matrix-3';
 import { simpleConfig } from './gl/programs/simple';
 import { simpleDirectionalConfig } from './gl/programs/simple-directional';
@@ -53,36 +57,41 @@ const dataDict = {
   fColours: fColours(),
   fNormals: fNormals(),
   fPositions: fPositions(),
+  cubeBlack: cubeBlack(),
+  cubeBlue: cubeBlue(),
   cubeColours: cubeColours(),
+  cubeGreen: cubeGreen(),
   cubeNormals: cubeNormals(),
   cubePositions: cubePositions(),
+  cubeRed: cubeRed(),
 };
 
-const fLightConfig: ShapeConfig = {
-  coloursDataName: 'fColours',
-  lightDirection: [0.2, -0.9, -1],
-  normalsDataName: 'fNormals',
-  positionsDataName: 'fPositions',
-  programName: 'simple-directional',
-};
-
-const fConfig: ShapeConfig = {
-  coloursDataName: 'fColours',
-  positionsDataName: 'fPositions',
-  programName: 'simple',
-};
-
-const cubeLightConfig: ShapeConfig = {
-  coloursDataName: 'cubeColours',
+const cubeBlackConfig: ShapeConfig = {
+  coloursDataName: 'cubeBlack',
   positionsDataName: 'cubePositions',
   programName: 'simple-directional',
   normalsDataName: 'cubeNormals',
 };
 
-const cubeConfig: ShapeConfig = {
-  coloursDataName: 'cubeColours',
+const cubeBlueConfig: ShapeConfig = {
+  coloursDataName: 'cubeBlue',
   positionsDataName: 'cubePositions',
-  programName: 'simple',
+  programName: 'simple-directional',
+  normalsDataName: 'cubeNormals',
+};
+
+const cubeGreenConfig: ShapeConfig = {
+  coloursDataName: 'cubeGreen',
+  positionsDataName: 'cubePositions',
+  programName: 'simple-directional',
+  normalsDataName: 'cubeNormals',
+};
+
+const cubeRedConfig: ShapeConfig = {
+  coloursDataName: 'cubeRed',
+  positionsDataName: 'cubePositions',
+  programName: 'simple-directional',
+  normalsDataName: 'cubeNormals',
 };
 
 const sceneConfig: SceneConfig[] = [
@@ -90,97 +99,41 @@ const sceneConfig: SceneConfig[] = [
     children: [
       {
         children: [],
-        name: 'sun',
-        shape: fLightConfig,
-      },
-      {
-        children: [
-          {
-            children: [],
-            name: 'mercury',
-            initialScale: [0.3, 0.3, 0.3],
-            shape: cubeConfig,
-          },
-        ],
-        initialTranslation: [300, 0, 0],
-        name: 'mercury orbit',
-      },
-      {
-        children: [
-          {
-            children: [],
-            name: 'venus',
-            initialScale: [0.5, 0.5, 0.5],
-            shape: cubeConfig,
-          },
-        ],
-        initialTranslation: [500, 0, 0],
-        name: 'venus orbit',
-      },
-      {
-        children: [
-          {
-            children: [],
-            name: 'earth',
-            initialScale: [0.6, 0.6, 0.6],
-            shape: cubeLightConfig,
-          },
-          {
-            children: [
-              {
-                children: [],
-                name: 'moon',
-                initialScale: [0.2, 0.2, 0.2],
-                shape: fConfig,
-              },
-            ],
-            initialTranslation: [75, 0, 0],
-            name: 'moon orbit',
-          },
-        ],
-        initialTranslation: [700, 0, 0],
-        name: 'earth orbit',
-      },
-      {
-        children: [
-          {
-            children: [],
-            name: 'mars',
-            initialScale: [0.35, 0.35, 0.35],
-            shape: cubeConfig,
-          },
-          {
-            children: [
-              {
-                children: [],
-                name: 'phobos',
-                initialScale: [0.15, 0.15, 0.15],
-                shape: fConfig,
-              },
-            ],
-            initialTranslation: [75, 0, 0],
-            name: 'phobos orbit',
-          },
-          {
-            children: [
-              {
-                children: [],
-                name: 'deimos',
-                initialScale: [0.15, 0.15, 0.15],
-                shape: fConfig,
-              },
-            ],
-            initialTranslation: [100, 0, 0],
-            name: 'deimos orbit',
-          },
-        ],
-        initialTranslation: [900, 0, 0],
-        name: 'mars orbit',
+        name: 'the block',
+        initialScale: [5000, 1, 5000],
+        initialTranslation: [0, -1, 0],
+        shape: cubeBlackConfig,
       },
     ],
-    name: 'solar orbit',
+    name: 'the void',
   },
 ];
+
+export const blockConfig: Dictionary<SceneConfig> = {
+  blue: {
+    children: [],
+    name: 'blue block',
+    initialScale: [25, 25, 25],
+    shape: cubeBlueConfig,
+  },
+  green: {
+    children: [],
+    name: 'green block',
+    initialScale: [25, 25, 25],
+    shape: cubeGreenConfig,
+  },
+  red: {
+    children: [],
+    name: 'red block',
+    initialScale: [25, 25, 25],
+    shape: cubeRedConfig,
+  },
+};
+
+const programConfigDict = {
+  simple: simpleConfig,
+  'simple-directional': simpleDirectionalConfig,
+};
 
 main();
 
@@ -190,46 +143,58 @@ interface DrawContext {
   cameraPosition: Matrix3_1;
   cameraTarget: Matrix3_1;
   cameraUp: Matrix3_1;
+  doRedraw: boolean;
   engine: any;
   gl: WebGLRenderingContext;
   lastProgram?: WebGLProgram;
   op3_1: ObjectPool<Matrix3_1>;
   op4_4: ObjectPool<Matrix4_4>;
-  programs: ProgramContext[];
+  opScene: ObjectPool<SceneGraph>;
+  programDict: Dictionary<ProgramContext>;
   scene: SceneGraph;
   sceneList: SceneGraphShape[];
 }
 
 function main() {
   try {
-    const context = setup([simpleConfig, simpleDirectionalConfig]);
+    const context = setup(programConfigDict);
     draw(context);
 
     const go = () => {
       requestAnimationFrame(() => {
-        console.log(context.engine.buffer);
-        context.scene.walk(s => {
-          if (s.name.indexOf('orbit') >= 0) {
-            s.rotation[1] += 0.01;
-            s.updateLocalMatrix();
-          }
-          [
-            'mercury',
-            'venus',
-            'earth',
-            'moon',
-            'mars',
-            'phobos',
-            'deimos',
-          ].forEach(name => {
-            if (s.name === name) {
-              s.rotation[1] += 0.07;
-              s.updateLocalMatrix();
+        if (context.doRedraw) {
+          const newChildren: SceneGraph[] = [];
+          for (let i = 0; i < context.engine.buffer.length; i += 1) {
+            const el = context.engine.buffer[i];
+            if (el !== 0) {
+              const block = getBlockFromInt(context, el);
+              const j =
+                context.engine.config.width * context.engine.config.height - i;
+              const y = 25 * Math.floor(j / context.engine.config.width) + 25;
+              const x = 25 * (j % context.engine.config.width);
+              block.translation[0] = x;
+              block.translation[1] = y;
+              newChildren.push(block);
             }
+          }
+          context.scene.children.forEach((child, i) => {
+            if (i === 0) {
+              return;
+            }
+            context.opScene.free(child);
           });
-        });
-        context.scene.updateWorldMatrix();
-        draw(context);
+          context.scene.children.splice(1);
+          newChildren.forEach(child => {
+            child.updateLocalMatrix();
+            child.setParent(context.scene);
+          });
+          context.sceneList = context.scene.toArray();
+          context.doRedraw = false;
+
+          context.scene.updateWorldMatrix();
+          console.log(context.sceneList);
+          draw(context);
+        }
         go();
       });
     };
@@ -240,22 +205,60 @@ function main() {
   }
 }
 
-function setup(programConfigs: ProgramContextConfig[]) {
+function getBlockFromInt(context: DrawContext, int: number) {
+  let config: SceneConfig;
+  switch (int) {
+    case 10:
+      config = blockConfig.green;
+      break;
+    case 20:
+      config = blockConfig.red;
+      break;
+    case 30:
+      config = blockConfig.blue;
+      break;
+    default:
+      config = blockConfig.blue;
+      break;
+  }
+  return sceneConfigToNode(
+    context.opScene,
+    dataDict,
+    context.programDict,
+    context.bufferMap,
+    context.gl,
+    config,
+    context.op3_1,
+    context.op4_4
+  );
+}
+
+function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
   const tree = body();
   const gl = getContext(tree.canvas);
   const bufferMap: BufferMap = new Map();
 
   const op3_1 = createObjectPool(createMatrix3_1, 500);
   const op4_4 = createObjectPool(createMatrix4_4, 1000);
+  const opScene = createObjectPool(
+    () => createEmptySceneGraph(op3_1, op4_4),
+    1000
+  );
 
-  const programs = programConfigs.map(config => {
-    return createProgramFromConfig(shaderDict, gl, config);
-  });
+  const programDict = objReduce(
+    programConfigs,
+    (dict: Dictionary<ProgramContext>, config, key) => {
+      dict[key] = createProgramFromConfig(shaderDict, gl, config);
+      return dict;
+    },
+    {}
+  );
 
   const scenes: SceneGraph[] = sceneConfig.map(sceneConfig => {
     return sceneConfigToNode(
+      opScene,
       dataDict,
-      { simple: programs[0], 'simple-directional': programs[1] },
+      programDict,
       bufferMap,
       gl,
       sceneConfig
@@ -278,20 +281,52 @@ function setup(programConfigs: ProgramContextConfig[]) {
     seed: 'hello-world',
   });
 
+  function listener(engine: any, e: KeyboardEvent) {
+    switch (e.keyCode) {
+      case 37:
+        engine.controls.moveLeft();
+        break;
+      case 38:
+        engine.controls.moveUp();
+        break;
+      case 39:
+        engine.controls.moveRight();
+        break;
+      case 40:
+        engine.controls.moveDown();
+        break;
+      case 81:
+        engine.controls.rotateLeft();
+        break;
+      case 87:
+        engine.controls.rotateRight();
+        break;
+      default:
+        console.log('unsupportd', e.keyCode);
+        break;
+    }
+  }
+
+  window.addEventListener('keydown', e => listener(engine, e));
+
   const context = {
     bufferMap,
-    cameraPosition: [0, 1200, -1200] as Matrix3_1,
+    cameraPosition: [0, 250, -500] as Matrix3_1,
     cameraTarget: [0.5, 0.5, 0.5] as Matrix3_1,
     cameraUp: [0, 1, 0] as Matrix3_1,
     canvas: tree.canvas,
+    doRedraw: false,
     engine: engine,
     gl,
     op3_1,
     op4_4,
-    programs,
+    opScene,
+    programDict,
     scene: scenes[0],
     sceneList,
   };
+
+  engine.on('redraw', () => (context.doRedraw = true));
   // set the clear colour
   gl.clearColor(0, 0, 0, 0);
 

@@ -25,52 +25,87 @@ import { createMatrix3_1 } from '../matrix/matrix-3';
 import { Dictionary } from '@ch1/utility';
 import { shapeConfigToShape } from './shape';
 
+export function createEmptySceneGraph(
+  op3_1 = createObjectPool(createMatrix3_1),
+  op4_4 = createObjectPool(createMatrix4_4)
+): SceneGraph {
+  const scene: SceneGraph = {
+    children: [],
+    localMatrix: op4_4.malloc(),
+    name: 'empty node',
+    op3_1,
+    op4_4,
+    parent: null,
+    rotation: op3_1.malloc(),
+    scale: op3_1.malloc(),
+    translation: op3_1.malloc(),
+    worldMatrix: op4_4.malloc(),
+
+    setParent: (parentScene: null | SceneGraph) =>
+      setParent(scene, parentScene),
+    toArray: (): SceneGraphShape[] => sceneGraphToSceneArray(scene),
+    updateLocalMatrix: () => {
+      updateLocalMatrix(scene, op4_4);
+    },
+    updateWorldMatrix: (parentWorldMatrix?: Matrix4_4) => {
+      updateWorldMatrix(scene, parentWorldMatrix, op4_4);
+    },
+    walk: (callback: (s: SceneGraph) => void) => {
+      walkScene(scene, callback);
+    },
+  };
+  return scene;
+}
+
 export function createSceneGraph(
+  opScene: ObjectPool<SceneGraph>,
   name: string,
   shape?: Shape,
   op3_1 = createObjectPool(createMatrix3_1),
   op4_4 = createObjectPool(createMatrix4_4)
 ): SceneGraph {
-  const rotation = op3_1.malloc();
-  const scale = op3_1.malloc();
-  const translation = op3_1.malloc();
-  rotation[0] = 0;
-  rotation[1] = 0;
-  rotation[2] = 0;
-  scale[0] = 1;
-  scale[1] = 1;
-  scale[2] = 1;
-  translation[0] = 0;
-  translation[1] = 0;
-  translation[2] = 0;
-  const node = {
-    children: [],
-    localMatrix: identity4_4(),
-    name,
-    op3_1,
-    op4_4,
-    parent: null,
-    rotation,
-    scale,
-    shape,
-    translation,
-    worldMatrix: identity4_4(),
-    setParent: (parent: null | SceneGraph) => setParent(node, parent),
-    toArray: (): SceneGraphShape[] => sceneGraphToSceneArray(node),
-    updateLocalMatrix: () => {
-      updateLocalMatrix(node, op4_4);
-    },
-    updateWorldMatrix: (parentWorldMatrix?: Matrix4_4) => {
-      updateWorldMatrix(node, parentWorldMatrix, op4_4);
-    },
-    walk: (callback: (s: SceneGraph) => void) => {
-      walkScene(node, callback);
-    },
+  const scene = opScene.malloc();
+  scene.rotation[0] = 0;
+  scene.rotation[1] = 0;
+  scene.rotation[2] = 0;
+  scene.scale[0] = 1;
+  scene.scale[1] = 1;
+  scene.scale[2] = 1;
+  scene.translation[0] = 0;
+  scene.translation[1] = 0;
+  scene.translation[2] = 0;
+
+  scene.children = [];
+  op4_4.free(scene.localMatrix);
+  scene.localMatrix = identity4_4(op4_4);
+  scene.name = name;
+  scene.op3_1 = op3_1;
+  scene.op4_4 = op4_4;
+  scene.parent = null;
+  if (scene.shape) {
+    op3_1.free(scene.shape.lightDirection);
+  }
+  scene.shape = shape;
+  op4_4.free(scene.worldMatrix);
+  scene.worldMatrix = identity4_4(op4_4);
+
+  scene.setParent = (parentScene: null | SceneGraph) =>
+    setParent(scene, parentScene);
+  scene.toArray = (): SceneGraphShape[] => sceneGraphToSceneArray(scene);
+  scene.updateLocalMatrix = () => {
+    updateLocalMatrix(scene, op4_4);
   };
-  return node;
+  scene.updateWorldMatrix = (parentWorldMatrix?: Matrix4_4) => {
+    updateWorldMatrix(scene, parentWorldMatrix, op4_4);
+  };
+  scene.walk = (callback: (s: SceneGraph) => void) => {
+    walkScene(scene, callback);
+  };
+
+  return scene;
 }
 
-export function setParent(child: SceneGraph, parent: null | SceneGraph = null) {
+export function setParent(child: SceneGraph, parent: null | SceneGraph) {
   // unlink the child
   if (child.parent) {
     const childIndex = child.parent.children.indexOf(child);
@@ -155,6 +190,7 @@ export function updateLocalMatrix(
 }
 
 export function sceneConfigToNode(
+  opScene: ObjectPool<SceneGraph>,
   dataDict: DataDictionary,
   programDict: Dictionary<ProgramContext>,
   bufferMap: BufferMap,
@@ -172,26 +208,39 @@ export function sceneConfigToNode(
         sceneConfig.shape
       )
     : undefined;
-  const node = createSceneGraph(sceneConfig.name, shape, op3_1, op4_4);
+  const node = createSceneGraph(opScene, sceneConfig.name, shape, op3_1, op4_4);
   node.localMatrix = op4_4.malloc();
   if (sceneConfig.initialTranslation) {
-    node.translation = sceneConfig.initialTranslation;
+    node.translation[0] = sceneConfig.initialTranslation[0];
+    node.translation[1] = sceneConfig.initialTranslation[1];
+    node.translation[2] = sceneConfig.initialTranslation[2];
   } else {
-    node.translation = [0, 0, 0];
+    node.translation[0] = 0;
+    node.translation[1] = 0;
+    node.translation[2] = 0;
   }
   if (sceneConfig.initialRotation) {
-    node.rotation = sceneConfig.initialRotation;
+    node.rotation[0] = sceneConfig.initialRotation[0];
+    node.rotation[1] = sceneConfig.initialRotation[1];
+    node.rotation[2] = sceneConfig.initialRotation[2];
   } else {
-    node.rotation = [0, 0, 0];
+    node.rotation[0] = 0;
+    node.rotation[1] = 0;
+    node.rotation[2] = 0;
   }
   if (sceneConfig.initialScale) {
-    node.scale = sceneConfig.initialScale;
+    node.scale[0] = sceneConfig.initialScale[0];
+    node.scale[1] = sceneConfig.initialScale[1];
+    node.scale[2] = sceneConfig.initialScale[2];
   } else {
-    node.scale = [1, 1, 1];
+    node.scale[0] = 1;
+    node.scale[1] = 1;
+    node.scale[2] = 1;
   }
   node.updateLocalMatrix();
   sceneConfig.children.forEach(childConfig => {
     const child = sceneConfigToNode(
+      opScene,
       dataDict,
       programDict,
       bufferMap,

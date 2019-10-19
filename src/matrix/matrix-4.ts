@@ -434,7 +434,7 @@ export function inverse4_4(
   if (det === 0) {
     console.warn('4x4 Matrix inversion warnining, no inverse');
   }
-  const d = 1.0 / det;
+  const d = det !== 0 ? 1.0 / det : 0.000000001;
 
   v[0] = d * t0;
   v[1] = d * t1;
