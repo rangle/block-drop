@@ -82,9 +82,6 @@ export function createSceneGraph(
   scene.op3_1 = op3_1;
   scene.op4_4 = op4_4;
   scene.parent = null;
-  if (scene.shape) {
-    op3_1.free(scene.shape.lightDirection);
-  }
   scene.shape = shape;
   op4_4.free(scene.worldMatrix);
   scene.worldMatrix = identity4_4(op4_4);

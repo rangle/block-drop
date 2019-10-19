@@ -75,6 +75,7 @@ const cubeBlackConfig: ShapeConfig = {
 
 const cubeBlueConfig: ShapeConfig = {
   coloursDataName: 'cubeBlue',
+  lightDirection: [10, 20, -10],
   positionsDataName: 'cubePositions',
   programName: 'simple-directional',
   normalsDataName: 'cubeNormals',
@@ -192,7 +193,6 @@ function main() {
           context.doRedraw = false;
 
           context.scene.updateWorldMatrix();
-          console.log(context.sceneList);
           draw(context);
         }
         go();
