@@ -475,13 +475,13 @@ function draw(drawContext: DrawContext) {
 
       if (scene.shape.lightDirectional.length) {
         if (context.uniforms['u_dirLight.direction']) {
-          let normalized = normalize3_1(
+          let normalizedDirection = normalize3_1(
             scene.shape.lightDirectional[0].direction,
             op3_1
           );
           gl.uniform3fv(
             context.uniforms['u_dirLight.direction'].location,
-            normalized
+            normalizedDirection
           );
         }
 
@@ -503,17 +503,6 @@ function draw(drawContext: DrawContext) {
           gl.uniform3fv(
             context.uniforms['u_dirLight.specular'].location,
             scene.shape.lightDirectional[0].specular
-          );
-        }
-
-        if (context.uniforms.u_reverseLightDirection) {
-          normalizedDirection = normalize3_1(
-            scene.shape.lightDirectional[0].direction,
-            op3_1
-          );
-          gl.uniform3fv(
-            context.uniforms.u_reverseLightDirection.location,
-            normalizedDirection
           );
         }
       }

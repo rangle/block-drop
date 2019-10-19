@@ -36,7 +36,7 @@ export const simpleDirectionalConfig: ProgramContextConfig = {
       name: 'u_matrix',
     },
     {
-      name: 'u_reverseLightDirection',
+      name: 'u_dirLight.direction',
     },
     {
       name: 'u_worldInverseTranspose',
