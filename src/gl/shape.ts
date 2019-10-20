@@ -49,12 +49,26 @@ export function shapeConfigToShape(
     dataDict,
     config.positionsDataName
   );
-  const colours = getOrCreateBuffer(
-    gl,
-    bufferMap,
-    dataDict,
-    config.coloursDataName
-  );
+
+  let colours;
+  if (config.coloursDataName) {
+    colours = getOrCreateBuffer(
+      gl,
+      bufferMap,
+      dataDict,
+      config.coloursDataName
+    );
+  }
+
+  let textures;
+  if (config.texturesDataName) {
+    textures = getOrCreateBuffer(
+      gl,
+      bufferMap,
+      dataDict,
+      config.texturesDataName
+    );
+  }
 
   let normals;
   const lightDirectional: ShapeDirectionalLight[] = [];
@@ -83,6 +97,7 @@ export function shapeConfigToShape(
     lightDirectional,
     a_normal: normals,
     a_position: positions,
+    a_texcoord: textures,
     vertexCount: dataDict[config.positionsDataName].length / 3,
   };
 }

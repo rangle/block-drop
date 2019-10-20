@@ -44,6 +44,10 @@ module.exports = {
         use: 'webpack-glsl-loader',
       },
       {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ['file-loader'],
+      },
+      {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,

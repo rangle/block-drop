@@ -41,10 +41,11 @@ export interface ShapeDirectionalLightConfig {
 }
 export interface ShapeConfig {
   positionsDataName: string;
-  coloursDataName: string;
+  coloursDataName?: string;
   lightDirectionalConfigs?: ShapeDirectionalLightConfig[];
   programName: string;
   normalsDataName?: string;
+  texturesDataName?: string;
 }
 
 export interface ShapeDirectionalLight {
@@ -54,11 +55,12 @@ export interface ShapeDirectionalLight {
   specular: Matrix3_1;
 }
 export interface Shape {
-  a_colour: WebGLBuffer;
+  a_colour?: WebGLBuffer;
   context: ProgramContext;
   lightDirectional: ShapeDirectionalLight[];
   a_normal?: WebGLBuffer;
   a_position: WebGLBuffer;
+  a_texcoord?: WebGLBuffer;
   vertexCount: number;
 }
 

@@ -33,6 +33,7 @@ import {
   cubeBlue,
   cubeGreen,
   cubeRed,
+  cubeTextures,
 } from './gl/shape-generator';
 import { objEach, Dictionary, objReduce } from '@ch1/utility';
 import { sceneConfigToNode, createEmptySceneGraph } from './gl/scene-graph';
@@ -42,6 +43,8 @@ import { simpleDirectionalConfig } from './gl/programs/simple-directional';
 import { advancedDirectionalConfig } from './gl/programs/advanced-directional';
 import { createObjectPool } from './object-pool';
 import { create1 } from './engine/engine';
+import { simpleTextureConfig } from './gl/programs/simple-texture';
+const texturePath = require('../assets/weave-256-256.png');
 
 const shaderDict: ShaderDictionary = {
   'advanced-directional': {
@@ -56,6 +59,10 @@ const shaderDict: ShaderDictionary = {
     fragment: require('./shaders/simple-directional-fragment.glsl'),
     vertex: require('./shaders/simple-directional-vertex.glsl'),
   },
+  'simple-texture': {
+    fragment: require('./shaders/simple-texture-fragment.glsl'),
+    vertex: require('./shaders/simple-texture-vertex.glsl'),
+  },
 };
 
 const dataDict = {
@@ -69,6 +76,7 @@ const dataDict = {
   cubeNormals: cubeNormals(),
   cubePositions: cubePositions(),
   cubeRed: cubeRed(),
+  cubeTextures: cubeTextures(),
 };
 
 const cubeBlackConfig: ShapeConfig = {
@@ -84,18 +92,19 @@ const cubeBlackConfig: ShapeConfig = {
 };
 
 const cubeBlueConfig: ShapeConfig = {
-  coloursDataName: 'cubeBlue',
-  lightDirectionalConfigs: [
-    {
-      direction: [0.3, 0.6, -1.0],
-      ambient: [0.1, 0.1, 0.1],
-      diffuse: [0.7, 0.7, 0.7],
-      specular: [0.5, 0.5, 0.5],
-    },
-  ],
+  // coloursDataName: 'cubeBlue',
+  // lightDirectionalConfigs: [
+  //   {
+  //     direction: [0.3, 0.6, -1.0],
+  //     ambient: [0.1, 0.1, 0.1],
+  //     diffuse: [0.7, 0.7, 0.7],
+  //     specular: [0.5, 0.5, 0.5],
+  //   },
+  // ],
   positionsDataName: 'cubePositions',
-  programName: 'advanced-directional',
-  normalsDataName: 'cubeNormals',
+  programName: 'simple-texture',
+  // normalsDataName: 'cubeNormals',
+  texturesDataName: 'cubeTextures',
 };
 
 const cubeGreenConfig: ShapeConfig = {
@@ -162,6 +171,7 @@ const programConfigDict = {
   'advanced-directional': advancedDirectionalConfig,
   simple: simpleConfig,
   'simple-directional': simpleDirectionalConfig,
+  'simple-texture': simpleTextureConfig,
 };
 
 main();
@@ -310,6 +320,28 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
     seed: 'hello-world',
   });
 
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    1,
+    1,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    new Uint8Array([0, 0, 200, 255])
+  );
+
+  const image = new Image();
+  image.src = texturePath;
+  image.addEventListener('load', () => {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.generateMipmap(gl.TEXTURE_2D);
+  });
+
   function listener(engine: any, e: KeyboardEvent) {
     switch (e.keyCode) {
       case 37:
@@ -353,27 +385,6 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
     scene: scenes[0],
     sceneList,
   };
-
-  window.document.addEventListener('keypress', (e: KeyboardEvent) => {
-    switch (e.keyCode) {
-      case 106:
-        context.cameraPosition[0] += 10;
-        context.cameraPosition[2] -= 10;
-        break;
-      case 105:
-        context.cameraPosition[1] += 10;
-        break;
-      case 108:
-        context.cameraPosition[0] -= 10;
-        context.cameraPosition[2] += 10;
-        break;
-      case 107:
-        context.cameraPosition[1] -= 10;
-        break;
-      default:
-        break;
-    }
-  });
 
   engine.on('redraw', () => (context.doRedraw = true));
   // set the clear colour
@@ -448,6 +459,11 @@ function draw(drawContext: DrawContext) {
     let worldInverseMatrix: Matrix4_4 | null = null;
     let worldInverseTransposeMatrix: Matrix4_4 | null = null;
     let normalizedDirection: Matrix3_1 | null = null;
+
+    if (scene.shape.a_texcoord) {
+      gl.uniform1i(context.uniforms.u_texture.location, 0);
+    }
+
     if (scene.shape.a_normal) {
       worldInverseMatrix = inverse4_4(scene.worldMatrix, op4_4);
       worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix, op4_4);
