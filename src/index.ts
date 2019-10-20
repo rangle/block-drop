@@ -192,8 +192,6 @@ function main() {
     const go = () => {
       requestAnimationFrame(() => {
         if (context.doRedraw) {
-          context.scene.rotation[1] += 0.1;
-          context.scene.updateLocalMatrix();
           const newChildren: SceneGraph[] = [];
           for (let i = 0; i < context.engine.buffer.length; i += 1) {
             const el = context.engine.buffer[i];
@@ -221,10 +219,11 @@ function main() {
           });
           context.sceneList = context.scene.toArray();
           context.doRedraw = false;
-
-          context.scene.updateWorldMatrix();
-          draw(context);
         }
+        context.scene.rotation[1] += 0.01;
+        context.scene.updateLocalMatrix();
+        context.scene.updateWorldMatrix();
+        draw(context);
         go();
       });
     };
