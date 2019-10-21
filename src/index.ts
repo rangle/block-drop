@@ -44,6 +44,7 @@ import { normalize3_1, createMatrix3_1 } from './matrix/matrix-3';
 import { simpleConfig } from './gl/programs/simple';
 import { simpleDirectionalConfig } from './gl/programs/simple-directional';
 import { advancedDirectionalConfig } from './gl/programs/advanced-directional';
+import { advancedDirectionalSimpleTextureConfig } from './gl/programs/advanced-directional-simple-texture';
 import { createObjectPool } from './object-pool';
 import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
@@ -55,6 +56,10 @@ const greenDashTexturePath = require('../assets/dash-green-2048-2048.png');
 const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
 
 const shaderDict: ShaderDictionary = {
+  'advanced-directional-simple-texture': {
+    fragment: require('./shaders/advanced-directional-simple-texture-fragment.glsl'),
+    vertex: require('./shaders/advanced-directional-simple-texture-vertex.glsl'),
+  },
   'advanced-directional': {
     fragment: require('./shaders/advanced-directional-fragment.glsl'),
     vertex: require('./shaders/advanced-directional-vertex.glsl'),
@@ -101,18 +106,17 @@ const cubeBlackConfig: ShapeConfig = {
 };
 
 const cubeBlueConfig: ShapeConfig = {
-  // coloursDataName: 'cubeBlue',
-  // lightDirectionalConfigs: [
-  //   {
-  //     direction: [0.3, 0.6, -1.0],
-  //     ambient: [0.1, 0.1, 0.1],
-  //     diffuse: [0.7, 0.7, 0.7],
-  //     specular: [0.5, 0.5, 0.5],
-  //   },
-  // ],
+  lightDirectionalConfigs: [
+    {
+      direction: [0.3, 0.6, -1.0],
+      ambient: [0.1, 0.1, 0.1],
+      diffuse: [0.7, 0.7, 0.7],
+      specular: [0.5, 0.5, 0.5],
+    },
+  ],
   positionsDataName: 'cubePositions',
-  programName: 'simple-texture',
-  // normalsDataName: 'cubeNormals',
+  programName: 'advanced-directional-simple-texture',
+  normalsDataName: 'cubeNormals',
   texturesDataName: 'colouredCubeTextures',
   texturePath: blueTexturePath,
 };
@@ -245,6 +249,7 @@ export const blockConfig: Dictionary<SceneConfig> = {
 };
 
 const programConfigDict = {
+  'advanced-directional-simple-texture': advancedDirectionalSimpleTextureConfig,
   'advanced-directional': advancedDirectionalConfig,
   simple: simpleConfig,
   'simple-directional': simpleDirectionalConfig,
