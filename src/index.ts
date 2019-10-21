@@ -49,7 +49,10 @@ import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
 const blueTexturePath = require('../assets/blue-2048-2048.png');
 const greenTexturePath = require('../assets/green-2048-2048.png');
-// const redTexturePath = require('../assets/red-2048-2048.png');
+const redTexturePath = require('../assets/red-2048-2048.png');
+const blueDashTexturePath = require('../assets/dash-blue-2048-2048.png');
+const greenDashTexturePath = require('../assets/dash-green-2048-2048.png');
+const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
 
 const shaderDict: ShaderDictionary = {
   'advanced-directional': {
@@ -115,7 +118,7 @@ const cubeBlueConfig: ShapeConfig = {
 };
 
 const cubeGreenConfig: ShapeConfig = {
-  coloursDataName: 'cubeGreen',
+  // coloursDataName: 'cubeGreen',
   // lightDirectionalConfigs: [
   //   {
   //     direction: [10, 10, -10],
@@ -129,15 +132,62 @@ const cubeGreenConfig: ShapeConfig = {
 };
 
 const cubeRedConfig: ShapeConfig = {
-  coloursDataName: 'cubeRed',
-  lightDirectionalConfigs: [
-    {
-      direction: [10, 10, -10],
-    },
-  ],
+  // coloursDataName: 'cubeRed',
+  // lightDirectionalConfigs: [
+  //   {
+  //     direction: [10, 10, -10],
+  //   },
+  // ],
   positionsDataName: 'cubePositions',
-  programName: 'simple-directional',
-  normalsDataName: 'cubeNormals',
+  programName: 'simple-texture',
+  // normalsDataName: 'cubeNormals',
+  texturesDataName: 'colouredCubeTextures',
+  texturePath: redTexturePath,
+};
+
+const cubeBlueDashConfig: ShapeConfig = {
+  // coloursDataName: 'cubeBlue',
+  // lightDirectionalConfigs: [
+  //   {
+  //     direction: [0.3, 0.6, -1.0],
+  //     ambient: [0.1, 0.1, 0.1],
+  //     diffuse: [0.7, 0.7, 0.7],
+  //     specular: [0.5, 0.5, 0.5],
+  //   },
+  // ],
+  positionsDataName: 'cubePositions',
+  programName: 'simple-texture',
+  // normalsDataName: 'cubeNormals',
+  texturesDataName: 'colouredCubeTextures',
+  texturePath: blueDashTexturePath,
+};
+
+const cubeGreenDashConfig: ShapeConfig = {
+  // coloursDataName: 'cubeGreen',
+  // lightDirectionalConfigs: [
+  //   {
+  //     direction: [10, 10, -10],
+  //   },
+  // ],
+  positionsDataName: 'cubePositions',
+  programName: 'simple-texture',
+  // normalsDataName: 'cubeNormals',
+  texturesDataName: 'colouredCubeTextures',
+  texturePath: greenDashTexturePath,
+};
+
+const cubeRedDashConfig: ShapeConfig = {
+  // coloursDataName: 'cubeRed',
+  // lightDirectionalConfigs: [
+  //   {
+  //     direction: [10, 10, -10],
+  //   },
+  // ],
+  positionsDataName: 'cubePositions',
+  programName: 'simple-texture',
+  // normalsDataName: 'cubeNormals',
+  texturesDataName: 'colouredCubeTextures',
+  texturePath: redDashTexturePath,
 };
 
 const sceneConfig: SceneConfig[] = [
@@ -173,6 +223,24 @@ export const blockConfig: Dictionary<SceneConfig> = {
     name: 'red block',
     initialScale: [25, 25, 25],
     shape: cubeRedConfig,
+  },
+  blueDash: {
+    children: [],
+    name: 'blue block',
+    initialScale: [25, 25, 25],
+    shape: cubeBlueDashConfig,
+  },
+  greenDash: {
+    children: [],
+    name: 'green block',
+    initialScale: [25, 25, 25],
+    shape: cubeGreenDashConfig,
+  },
+  redDash: {
+    children: [],
+    name: 'red block',
+    initialScale: [25, 25, 25],
+    shape: cubeRedDashConfig,
   },
 };
 
@@ -273,11 +341,20 @@ function getBlockFromInt(context: DrawContext, int: number) {
     case 10:
       config = blockConfig.green;
       break;
+    case 19:
+      config = blockConfig.greenDash;
+      break;
     case 20:
       config = blockConfig.red;
       break;
+    case 29:
+      config = blockConfig.redDash;
+      break;
     case 30:
       config = blockConfig.blue;
+      break;
+    case 39:
+      config = blockConfig.blueDash;
       break;
     default:
       config = blockConfig.blue;
