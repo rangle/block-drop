@@ -46,6 +46,7 @@ export interface ShapeConfig {
   programName: string;
   normalsDataName?: string;
   texturesDataName?: string;
+  texturePath?: string;
 }
 
 export interface ShapeDirectionalLight {
@@ -56,11 +57,12 @@ export interface ShapeDirectionalLight {
 }
 export interface Shape {
   a_colour?: WebGLBuffer;
-  context: ProgramContext;
-  lightDirectional: ShapeDirectionalLight[];
   a_normal?: WebGLBuffer;
   a_position: WebGLBuffer;
   a_texcoord?: WebGLBuffer;
+  context: ProgramContext;
+  lightDirectional: ShapeDirectionalLight[];
+  texture?: WebGLTexture;
   vertexCount: number;
 }
 
@@ -84,6 +86,10 @@ export interface ShaderDictionary {
     vertex: string;
   };
 }
+
+export type ImageDictionary = Dictionary<HTMLImageElement>;
+export type TextureDictionary = Dictionary<WebGLTexture>;
+
 export interface ProgramContextAttributeBase {
   name: string;
   normalize: boolean;

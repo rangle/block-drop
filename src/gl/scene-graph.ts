@@ -8,6 +8,8 @@ import {
   SceneConfig,
   DataDictionary,
   BufferMap,
+  ImageDictionary,
+  TextureDictionary,
 } from '../interfaces';
 import {
   identity4_4,
@@ -190,6 +192,8 @@ export function sceneConfigToNode(
   opScene: ObjectPool<SceneGraph>,
   dataDict: DataDictionary,
   programDict: Dictionary<ProgramContext>,
+  imageDict: ImageDictionary,
+  textureDict: TextureDictionary,
   bufferMap: BufferMap,
   gl: WebGLRenderingContext,
   sceneConfig: SceneConfig,
@@ -200,6 +204,8 @@ export function sceneConfigToNode(
     ? shapeConfigToShape(
         dataDict,
         programDict,
+        imageDict,
+        textureDict,
         bufferMap,
         gl,
         sceneConfig.shape
@@ -240,6 +246,8 @@ export function sceneConfigToNode(
       opScene,
       dataDict,
       programDict,
+      imageDict,
+      textureDict,
       bufferMap,
       gl,
       childConfig

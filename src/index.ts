@@ -15,6 +15,8 @@ import {
   BufferMap,
   ObjectPool,
   Matrix4_4,
+  ImageDictionary,
+  TextureDictionary,
 } from './interfaces';
 import { createProgramFromConfig } from './gl/program';
 import {
@@ -34,6 +36,7 @@ import {
   cubeGreen,
   cubeRed,
   cubeTextures,
+  colouredCubeTextures,
 } from './gl/shape-generator';
 import { objEach, Dictionary, objReduce } from '@ch1/utility';
 import { sceneConfigToNode, createEmptySceneGraph } from './gl/scene-graph';
@@ -44,7 +47,9 @@ import { advancedDirectionalConfig } from './gl/programs/advanced-directional';
 import { createObjectPool } from './object-pool';
 import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
-const texturePath = require('../assets/weave-256-256.png');
+const blueTexturePath = require('../assets/blue-2048-2048.png');
+const greenTexturePath = require('../assets/green-2048-2048.png');
+// const redTexturePath = require('../assets/red-2048-2048.png');
 
 const shaderDict: ShaderDictionary = {
   'advanced-directional': {
@@ -77,6 +82,7 @@ const dataDict = {
   cubePositions: cubePositions(),
   cubeRed: cubeRed(),
   cubeTextures: cubeTextures(),
+  colouredCubeTextures: colouredCubeTextures(),
 };
 
 const cubeBlackConfig: ShapeConfig = {
@@ -104,19 +110,22 @@ const cubeBlueConfig: ShapeConfig = {
   positionsDataName: 'cubePositions',
   programName: 'simple-texture',
   // normalsDataName: 'cubeNormals',
-  texturesDataName: 'cubeTextures',
+  texturesDataName: 'colouredCubeTextures',
+  texturePath: blueTexturePath,
 };
 
 const cubeGreenConfig: ShapeConfig = {
   coloursDataName: 'cubeGreen',
-  lightDirectionalConfigs: [
-    {
-      direction: [10, 10, -10],
-    },
-  ],
+  // lightDirectionalConfigs: [
+  //   {
+  //     direction: [10, 10, -10],
+  //   },
+  // ],
   positionsDataName: 'cubePositions',
-  programName: 'simple-directional',
-  normalsDataName: 'cubeNormals',
+  programName: 'simple-texture',
+  // normalsDataName: 'cubeNormals',
+  texturesDataName: 'colouredCubeTextures',
+  texturePath: greenTexturePath,
 };
 
 const cubeRedConfig: ShapeConfig = {
@@ -186,62 +195,76 @@ interface DrawContext {
   engine: any;
   gl: WebGLRenderingContext;
   lastProgram?: WebGLProgram;
+  lastTexture?: WebGLTexture;
   op3_1: ObjectPool<Matrix3_1>;
   op4_4: ObjectPool<Matrix4_4>;
   opScene: ObjectPool<SceneGraph>;
   programDict: Dictionary<ProgramContext>;
   scene: SceneGraph;
   sceneList: SceneGraphShape[];
+  textureDict: TextureDictionary;
+  imageDict: ImageDictionary;
 }
 
 function main() {
   try {
-    const context = setup(programConfigDict);
-    draw(context);
-
-    const go = () => {
-      requestAnimationFrame(() => {
-        if (context.doRedraw) {
-          const newChildren: SceneGraph[] = [];
-          for (let i = 0; i < context.engine.buffer.length; i += 1) {
-            const el = context.engine.buffer[i];
-            if (el !== 0) {
-              const block = getBlockFromInt(context, el);
-              const j =
-                context.engine.config.width * context.engine.config.height - i;
-              const y = 25 * Math.floor(j / context.engine.config.width) + 25;
-              const x = 25 * (j % context.engine.config.width);
-              block.translation[0] = x;
-              block.translation[1] = y;
-              newChildren.push(block);
-            }
-          }
-          context.scene.children.forEach((child, i) => {
-            if (i === 0) {
-              return;
-            }
-            context.opScene.free(child);
-          });
-          context.scene.children.splice(1);
-          newChildren.forEach(child => {
-            child.updateLocalMatrix();
-            child.setParent(context.scene);
-          });
-          context.sceneList = context.scene.toArray();
-          context.doRedraw = false;
-        }
-        context.scene.rotation[1] += 0.01;
-        context.scene.updateLocalMatrix();
-        context.scene.updateWorldMatrix();
-        draw(context);
-        go();
+    const imageDict: ImageDictionary = {};
+    load(imageDict)
+      .then(() => {
+        const context = setup(programConfigDict, imageDict);
+        start(context);
+      })
+      .catch((e: Error) => {
+        throw e;
       });
-    };
-    go();
   } catch (err) {
     console.log(err);
     window.document.body.appendChild(error(err.message));
   }
+}
+
+function start(context: DrawContext) {
+  draw(context);
+
+  const go = () => {
+    requestAnimationFrame(() => {
+      if (context.doRedraw) {
+        const newChildren: SceneGraph[] = [];
+        for (let i = 0; i < context.engine.buffer.length; i += 1) {
+          const el = context.engine.buffer[i];
+          if (el !== 0) {
+            const block = getBlockFromInt(context, el);
+            const j =
+              context.engine.config.width * context.engine.config.height - i;
+            const y = 25 * Math.floor(j / context.engine.config.width) + 25;
+            const x = 25 * (j % context.engine.config.width);
+            block.translation[0] = x;
+            block.translation[1] = y;
+            newChildren.push(block);
+          }
+        }
+        context.scene.children.forEach((child, i) => {
+          if (i === 0) {
+            return;
+          }
+          context.opScene.free(child);
+        });
+        context.scene.children.splice(1);
+        newChildren.forEach(child => {
+          child.updateLocalMatrix();
+          child.setParent(context.scene);
+        });
+        context.sceneList = context.scene.toArray();
+        context.doRedraw = false;
+      }
+      context.scene.rotation[1] += 0.01;
+      context.scene.updateLocalMatrix();
+      context.scene.updateWorldMatrix();
+      draw(context);
+      go();
+    });
+  };
+  go();
 }
 
 function getBlockFromInt(context: DrawContext, int: number) {
@@ -264,6 +287,8 @@ function getBlockFromInt(context: DrawContext, int: number) {
     context.opScene,
     dataDict,
     context.programDict,
+    context.imageDict,
+    context.textureDict,
     context.bufferMap,
     context.gl,
     config,
@@ -272,7 +297,38 @@ function getBlockFromInt(context: DrawContext, int: number) {
   );
 }
 
-function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
+function load(imageDict: ImageDictionary) {
+  return Promise.all(
+    objReduce(
+      blockConfig,
+      (promises: Promise<void>[], config) => {
+        if (config.shape && config.shape.texturePath) {
+          const texturePath = config.shape.texturePath;
+          promises.push(
+            new Promise((resolve, reject) => {
+              const image = new Image();
+              image.src = texturePath;
+              image.addEventListener('load', () => {
+                imageDict[texturePath] = image;
+                resolve();
+              });
+              image.addEventListener('error', (e: any) => {
+                reject(e);
+              });
+            })
+          );
+        }
+        return promises;
+      },
+      []
+    )
+  );
+}
+
+function setup(
+  programConfigs: Dictionary<ProgramContextConfig>,
+  imageDict: ImageDictionary
+): DrawContext {
   const tree = body();
   const gl = getContext(tree.canvas);
   const bufferMap: BufferMap = new Map();
@@ -283,6 +339,8 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
     () => createEmptySceneGraph(op3_1, op4_4),
     1000
   );
+
+  const textureDict: TextureDictionary = {};
 
   const programDict = objReduce(
     programConfigs,
@@ -298,6 +356,8 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
       opScene,
       dataDict,
       programDict,
+      imageDict,
+      textureDict,
       bufferMap,
       gl,
       sceneConfig
@@ -318,28 +378,6 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
     debug: true,
     preview: 3,
     seed: 'hello-world',
-  });
-
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    0,
-    gl.RGBA,
-    1,
-    1,
-    0,
-    gl.RGBA,
-    gl.UNSIGNED_BYTE,
-    new Uint8Array([0, 0, 200, 255])
-  );
-
-  const image = new Image();
-  image.src = texturePath;
-  image.addEventListener('load', () => {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.generateMipmap(gl.TEXTURE_2D);
   });
 
   function listener(engine: any, e: KeyboardEvent) {
@@ -384,6 +422,8 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
     programDict,
     scene: scenes[0],
     sceneList,
+    textureDict,
+    imageDict: imageDict,
   };
 
   engine.on('redraw', () => (context.doRedraw = true));
@@ -395,6 +435,9 @@ function setup(programConfigs: Dictionary<ProgramContextConfig>): DrawContext {
 
   // enable depth test
   gl.enable(gl.DEPTH_TEST);
+
+  // gl.enable(gl.BLEND);
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   return context;
 }
@@ -461,6 +504,13 @@ function draw(drawContext: DrawContext) {
     let normalizedDirection: Matrix3_1 | null = null;
 
     if (scene.shape.a_texcoord) {
+      if (scene.shape.texture) {
+        if (drawContext.lastTexture != scene.shape.texture) {
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, scene.shape.texture);
+          drawContext.lastTexture = scene.shape.texture;
+        }
+      }
       gl.uniform1i(context.uniforms.u_texture.location, 0);
     }
 
