@@ -1,19 +1,29 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const isProd = process.env.NODE_ENV === 'production';
+const logLevel = (function() {
+  if (process.env.NODE_LOG) {
+    return process.env.NODE_LOG;
+  }
+  return isProd ? 'production' : 'debug';
+})();
 
 const mode = isProd ? 'production' : 'development';
 const devtool = isProd ? 'hidden-source-map' : 'cheap-module-source-map';
 const allPlugins = [
   new HtmlWebpackPlugin({
-    template: 'src/templates/index.html',
+    template: 'src/templates/index.ejs',
   }),
   new MiniCssExtractPlugin({
     filename: '[name].css',
     chunkFilename: '[id].css',
+  }),
+  new webpack.DefinePlugin({
+    LOG_LEVEL: JSON.stringify(logLevel),
   }),
 ];
 const prodPlugins = [

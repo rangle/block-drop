@@ -48,9 +48,15 @@ import { advancedDirectionalSimpleTextureConfig } from './gl/programs/advanced-d
 import { createObjectPool } from './object-pool';
 import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
+import { simpleDirPointMixConfig } from './gl/programs/simple-dir_point_mix';
+declare const LOG_LEVEL: string;
+const WebGLDebugUtils: any =
+  LOG_LEVEL === 'debug'
+    ? require('../vendor/webgl-debug').WebGLDebugUtils
+    : undefined;
 const blueTexturePath = require('../assets/blue-2048-2048.png');
 const greenTexturePath = require('../assets/green-2048-2048.png');
-const redTexturePath = require('../assets/red-2048-2048.png');
+// const redTexturePath = require('../assets/red-2048-2048.png');
 const blueDashTexturePath = require('../assets/dash-blue-2048-2048.png');
 const greenDashTexturePath = require('../assets/dash-green-2048-2048.png');
 const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
@@ -67,6 +73,10 @@ const shaderDict: ShaderDictionary = {
   simple: {
     fragment: require('./shaders/simple-fragment.glsl'),
     vertex: require('./shaders/simple-vertex.glsl'),
+  },
+  'simple-dir_point_mix': {
+    fragment: require('./shaders/simple-dir_point_mix-fragment.glsl'),
+    vertex: require('./shaders/simple-dir_point_mix-vertex.glsl'),
   },
   'simple-directional': {
     fragment: require('./shaders/simple-directional-fragment.glsl'),
@@ -136,32 +146,35 @@ const cubeGreenConfig: ShapeConfig = {
 };
 
 const cubeRedConfig: ShapeConfig = {
-  // coloursDataName: 'cubeRed',
-  // lightDirectionalConfigs: [
-  //   {
-  //     direction: [10, 10, -10],
-  //   },
-  // ],
+  coloursDataName: 'cubeRed',
+  lightDirectionalConfigs: [
+    {
+      direction: [0.3, 0.6, -1.0],
+      ambient: [0.1, 0.1, 0.1],
+      diffuse: [0.7, 0.7, 0.7],
+      specular: [0.5, 0.5, 0.5],
+    },
+  ],
   positionsDataName: 'cubePositions',
-  programName: 'simple-texture',
-  // normalsDataName: 'cubeNormals',
-  texturesDataName: 'colouredCubeTextures',
-  texturePath: redTexturePath,
+  programName: 'simple-dir_point_mix',
+  normalsDataName: 'cubeNormals',
+  // texturesDataName: 'colouredCubeTextures',
+  // texturePath: redTexturePath,
 };
 
 const cubeBlueDashConfig: ShapeConfig = {
-  // coloursDataName: 'cubeBlue',
-  // lightDirectionalConfigs: [
-  //   {
-  //     direction: [0.3, 0.6, -1.0],
-  //     ambient: [0.1, 0.1, 0.1],
-  //     diffuse: [0.7, 0.7, 0.7],
-  //     specular: [0.5, 0.5, 0.5],
-  //   },
-  // ],
+  coloursDataName: 'cubeBlue',
+  lightDirectionalConfigs: [
+    {
+      direction: [0.3, 0.6, -1.0],
+      ambient: [0.1, 0.1, 0.1],
+      diffuse: [0.9, 0.9, 0.9],
+      specular: [0.5, 0.5, 0.5],
+    },
+  ],
   positionsDataName: 'cubePositions',
-  programName: 'simple-texture',
-  // normalsDataName: 'cubeNormals',
+  programName: 'advanced-directional-simple-texture',
+  normalsDataName: 'cubeNormals',
   texturesDataName: 'colouredCubeTextures',
   texturePath: blueDashTexturePath,
 };
@@ -252,6 +265,7 @@ const programConfigDict = {
   'advanced-directional-simple-texture': advancedDirectionalSimpleTextureConfig,
   'advanced-directional': advancedDirectionalConfig,
   simple: simpleConfig,
+  'simple-dir_point_mix': simpleDirPointMixConfig,
   'simple-directional': simpleDirectionalConfig,
   'simple-texture': simpleTextureConfig,
 };
@@ -412,7 +426,11 @@ function setup(
   imageDict: ImageDictionary
 ): DrawContext {
   const tree = body();
-  const gl = getContext(tree.canvas);
+  const gl =
+    LOG_LEVEL === 'debug'
+      ? WebGLDebugUtils.makeDebugContext(getContext(tree.canvas))
+      : getContext(tree.canvas);
+
   const bufferMap: BufferMap = new Map();
 
   const op3_1 = createObjectPool(createMatrix3_1, 500);
@@ -609,6 +627,13 @@ function draw(drawContext: DrawContext) {
         gl.uniform3fv(
           context.uniforms.u_viewWorldPosition.location,
           cameraPosition
+        );
+      }
+
+      if (context.uniforms.u_lightWorldPosition) {
+        gl.uniform3fv(
+          context.uniforms.u_lightWorldPosition.location,
+          normalize3_1([-1, 1, -1], op3_1)
         );
       }
 
