@@ -312,9 +312,14 @@ function main() {
 
 function start(context: DrawContext) {
   draw(context);
+  let then = 0;
+  const rotationSpeed = 1.2;
 
   const go = () => {
-    requestAnimationFrame(() => {
+    requestAnimationFrame((now: number) => {
+      const nowSeconds = now * 0.001;
+      const deltaTime = nowSeconds - then;
+      then = nowSeconds;
       if (context.doRedraw) {
         const newChildren: SceneGraph[] = [];
         for (let i = 0; i < context.engine.buffer.length; i += 1) {
@@ -344,7 +349,7 @@ function start(context: DrawContext) {
         context.sceneList = context.scene.toArray();
         context.doRedraw = false;
       }
-      context.scene.rotation[1] += 0.01;
+      context.scene.rotation[1] += rotationSpeed * deltaTime;
       context.scene.updateLocalMatrix();
       context.scene.updateWorldMatrix();
       draw(context);
