@@ -1,4 +1,11 @@
-import { ShaderDictionary, ShapeConfig, SceneConfig } from './interfaces';
+import {
+  ShaderDictionary,
+  ShapeConfig,
+  SceneConfig,
+  MeshConfig,
+  MaterialColourConfig,
+  MaterialTextureConfig,
+} from './interfaces';
 import {
   fColours,
   fPositions,
@@ -69,16 +76,97 @@ export const dataDict = {
   colouredCubeTextures: colouredCubeTextures(),
 };
 
-const cubeBlackConfig: ShapeConfig = {
+const blackCubeMesh: MeshConfig = {
   coloursDataName: 'cubeBlack',
+  normalsDataName: 'cubeNormals',
+  textureCoordDataName: 'colouredCubeTextures',
+  verticiesDataName: 'cubePositions',
+};
+
+const blueCubeMesh: MeshConfig = {
+  coloursDataName: 'cubeBlue',
+  normalsDataName: 'cubeNormals',
+  textureCoordDataName: 'colouredCubeTextures',
+  verticiesDataName: 'cubePositions',
+};
+
+const greenCubeMesh: MeshConfig = {
+  coloursDataName: 'cubeGreen',
+  normalsDataName: 'cubeNormals',
+  textureCoordDataName: 'colouredCubeTextures',
+  verticiesDataName: 'cubePositions',
+};
+
+const redCubeMesh: MeshConfig = {
+  coloursDataName: 'cubeRed',
+  normalsDataName: 'cubeNormals',
+  textureCoordDataName: 'colouredCubeTextures',
+  verticiesDataName: 'cubePositions',
+};
+
+const blackShinyMaterialColour: MaterialColourConfig = {
+  ambient: [0.01, 0.01, 0.01],
+  diffuse: [0.01, 0.01, 0.01],
+  specular: [0.01, 0.01, 0.01],
+  shiny: 32,
+};
+
+const blueShinyMaterialTexture: MaterialTextureConfig = {
+  diffusePath: blueTexturePath,
+  normalPath: blueTexturePath,
+  specularPath: blueTexturePath,
+  texturePath: blueTexturePath,
+  shiny: 32,
+};
+
+const greenShinyMaterialTexture: MaterialTextureConfig = {
+  diffusePath: greenTexturePath,
+  normalPath: greenTexturePath,
+  specularPath: greenTexturePath,
+  texturePath: greenTexturePath,
+  shiny: 32,
+};
+
+const redShinyMaterialColour: MaterialColourConfig = {
+  ambient: [0.7, 0.01, 0.03],
+  diffuse: [0.7, 0.01, 0.03],
+  specular: [0.7, 0.01, 0.03],
+  shiny: 32,
+};
+
+const greenDashShinyMaterialTexture: MaterialTextureConfig = {
+  diffusePath: greenDashTexturePath,
+  normalPath: greenDashTexturePath,
+  specularPath: greenDashTexturePath,
+  texturePath: greenDashTexturePath,
+  shiny: 32,
+};
+
+const blueDashShinyMaterialTexture: MaterialTextureConfig = {
+  diffusePath: blueDashTexturePath,
+  normalPath: blueDashTexturePath,
+  specularPath: blueDashTexturePath,
+  texturePath: blueDashTexturePath,
+  shiny: 32,
+};
+
+const redDashShinyMaterialTexture: MaterialTextureConfig = {
+  diffusePath: redDashTexturePath,
+  normalPath: redDashTexturePath,
+  specularPath: redDashTexturePath,
+  texturePath: redDashTexturePath,
+  shiny: 32,
+};
+
+const cubeBlackConfig: ShapeConfig = {
   lightDirectionalConfigs: [
     {
       direction: [10, 10, -10],
     },
   ],
-  positionsDataName: 'cubePositions',
+  material: blackShinyMaterialColour,
+  mesh: blackCubeMesh,
   programName: 'simple-directional',
-  normalsDataName: 'cubeNormals',
 };
 
 const cubeBlueConfig: ShapeConfig = {
@@ -90,29 +178,18 @@ const cubeBlueConfig: ShapeConfig = {
       specular: [0.5, 0.5, 0.5],
     },
   ],
-  positionsDataName: 'cubePositions',
+  material: blueShinyMaterialTexture,
+  mesh: blueCubeMesh,
   programName: 'advanced-directional-simple-texture',
-  normalsDataName: 'cubeNormals',
-  texturesDataName: 'colouredCubeTextures',
-  texturePath: blueTexturePath,
 };
 
 const cubeGreenConfig: ShapeConfig = {
-  // coloursDataName: 'cubeGreen',
-  // lightDirectionalConfigs: [
-  //   {
-  //     direction: [10, 10, -10],
-  //   },
-  // ],
-  positionsDataName: 'cubePositions',
+  material: greenShinyMaterialTexture,
+  mesh: greenCubeMesh,
   programName: 'simple-texture',
-  // normalsDataName: 'cubeNormals',
-  texturesDataName: 'colouredCubeTextures',
-  texturePath: greenTexturePath,
 };
 
 const cubeRedConfig: ShapeConfig = {
-  coloursDataName: 'cubeRed',
   lightDirectionalConfigs: [
     {
       direction: [0.3, 0.6, -1.0],
@@ -121,15 +198,12 @@ const cubeRedConfig: ShapeConfig = {
       specular: [0.5, 0.5, 0.5],
     },
   ],
-  positionsDataName: 'cubePositions',
+  material: redShinyMaterialColour,
+  mesh: redCubeMesh,
   programName: 'simple-dir_point_mix',
-  normalsDataName: 'cubeNormals',
-  // texturesDataName: 'colouredCubeTextures',
-  // texturePath: redTexturePath,
 };
 
 const cubeBlueDashConfig: ShapeConfig = {
-  coloursDataName: 'cubeBlue',
   lightDirectionalConfigs: [
     {
       direction: [0.3, 0.6, -1.0],
@@ -138,39 +212,21 @@ const cubeBlueDashConfig: ShapeConfig = {
       specular: [0.5, 0.5, 0.5],
     },
   ],
-  positionsDataName: 'cubePositions',
+  material: blueDashShinyMaterialTexture,
+  mesh: blueCubeMesh,
   programName: 'advanced-directional-simple-texture',
-  normalsDataName: 'cubeNormals',
-  texturesDataName: 'colouredCubeTextures',
-  texturePath: blueDashTexturePath,
 };
 
 const cubeGreenDashConfig: ShapeConfig = {
-  // coloursDataName: 'cubeGreen',
-  // lightDirectionalConfigs: [
-  //   {
-  //     direction: [10, 10, -10],
-  //   },
-  // ],
-  positionsDataName: 'cubePositions',
+  material: greenDashShinyMaterialTexture,
+  mesh: greenCubeMesh,
   programName: 'simple-texture',
-  // normalsDataName: 'cubeNormals',
-  texturesDataName: 'colouredCubeTextures',
-  texturePath: greenDashTexturePath,
 };
 
 const cubeRedDashConfig: ShapeConfig = {
-  // coloursDataName: 'cubeRed',
-  // lightDirectionalConfigs: [
-  //   {
-  //     direction: [10, 10, -10],
-  //   },
-  // ],
-  positionsDataName: 'cubePositions',
+  material: redDashShinyMaterialTexture,
+  mesh: redCubeMesh,
   programName: 'simple-texture',
-  // normalsDataName: 'cubeNormals',
-  texturesDataName: 'colouredCubeTextures',
-  texturePath: redDashTexturePath,
 };
 
 export const sceneConfig: SceneConfig[] = [

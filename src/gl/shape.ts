@@ -7,6 +7,7 @@ import {
   ShapeDirectionalLight,
   ImageDictionary,
   TextureDictionary,
+  MaterialTextureConfig,
 } from '../interfaces';
 
 function getOrCreateBuffer(
@@ -51,43 +52,43 @@ export function shapeConfigToShape(
     gl,
     bufferMap,
     dataDict,
-    config.positionsDataName
+    config.mesh.verticiesDataName
   );
 
   let colours;
-  if (config.coloursDataName) {
+  if (config.mesh.coloursDataName) {
     colours = getOrCreateBuffer(
       gl,
       bufferMap,
       dataDict,
-      config.coloursDataName
+      config.mesh.coloursDataName
     );
   }
 
   let textures;
-  if (config.texturesDataName) {
+  let texture: undefined | WebGLTexture;
+  if (isMaterialTextureConfig(config.material)) {
     textures = getOrCreateBuffer(
       gl,
       bufferMap,
       dataDict,
-      config.texturesDataName
+      config.mesh.textureCoordDataName
     );
-  }
 
-  let texture: undefined | WebGLTexture;
-  if (config.texturePath) {
-    if (textureDict[config.texturePath]) {
-      texture = textureDict[config.texturePath];
+    if (textureDict[config.material.texturePath]) {
+      texture = textureDict[config.material.texturePath];
     } else {
       const attemptTexture = gl.createTexture();
       if (!attemptTexture) {
-        throw new Error('could not create texture ' + config.texturePath);
+        throw new Error(
+          'could not create texture ' + config.material.texturePath
+        );
       }
       texture = attemptTexture;
 
-      if (!imageDict[config.texturePath]) {
+      if (!imageDict[config.material.texturePath]) {
         throw new Error(
-          'could not find image for texture ' + config.texturePath
+          'could not find image for texture ' + config.material.texturePath
         );
       }
 
@@ -98,21 +99,21 @@ export function shapeConfigToShape(
         gl.RGBA,
         gl.RGBA,
         gl.UNSIGNED_BYTE,
-        imageDict[config.texturePath]
+        imageDict[config.material.texturePath]
       );
       gl.generateMipmap(gl.TEXTURE_2D);
-      textureDict[config.texturePath] = texture;
+      textureDict[config.material.texturePath] = texture;
     }
   }
 
   let normals;
   const lightDirectional: ShapeDirectionalLight[] = [];
-  if (config.normalsDataName) {
+  if (config.mesh.normalsDataName) {
     normals = getOrCreateBuffer(
       gl,
       bufferMap,
       dataDict,
-      config.normalsDataName
+      config.mesh.normalsDataName
     );
     if (config.lightDirectionalConfigs) {
       config.lightDirectionalConfigs.forEach(ldConfig => {
@@ -134,6 +135,20 @@ export function shapeConfigToShape(
     context: programDict[config.programName],
     lightDirectional,
     texture,
-    vertexCount: dataDict[config.positionsDataName].length / 3,
+    vertexCount: dataDict[config.mesh.verticiesDataName].length / 3,
   };
+}
+
+// function isMaterialColourConfig(thing: any): thing is MaterialColourConfig {
+//   if (thing.ambient) {
+//     return true;
+//   }
+//   return false;
+// }
+
+function isMaterialTextureConfig(thing: any): thing is MaterialTextureConfig {
+  if (thing.texturePath) {
+    return true;
+  }
+  return false;
 }

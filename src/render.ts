@@ -131,7 +131,7 @@ function draw(drawContext: DrawContext) {
       gl.uniform1i(context.uniforms.u_texture.location, 0);
     }
 
-    if (scene.shape.a_normal) {
+    if (scene.shape.a_normal && scene.shape.lightDirectional.length) {
       worldInverseMatrix = inverse4_4(scene.worldMatrix, op4_4);
       worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix, op4_4);
       gl.uniformMatrix4fv(

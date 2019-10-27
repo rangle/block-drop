@@ -40,13 +40,32 @@ export interface ShapeDirectionalLightConfig {
   specular?: Matrix3_1;
 }
 export interface ShapeConfig {
-  positionsDataName: string;
-  coloursDataName?: string;
   lightDirectionalConfigs?: ShapeDirectionalLightConfig[];
   programName: string;
-  normalsDataName?: string;
-  texturesDataName?: string;
-  texturePath?: string;
+  mesh: MeshConfig;
+  material: MaterialColourConfig | MaterialTextureConfig;
+}
+
+export interface MeshConfig {
+  coloursDataName: string;
+  normalsDataName: string;
+  textureCoordDataName: string;
+  verticiesDataName: string;
+}
+
+export interface MaterialColourConfig {
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+  shiny: number;
+}
+
+export interface MaterialTextureConfig {
+  texturePath: string;
+  diffusePath: string;
+  normalPath: string;
+  specularPath: string;
+  shiny: number;
 }
 
 export interface ShapeDirectionalLight {

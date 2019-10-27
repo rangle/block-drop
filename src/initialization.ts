@@ -200,8 +200,8 @@ export function loadImages(imageDict: ImageDictionary) {
     objReduce(
       blockConfig,
       (promises: Promise<void>[], config) => {
-        if (config.shape && config.shape.texturePath) {
-          const texturePath = config.shape.texturePath;
+        if (config.shape && (config.shape.material as any).texturePath) {
+          const texturePath = (config.shape.material as any).texturePath;
           promises.push(
             new Promise((resolve, reject) => {
               const image = new Image();
