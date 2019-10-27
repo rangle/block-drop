@@ -11,12 +11,12 @@ import {
   invertBoolean,
   isBoard1,
   mergeProp,
-  noop,
   numberFromString,
   safeCall,
   throttle,
   throwOutOfBounds,
 } from './util';
+import { noop } from '@ch1/utility';
 
 describe('utility functions', () => {
   describe('aspect ratio', () => {
@@ -199,12 +199,6 @@ describe('utility functions', () => {
         expect(newObj.test2).toBe('word');
       }
     );
-  });
-
-  describe('noop function', () => {
-    it('should do nothing', () => {
-      expect(() => noop()).not.toThrowError();
-    });
   });
 
   describe('number from string', () => {

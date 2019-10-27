@@ -6,14 +6,27 @@
   <meta name="description" content="Block Drop is a game about falling blocks">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-      body {
+      html, body {
         border: 0;
         background-color: white;
+        font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
       }
       canvas {
+        display: block;
         width: 100vw;
         height: 100vh;
-        display: block;
+        top: 0;
+      }
+      canvas, section {
+        position: absolute;
+        left: 0;
+      }
+      section {
+        background-color: rgba(255, 255, 255, 200);
+        top: 2em;
+      }
+      .languages {
+        position: absolute;
       }
   </style>
 </head>

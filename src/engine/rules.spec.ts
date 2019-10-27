@@ -1,5 +1,5 @@
 import { tick1 } from './rules';
-import { noop } from '../util';
+import { noop } from '@ch1/utility';
 
 describe('rules functions', () => {
   describe('tick1 function', () => {

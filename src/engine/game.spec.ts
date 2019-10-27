@@ -1,6 +1,6 @@
 import { createGame1 } from './game';
 import { createBoard1 } from './board';
-import { noop } from '../util';
+import { noop } from '@ch1/utility';
 
 describe('game functions', () => {
   describe('createGame1', () => {

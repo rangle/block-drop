@@ -1,6 +1,6 @@
 import { registerTo, getFunctionFrom } from './function-collection';
 
-import { noop } from '../util';
+import { noop } from '@ch1/utility';
 
 describe('function collection functions', () => {
   describe('getFunctionFrom', () => {

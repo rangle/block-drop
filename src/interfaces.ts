@@ -368,3 +368,20 @@ export interface FunctionsCollection<T extends Function> {
 }
 
 export type SeedRandom = (seed: string, ...args: any[]) => () => number;
+
+/**
+ *
+ *
+ * UI
+ *
+ *
+ */
+export type Translations = Dictionary<Translation>;
+export type Translation = Dictionary<Dictionary<string>>;
+
+export interface LanguageState {
+  currentCode(): string;
+  current(): Translation;
+  on(callback: (...args: any[]) => void): () => void;
+  set(languageCode?: string): void;
+}

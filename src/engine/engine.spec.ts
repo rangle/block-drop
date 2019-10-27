@@ -8,7 +8,7 @@ import {
 } from './engine';
 
 import { spawn1 } from './rules';
-import { noop } from '../util';
+import { noop } from '@ch1/utility';
 
 describe('engine functions', () => {
   describe('create1Controls', () => {

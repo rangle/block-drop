@@ -168,11 +168,6 @@ export function mergeProp(obj: any, newValue: any, prop: string) {
   return Object.assign({}, obj, newObj);
 }
 
-/**
- * Sometimes a no operation is useful
- */
-export function noop() {}
-
 export function numberFromString(string: string): number {
   const mostlyNumeric = string.replace(/[^\d.-]/g, '');
 

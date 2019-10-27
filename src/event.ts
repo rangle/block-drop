@@ -15,7 +15,11 @@ export function emitFrom(dict: Dict, message: string, ...args: any[]) {
   );
 }
 
-export function onTo(dict: Dict, message: string, listener: Function) {
+export function onTo(
+  dict: Dict,
+  message: string,
+  listener: (...args: any[]) => void
+) {
   if (!dict[message]) {
     dict[message] = Object.create(null);
   }
@@ -36,7 +40,10 @@ export function onTo(dict: Dict, message: string, listener: Function) {
   };
 }
 
-export function createEventEmitter() {
+export function createEventEmitter(): {
+  emit: (message: string, ...args: any[]) => void;
+  on: (message: string, callback: (...args: any[]) => void) => () => void;
+} {
   const dict = Object.create(null);
 
   return Object.create(null, {

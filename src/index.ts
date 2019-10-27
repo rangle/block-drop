@@ -49,6 +49,7 @@ import { createObjectPool } from './object-pool';
 import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
 import { simpleDirPointMixConfig } from './gl/programs/simple-dir_point_mix';
+import { createLanguageState } from './languages';
 declare const LOG_LEVEL: string;
 const WebGLDebugUtils: any =
   LOG_LEVEL === 'debug'
@@ -711,8 +712,27 @@ function draw(drawContext: DrawContext) {
 
 function body() {
   const canvas = window.document.createElement('canvas');
+  const languages = window.document.createElement('span');
+  const editor = window.document.createElement('section');
 
+  languages.className = 'languages';
   window.document.body.appendChild(canvas);
+
+  import('./languages')
+    .then(lang => {
+      const ls = createLanguageState();
+      ls.on(() => (window.document.title = ls.current().meta.title));
+      lang.main(languages, ls);
+      window.document.body.appendChild(languages);
+      return import('./editor').then(ed => {
+        ed.main(editor, ls);
+        window.document.body.appendChild(editor);
+        ls.set();
+      });
+    })
+    .catch((e: Error) => {
+      throw e;
+    });
 
   return { canvas };
 }

@@ -1,6 +1,6 @@
 import { between, randomSet, shuffle } from './random';
 
-import { noop } from '../util';
+import { noop } from '@ch1/utility';
 
 describe('random number functions', () => {
   describe('between function', () => {
