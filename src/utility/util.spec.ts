@@ -15,6 +15,10 @@ import {
   safeCall,
   throttle,
   throwOutOfBounds,
+  degreesToRadians,
+  radiansToDegrees,
+  intToHex,
+  hexToInt,
 } from './util';
 import { noop } from '@ch1/utility';
 
@@ -286,6 +290,40 @@ describe('utility functions', () => {
 
     it('should throw if offset is greater than or equal to length', () => {
       expect(() => throwOutOfBounds(['1'], 1)).toThrowError();
+    });
+  });
+
+  describe('degreesToRadians', () => {
+    it('returns 0 for 0', () => {
+      expect(degreesToRadians(0)).toBe(0);
+    });
+
+    it('returns about (floats) π for 180', () => {
+      expect(degreesToRadians(180)).toBeGreaterThan(3.141592);
+      expect(degreesToRadians(180)).toBeLessThan(3.141593);
+    });
+  });
+
+  describe('radiansToDegrees', () => {
+    it('returns 0 for 0', () => {
+      expect(radiansToDegrees(0)).toBe(0);
+    });
+
+    it('returns about (floats) 180 for π', () => {
+      expect(radiansToDegrees(Math.PI)).toBeGreaterThan(179);
+      expect(radiansToDegrees(Math.PI)).toBeLessThan(181);
+    });
+  });
+
+  describe('intToHex', () => {
+    it('returns #ffffff for 255,255,255', () => {
+      expect(intToHex([255, 255, 255])).toBe('#ffffff');
+    });
+  });
+
+  describe('hexToInt', () => {
+    it('returns 255,255,255 for #ffffff', () => {
+      expect(hexToInt('#ffffff')).toEqual([255, 255, 255]);
     });
   });
 });

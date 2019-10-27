@@ -1,4 +1,4 @@
-import { Board1, BooleanFunction, TypedArray } from '../interfaces';
+import { Board1, BooleanFunction, TypedArray, Matrix3_1 } from '../interfaces';
 
 export const aspectRatio = (width: number, height: number) =>
   divide(width, height);
@@ -252,4 +252,27 @@ export function safeCall(fn: Function, args?: any[]) {
   } catch (e) {
     // fail over
   }
+}
+
+export function degreesToRadians(degrees: number): number {
+  return degrees * (Math.PI / 180);
+}
+
+export function radiansToDegrees(radians: number): number {
+  return radians * (180 / Math.PI);
+}
+
+export function intToHex(int: Matrix3_1): string {
+  const r = int[0].toString(16);
+  const g = int[1].toString(16);
+  const b = int[2].toString(16);
+
+  return `#${r}${g}${b}`;
+}
+
+export function hexToInt(number: string): Matrix3_1 {
+  const r = parseInt(number.slice(1, 3), 16);
+  const g = parseInt(number.slice(3, 5), 16);
+  const b = parseInt(number.slice(5, 7), 16);
+  return [r, g, b];
 }

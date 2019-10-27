@@ -3,6 +3,7 @@ import { useReducer, useState } from 'preact/hooks';
 import { Translation, UiToGameState, Matrix3_1 } from '../interfaces';
 import { state } from '../components/state';
 import { Cameras } from '../components/cameras';
+import { Orientation } from '../components/orientation';
 
 const initialState = false;
 
@@ -24,10 +25,18 @@ function EditorBase(props: {
   translation: Translation;
   uiToGameState: UiToGameState;
 }) {
+  const t = 'translation';
+  const r = 'rotation';
+  const s = 'scale';
   const [value, dispatch] = useReducer(reducer, initialState);
   const label = getLabel(props, value);
   const utg = props.uiToGameState;
   const [cameraPosition, setCameraPosition] = useState([1, 2, 3]);
+  const trs = {
+    translation: [1, 2, 3] as Matrix3_1,
+    rotation: [0, Math.PI, -Math.PI] as Matrix3_1,
+    scale: [4, 5, 6] as Matrix3_1,
+  };
 
   utg.on('cameras', (value: Matrix3_1) => {
     setCameraPosition(value);
@@ -39,6 +48,11 @@ function EditorBase(props: {
       <Cameras
         onChange={(...values: Matrix3_1[]) => utg.emit('cameras', ...values)}
         values={[cameraPosition as Matrix3_1]}
+      />
+      <Orientation
+        label={{ t, r, s }}
+        onChange={console.log.bind(console)}
+        value={trs}
       />
     </div>
   ) : (
