@@ -403,3 +403,33 @@ export interface EventEmitter {
 export interface EventHandler {
   (...args: any[]): void;
 }
+
+/**
+ *
+ *
+ * Render
+ *
+ *
+ */
+export interface DrawContext {
+  bufferMap: BufferMap;
+  canvas: HTMLCanvasElement;
+  cameraPosition: Matrix3_1;
+  cameraTarget: Matrix3_1;
+  cameraUp: Matrix3_1;
+  doRedraw: boolean;
+  engine: any;
+  getBlockFromInt(context: DrawContext, int: number): SceneGraph;
+  gl: WebGLRenderingContext;
+  imageDict: ImageDictionary;
+  lastProgram?: WebGLProgram;
+  lastTexture?: WebGLTexture;
+  op3_1: ObjectPool<Matrix3_1>;
+  op4_4: ObjectPool<Matrix4_4>;
+  opScene: ObjectPool<SceneGraph>;
+  programDict: Dictionary<ProgramContext>;
+  resize(canvas: HTMLCanvasElement): void;
+  scene: SceneGraph;
+  sceneList: SceneGraphShape[];
+  textureDict: TextureDictionary;
+}
