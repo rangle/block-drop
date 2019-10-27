@@ -1,5 +1,5 @@
 import { Matrix3_1, Matrix3_3, ObjectPool } from '../interfaces';
-import { createObjectPool } from '../object-pool';
+import { createObjectPool } from '../utility/object-pool';
 
 export function createMatrix3_1(): Matrix3_1 {
   return [0, 0, 0];

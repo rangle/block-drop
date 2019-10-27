@@ -6,7 +6,7 @@ import { canMoveDown, DC2MAX, addBlock } from './board';
 
 import { Block, Game } from '../interfaces';
 
-import { intMidFloor, invertBoolean } from '../util';
+import { intMidFloor, invertBoolean } from '../utility/util';
 
 export default {
   spawns: makeCollection<(width: number, _: any, block: Block) => Block>(

@@ -9,7 +9,7 @@ import {
 } from './matrix';
 
 import { deepFreeze } from '@ch1/utility';
-import { intMidCeil, intMidFloor } from '../util';
+import { intMidCeil, intMidFloor } from '../utility/util';
 import { makeCollection } from './function-collection';
 
 export default {

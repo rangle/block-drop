@@ -22,7 +22,7 @@ import {
   scale4_4,
   createMatrix4_4,
 } from '../matrix/matrix-4';
-import { createObjectPool } from '../object-pool';
+import { createObjectPool } from '../utility/object-pool';
 import { createMatrix3_1 } from '../matrix/matrix-3';
 import { Dictionary } from '@ch1/utility';
 import { shapeConfigToShape } from './shape';

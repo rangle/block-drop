@@ -45,7 +45,7 @@ import { simpleConfig } from './gl/programs/simple';
 import { simpleDirectionalConfig } from './gl/programs/simple-directional';
 import { advancedDirectionalConfig } from './gl/programs/advanced-directional';
 import { advancedDirectionalSimpleTextureConfig } from './gl/programs/advanced-directional-simple-texture';
-import { createObjectPool } from './object-pool';
+import { createObjectPool } from './utility/object-pool';
 import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
 import { simpleDirPointMixConfig } from './gl/programs/simple-dir_point_mix';

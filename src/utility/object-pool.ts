@@ -1,4 +1,4 @@
-import { ObjectPool } from './interfaces';
+import { ObjectPool } from '../interfaces';
 
 export function createObjectPool<T>(
   create: () => T,

@@ -7,7 +7,7 @@ import { makeCollection } from './function-collection';
 
 import { Block, Board, Board1 } from '../interfaces';
 
-import { throwOutOfBounds } from '../util';
+import { throwOutOfBounds } from '../utility/util';
 
 export const SHADOW_OFFSET = 9;
 export const DC2MAX = 9;

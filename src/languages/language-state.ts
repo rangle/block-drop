@@ -1,6 +1,6 @@
 import { noop, Dictionary } from '@ch1/utility';
 import { Translations } from '../interfaces';
-import { createEventEmitter } from '../event';
+import { createEventEmitter } from '../utility/event';
 
 const storageId = 'language';
 if (!window.localStorage) {

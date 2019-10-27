@@ -19,7 +19,7 @@ import { createPollGamePad } from './controls';
 
 import { DEFAULT_CONFIG_1 } from './configs/default-config';
 
-import { createEventEmitter } from '../event';
+import { createEventEmitter } from '../utility/event';
 
 import {
   Block,
@@ -34,7 +34,7 @@ import randomFunctions, { between, randomSet } from './random';
 import rulesFunctions from './rules';
 
 import { deepFreeze, noop, partial } from '@ch1/utility';
-import { copyBuffer, throttle } from '../util';
+import { copyBuffer, throttle } from '../utility/util';
 
 import { createGame1 } from './game';
 

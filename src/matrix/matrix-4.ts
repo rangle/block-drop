@@ -5,7 +5,7 @@ import {
   createMatrix3_1,
 } from './matrix-3';
 import { Matrix3_1, Matrix4_4, ObjectPool } from '../interfaces';
-import { createObjectPool } from '../object-pool';
+import { createObjectPool } from '../utility/object-pool';
 
 export function createMatrix4_4(): Matrix4_4 {
   return new Float32Array(16);
