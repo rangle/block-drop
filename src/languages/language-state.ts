@@ -1,5 +1,5 @@
 import { noop, Dictionary } from '@ch1/utility';
-import { Translations } from '../interfaces';
+import { Translations, LanguageState } from '../interfaces';
 import { createEventEmitter } from '../utility/event';
 
 const storageId = 'language';
@@ -49,7 +49,7 @@ function setLanguage(translations: Translations, code: string) {
   });
 }
 
-export function createLanguageState() {
+export function createLanguageState(): LanguageState {
   const emitter = createEventEmitter();
   const loaded: Translations = {};
   let current = initialLanguage;

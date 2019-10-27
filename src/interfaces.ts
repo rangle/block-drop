@@ -385,3 +385,21 @@ export interface LanguageState {
   on(callback: (...args: any[]) => void): () => void;
   set(languageCode?: string): void;
 }
+
+export type UiToGameState = EventEmitter;
+
+/**
+ *
+ *
+ * Event Emitter
+ *
+ *
+ */
+export interface EventEmitter {
+  emit(message: string, ...args: any[]): void;
+  on(message: string, callback: EventHandler): () => void;
+}
+
+export interface EventHandler {
+  (...args: any[]): void;
+}

@@ -3,6 +3,7 @@
  */
 import { partial, Dictionary } from '@ch1/utility';
 import { safeCall } from './util';
+import { EventEmitter } from '../interfaces';
 
 type Dict = Dictionary<Dictionary<Function>>;
 
@@ -40,10 +41,7 @@ export function onTo(
   };
 }
 
-export function createEventEmitter(): {
-  emit: (message: string, ...args: any[]) => void;
-  on: (message: string, callback: (...args: any[]) => void) => () => void;
-} {
+export function createEventEmitter(): EventEmitter {
   const dict = Object.create(null);
 
   return Object.create(null, {

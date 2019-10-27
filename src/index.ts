@@ -50,6 +50,7 @@ import { create1 } from './engine/engine';
 import { simpleTextureConfig } from './gl/programs/simple-texture';
 import { simpleDirPointMixConfig } from './gl/programs/simple-dir_point_mix';
 import { createLanguageState } from './languages';
+import { createEventEmitter } from './utility/event';
 declare const LOG_LEVEL: string;
 const WebGLDebugUtils: any =
   LOG_LEVEL === 'debug'
@@ -532,6 +533,12 @@ function setup(
     imageDict: imageDict,
   };
 
+  tree.uiToGameState.on('cameras', (value: Matrix3_1) => {
+    context.cameraPosition[0] = value[0];
+    context.cameraPosition[1] = value[1];
+    context.cameraPosition[2] = value[2];
+  });
+
   engine.on('redraw', () => (context.doRedraw = true));
   // set the clear colour
   gl.clearColor(0, 0, 0, 0);
@@ -714,6 +721,7 @@ function body() {
   const canvas = window.document.createElement('canvas');
   const languages = window.document.createElement('span');
   const editor = window.document.createElement('section');
+  const uiToGameState = createEventEmitter();
 
   languages.className = 'languages';
   window.document.body.appendChild(canvas);
@@ -725,7 +733,7 @@ function body() {
       lang.main(languages, ls);
       window.document.body.appendChild(languages);
       return import('./editor').then(ed => {
-        ed.main(editor, ls);
+        ed.main(editor, ls, uiToGameState);
         window.document.body.appendChild(editor);
         ls.set();
       });
@@ -734,7 +742,7 @@ function body() {
       throw e;
     });
 
-  return { canvas };
+  return { canvas, uiToGameState };
 }
 
 function getContext(canvas: HTMLCanvasElement) {

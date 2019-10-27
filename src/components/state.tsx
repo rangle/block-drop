@@ -1,9 +1,12 @@
 import { h, Component } from 'preact';
-import { LanguageState, Translation } from '../interfaces';
+import { LanguageState, Translation, UiToGameState } from '../interfaces';
 import { noop } from '@ch1/utility';
 
 export function state(Wrapped: any) {
-  return class State extends Component<{ languageState: LanguageState}, { translation: Translation }> {
+  return class State extends Component<
+    { uiToGameState?: UiToGameState; languageState: LanguageState },
+    { translation: Translation }
+  > {
     cleanup = noop;
     state = { translation: {} };
     constructor() {
@@ -27,7 +30,14 @@ export function state(Wrapped: any) {
     }
 
     render() {
-      return <Wrapped currentLanguageCode={ this.props.languageState.currentCode } setTranslation={ this.props.languageState.set } translation={ this.state.translation } />
+      return (
+        <Wrapped
+          currentLanguageCode={this.props.languageState.currentCode}
+          setTranslation={this.props.languageState.set}
+          translation={this.state.translation}
+          uiToGameState={this.props.uiToGameState}
+        />
+      );
     }
-  }
+  };
 }
