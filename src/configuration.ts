@@ -29,28 +29,28 @@ const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
 
 export const shaderDict: ShaderDictionary = {
   'advanced-directional-simple-texture': {
-    fragment: require('./shaders/advanced-directional-simple-texture-fragment.glsl'),
-    vertex: require('./shaders/advanced-directional-simple-texture-vertex.glsl'),
+    fragment: require('./gl/shaders/advanced-directional-simple-texture-fragment.glsl'),
+    vertex: require('./gl/shaders/advanced-directional-simple-texture-vertex.glsl'),
   },
   'advanced-directional': {
-    fragment: require('./shaders/advanced-directional-fragment.glsl'),
-    vertex: require('./shaders/advanced-directional-vertex.glsl'),
+    fragment: require('./gl/shaders/advanced-directional-fragment.glsl'),
+    vertex: require('./gl/shaders/advanced-directional-vertex.glsl'),
   },
   simple: {
-    fragment: require('./shaders/simple-fragment.glsl'),
-    vertex: require('./shaders/simple-vertex.glsl'),
+    fragment: require('./gl/shaders/simple-fragment.glsl'),
+    vertex: require('./gl/shaders/simple-vertex.glsl'),
   },
   'simple-dir_point_mix': {
-    fragment: require('./shaders/simple-dir_point_mix-fragment.glsl'),
-    vertex: require('./shaders/simple-dir_point_mix-vertex.glsl'),
+    fragment: require('./gl/shaders/simple-dir_point_mix-fragment.glsl'),
+    vertex: require('./gl/shaders/simple-dir_point_mix-vertex.glsl'),
   },
   'simple-directional': {
-    fragment: require('./shaders/simple-directional-fragment.glsl'),
-    vertex: require('./shaders/simple-directional-vertex.glsl'),
+    fragment: require('./gl/shaders/simple-directional-fragment.glsl'),
+    vertex: require('./gl/shaders/simple-directional-vertex.glsl'),
   },
   'simple-texture': {
-    fragment: require('./shaders/simple-texture-fragment.glsl'),
-    vertex: require('./shaders/simple-texture-vertex.glsl'),
+    fragment: require('./gl/shaders/simple-texture-fragment.glsl'),
+    vertex: require('./gl/shaders/simple-texture-vertex.glsl'),
   },
 };
 
