@@ -1,17 +1,8 @@
 import { h } from 'preact';
-import { Translation } from '../interfaces';
 import { state } from '../components/state';
-import { Dictionary } from '@ch1/utility';
+import { languages } from './language-state';
 
-function LanguagesBase(props: { currentLanguageCode: () => string, setTranslation: (code?: string) => void, translation: Translation }) {
-  let languages: Dictionary<string> = {};
-  if (!props.translation.languages) {
-    // load initial state
-    props.setTranslation();
-  } else {
-    languages = props.translation.languages;
-  }
-
+function LanguagesBase(props: { currentLanguageCode: () => string, setTranslation: (code?: string) => void }) {
   const code = props.currentLanguageCode();
 
   const options = Object.keys(languages).map((key: string, i: number) => {

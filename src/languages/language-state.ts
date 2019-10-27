@@ -1,4 +1,4 @@
-import { noop } from '@ch1/utility';
+import { noop, Dictionary } from '@ch1/utility';
 import { Translations } from '../interfaces';
 import { createEventEmitter } from '../event';
 
@@ -12,7 +12,17 @@ if (!window.localStorage) {
 
 export const initialLanguage = window.localStorage.getItem(storageId) || 'en';
 
-export const languages = ['ar', 'en', 'es', 'fr', 'he', 'hi', 'pt', 'ru', 'zh'];
+export const languages: Dictionary<string> = {
+  ar: 'عربى',
+  en: 'English',
+  es: 'Español',
+  fr: 'Français',
+  he: 'עברי',
+  hi: 'हिंदी',
+  pt: 'Português',
+  ru: 'Pусский',
+  zh: '中文',
+};
 
 function saveLanguage(languageCode: string) {
   window.localStorage.setItem(storageId, languageCode);
@@ -23,7 +33,7 @@ function getLanguage(translations: Translations, languageCode: string) {
     return Promise.resolve(translations[languageCode]);
   }
 
-  return import('./' + languageCode)
+  return import('./translations/' + languageCode)
     .then(mod => {
       translations[languageCode] = mod.language;
       return mod.language;
