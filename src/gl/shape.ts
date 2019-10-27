@@ -8,6 +8,9 @@ import {
   ImageDictionary,
   TextureDictionary,
   MaterialTextureConfig,
+  MaterialColour,
+  MaterialTexture,
+  Matrix3_1,
 } from '../interfaces';
 
 function getOrCreateBuffer(
@@ -65,6 +68,7 @@ export function shapeConfigToShape(
     );
   }
 
+  let material: MaterialColour | MaterialTexture;
   let textures;
   let texture: undefined | WebGLTexture;
   if (isMaterialTextureConfig(config.material)) {
@@ -104,6 +108,21 @@ export function shapeConfigToShape(
       gl.generateMipmap(gl.TEXTURE_2D);
       textureDict[config.material.texturePath] = texture;
     }
+    // @todo implement light maps
+    material = {
+      texture,
+      diffuse: texture,
+      normal: texture,
+      specular: texture,
+      shiny: config.material.shiny,
+    };
+  } else {
+    material = {
+      ambient: config.material.ambient.slice(0) as Matrix3_1,
+      diffuse: config.material.diffuse.slice(0) as Matrix3_1,
+      specular: config.material.specular.slice(0) as Matrix3_1,
+      shiny: config.material.shiny,
+    };
   }
 
   let normals;
@@ -128,14 +147,16 @@ export function shapeConfigToShape(
   }
 
   return {
-    a_colour: colours,
-    a_normal: normals,
-    a_position: positions,
-    a_texcoord: textures,
     context: programDict[config.programName],
     lightDirectional,
-    texture,
-    vertexCount: dataDict[config.mesh.verticiesDataName].length / 3,
+    material,
+    mesh: {
+      a_colour: colours,
+      a_normal: normals,
+      a_position: positions,
+      a_texcoord: textures,
+      vertexCount: dataDict[config.mesh.verticiesDataName].length / 3,
+    },
   };
 }
 
@@ -149,6 +170,24 @@ export function shapeConfigToShape(
 function isMaterialTextureConfig(thing: any): thing is MaterialTextureConfig {
   if (thing.texturePath) {
     return true;
+  }
+  return false;
+}
+
+export function isMaterialColour(thing: any): thing is MaterialColour {
+  if (thing.diffuse) {
+    if (!thing.normal) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function isMaterialTexture(thing: any): thing is MaterialTexture {
+  if (thing.diffuse) {
+    if (thing.normal) {
+      return true;
+    }
   }
   return false;
 }

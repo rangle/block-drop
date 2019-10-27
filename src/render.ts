@@ -8,6 +8,7 @@ import {
 } from './matrix/matrix-4';
 import { objEach } from '@ch1/utility';
 import { normalize3_1 } from './matrix/matrix-3';
+import { isMaterialTexture } from './gl/shape';
 
 export function drawLoop(context: DrawContext) {
   draw(context);
@@ -99,7 +100,8 @@ function draw(drawContext: DrawContext) {
   const viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix, op4_4);
 
   sceneList.forEach(scene => {
-    const { context, vertexCount } = scene.shape;
+    const { context } = scene.shape;
+    const { vertexCount } = scene.shape.mesh;
     // check/cache this
     if (drawContext.lastProgram !== context.program) {
       gl.useProgram(context.program);
@@ -109,7 +111,7 @@ function draw(drawContext: DrawContext) {
     objEach(context.attributes, (attribute, name) => {
       const { location, normalize, offset, size, stride, type } = attribute;
       gl.enableVertexAttribArray(location);
-      gl.bindBuffer(gl.ARRAY_BUFFER, (scene.shape as any)[name as string]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, (scene.shape.mesh as any)[name as string]);
       gl.vertexAttribPointer(location, size, type, normalize, stride, offset);
     });
 
@@ -120,18 +122,18 @@ function draw(drawContext: DrawContext) {
     let worldInverseTransposeMatrix: Matrix4_4 | null = null;
     let normalizedDirection: Matrix3_1 | null = null;
 
-    if (scene.shape.a_texcoord) {
-      if (scene.shape.texture) {
-        if (drawContext.lastTexture != scene.shape.texture) {
+    if (isMaterialTexture(scene.shape.material)) {
+      if (scene.shape.material.texture) {
+        if (drawContext.lastTexture != scene.shape.material.texture) {
           gl.activeTexture(gl.TEXTURE0);
-          gl.bindTexture(gl.TEXTURE_2D, scene.shape.texture);
-          drawContext.lastTexture = scene.shape.texture;
+          gl.bindTexture(gl.TEXTURE_2D, scene.shape.material.texture);
+          drawContext.lastTexture = scene.shape.material.texture;
         }
       }
       gl.uniform1i(context.uniforms.u_texture.location, 0);
     }
 
-    if (scene.shape.a_normal && scene.shape.lightDirectional.length) {
+    if (scene.shape.mesh.a_normal && scene.shape.lightDirectional.length) {
       worldInverseMatrix = inverse4_4(scene.worldMatrix, op4_4);
       worldInverseTransposeMatrix = transpose4_4(worldInverseMatrix, op4_4);
       gl.uniformMatrix4fv(

@@ -75,14 +75,28 @@ export interface ShapeDirectionalLight {
   specular: Matrix3_1;
 }
 export interface Shape {
+  context: ProgramContext;
+  lightDirectional: ShapeDirectionalLight[];
+  material: MaterialColour | MaterialTexture;
+  mesh: Mesh;
+}
+
+export interface Mesh {
   a_colour?: WebGLBuffer;
   a_normal?: WebGLBuffer;
   a_position: WebGLBuffer;
   a_texcoord?: WebGLBuffer;
-  context: ProgramContext;
-  lightDirectional: ShapeDirectionalLight[];
-  texture?: WebGLTexture;
   vertexCount: number;
+}
+
+export type MaterialColour = MaterialColourConfig;
+
+export interface MaterialTexture {
+  diffuse: WebGLTexture;
+  normal: WebGLTexture;
+  specular: WebGLTexture;
+  texture: WebGLTexture;
+  shiny: number;
 }
 
 export type BufferMap = Map<Float32Array | Uint8Array, WebGLBuffer>;
