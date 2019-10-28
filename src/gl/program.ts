@@ -56,7 +56,10 @@ export function createProgramFromConfig(
   }
 
   const vertex = shaderDict[config.shaderNames.vertex].vertex;
-  const fragment = shaderDict[config.shaderNames.fragment].fragment;
+  const fragment = parseShader(
+    { directionalLightCount: 1 },
+    shaderDict[config.shaderNames.fragment].fragment
+  );
 
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertex);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragment);
@@ -147,4 +150,38 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string) {
   const log = gl.getShaderInfoLog(shader);
   gl.deleteShader(shader);
   throw new Error('shader error: ' + log);
+}
+
+export function parseShader(
+  templateValues: Dictionary<number>,
+  shaderSource: string
+): string {
+  const openToken = '${';
+  let parsed = shaderSource;
+  let first = parsed.indexOf(openToken);
+  while (first > -1) {
+    const close = parsed.slice(first).indexOf('}');
+    if (close === -1) {
+      const start = first < 25 ? 0 : first - 24;
+      const finish = first + 25 >= parsed.length ? parsed.length : first + 25;
+      throw new Error(
+        'Unclosed template string starting at ' + parsed.slice(start, finish)
+      );
+    }
+    const name = parsed.slice(first + 2, first + close);
+    if (!templateValues[name]) {
+      if (templateValues[name] !== 0) {
+        throw new Error(
+          'Cannot parse shader, no template value given for ' + name
+        );
+      }
+    }
+
+    parsed =
+      parsed.slice(0, first) +
+      templateValues[name] +
+      parsed.slice(first + close + 1);
+    first = parsed.indexOf(openToken);
+  }
+  return parsed;
 }

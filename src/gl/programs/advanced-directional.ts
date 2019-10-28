@@ -45,16 +45,16 @@ export const advancedDirectionalConfig: ProgramContextConfig = {
       name: 'u_worldInverseTranspose',
     },
     {
-      name: 'u_dirLight.direction',
+      name: 'u_dirLight[0].direction',
     },
     {
-      name: 'u_dirLight.ambient',
+      name: 'u_dirLight[0].ambient',
     },
     {
-      name: 'u_dirLight.diffuse',
+      name: 'u_dirLight[0].diffuse',
     },
     {
-      name: 'u_dirLight.specular',
+      name: 'u_dirLight[0].specular',
     },
   ],
 };

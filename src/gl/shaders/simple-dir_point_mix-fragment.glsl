@@ -27,20 +27,23 @@ varying vec3 v_normal;
 varying vec3 v_surfaceToView;
 varying vec3 v_surfaceToLight;
 
-uniform DirLight u_dirLight;
+uniform DirLight u_dirLight[${directionalLightCount}];
 float shiny = 16.0; 
 
-vec4 calcDir(vec4 colour, vec3 normal, vec3 surfaceToViewDirection);
+vec3 calcDir(vec4 colour, vec3 normal, vec3 surfaceToViewDirection, DirLight dirLight);
 vec4 calcPoint(vec4 colour, vec3 normal, vec3 surfaceToViewDirection);
 
 void main() {
   vec3 normal = normalize(v_normal);
   vec3 surfaceToViewDirection = normalize(v_surfaceToView);
 
-  vec4 dirTotal = calcDir(v_colour, normal, surfaceToViewDirection);
+  vec3 dirTotal = vec3(0.0, 0.0, 0.0);
+  for (int i = 0; i < ${directionalLightCount}; i += 1) {
+    dirTotal += calcDir(v_colour, normal, surfaceToViewDirection, u_dirLight[i]);
+  }
   vec4 pointTotal = calcPoint(v_colour, normal, surfaceToViewDirection); 
 
-  gl_FragColor = dirTotal + pointTotal;
+  gl_FragColor = vec4(dirTotal, v_colour.a) + pointTotal;
 }
 
 vec4 calcPoint(vec4 colour, vec3 normal, vec3 surfaceToViewDirection) {
@@ -58,18 +61,18 @@ vec4 calcPoint(vec4 colour, vec3 normal, vec3 surfaceToViewDirection) {
   return vec4(pointColour + specular, colour.a);
 }
 
-vec4 calcDir(vec4 colour, vec3 normal, vec3 surfaceToViewDirection) {
-  vec3 halfVector = normalize(u_dirLight.direction + surfaceToViewDirection);
+vec3 calcDir(vec4 colour, vec3 normal, vec3 surfaceToViewDirection, DirLight dirLight) {
+  vec3 halfVector = normalize(dirLight.direction + surfaceToViewDirection);
 
-  float light = dot(normal, u_dirLight.direction);
+  float light = dot(normal, dirLight.direction);
   float spec = 0.0;
   if (light > 0.0) {
     spec = pow(dot(normal, halfVector), shiny);
   }
 
-  vec3 ambient = u_dirLight.ambient * colour.rgb;
-  vec3 diffuse = light * u_dirLight.diffuse * colour.rgb;
-  vec3 specular = spec * u_dirLight.specular * colour.rgb;
+  vec3 ambient = dirLight.ambient * colour.rgb;
+  vec3 diffuse = light * dirLight.diffuse * colour.rgb;
+  vec3 specular = spec * dirLight.specular * colour.rgb;
 
-  return vec4(ambient + diffuse + specular, colour.a);
+  return ambient + diffuse + specular;
 }
