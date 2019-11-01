@@ -23,6 +23,12 @@ describe('gl program', () => {
       expect(parseShader({ world: 5 }, source)).toBe(expected);
     });
 
+    it('ignores white space in literals', () => {
+      const source = 'hello ${ world }';
+      const expected = `hello 5`;
+      expect(parseShader({ world: 5 }, source)).toBe(expected);
+    });
+
     it('substitues multiple properties', () => {
       const source = 'hello ${world} ${world}';
       const expected = `hello 5 5`;

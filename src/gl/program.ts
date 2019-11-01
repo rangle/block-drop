@@ -168,7 +168,7 @@ export function parseShader(
         'Unclosed template string starting at ' + parsed.slice(start, finish)
       );
     }
-    const name = parsed.slice(first + 2, first + close);
+    const name = parsed.slice(first + 2, first + close).trim();
     if (!templateValues[name]) {
       if (templateValues[name] !== 0) {
         throw new Error(
