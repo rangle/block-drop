@@ -1,5 +1,4 @@
 import { Dictionary, isNumber } from '@ch1/utility';
-import { shaderSources } from './shader-sources';
 
 export enum GlBindTypes {
   Attribute = 'a_',
@@ -274,8 +273,8 @@ export function getBindTypeFromConvention(name: string): GlBindTypes {
         return s;
       }
 
-      if (name.indexOf(GlBindTypes[prefix as any]) === 0) {
-        return GlBindTypes[prefix as any] as GlBindTypes;
+      if (name.indexOf((GlBindTypes as any)[prefix as any]) === 0) {
+        return (GlBindTypes as any)[prefix as any] as GlBindTypes;
       }
 
       return s;
@@ -295,7 +294,7 @@ export function getBindTypeFromConvention(name: string): GlBindTypes {
 }
 
 function loadSnippet(name: string): ProgramSnippet {
-  const snippet = shaderSources[name];
+  const snippet = require('./shader-snippets/' + name);
   if (!snippet) {
     throw new Error('loadSnippet could not find ' + name);
   }
