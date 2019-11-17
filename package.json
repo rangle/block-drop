@@ -68,6 +68,11 @@
   },
   "jest": {
     "collectCoverage": true,
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.test.json"
+      }
+    },
     "moduleFileExtensions": [
       "js",
       "json",

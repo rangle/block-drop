@@ -66,15 +66,30 @@ function getContext(canvas: HTMLCanvasElement) {
   return gl;
 }
 
-export function createDrawContext(
-  programConfigs: Dictionary<ProgramContextConfig>,
-  imageDict: ImageDictionary
-): DrawContext {
+export function createGlContext() {
   const tree = body();
   const gl =
     LOG_LEVEL === 'debug'
       ? WebGLDebugUtils.makeDebugContext(getContext(tree.canvas))
       : getContext(tree.canvas);
+
+  // set the clear colour
+  gl.clearColor(0, 0, 0, 0);
+
+  // enable cull face
+  gl.enable(gl.CULL_FACE);
+
+  // enable depth test
+  gl.enable(gl.DEPTH_TEST);
+
+  return { gl, tree };
+}
+
+export function createDrawContext(
+  programConfigs: Dictionary<ProgramContextConfig>,
+  imageDict: ImageDictionary
+): DrawContext {
+  const { gl, tree } = createGlContext();
 
   const bufferMap: BufferMap = new Map();
 
@@ -180,17 +195,6 @@ export function createDrawContext(
   });
 
   engine.on('redraw', () => (context.doRedraw = true));
-  // set the clear colour
-  gl.clearColor(0, 0, 0, 0);
-
-  // enable cull face
-  gl.enable(gl.CULL_FACE);
-
-  // enable depth test
-  gl.enable(gl.DEPTH_TEST);
-
-  // gl.enable(gl.BLEND);
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   return context;
 }
@@ -223,7 +227,7 @@ export function loadImages(imageDict: ImageDictionary) {
   );
 }
 
-function resize(canvas: HTMLCanvasElement) {
+export function resize(canvas: HTMLCanvasElement) {
   // Lookup the size the browser is displaying the canvas.
   const displayWidth = canvas.clientWidth;
   const displayHeight = canvas.clientHeight;

@@ -1,90 +1,19 @@
 import { Dictionary, isNumber } from '@ch1/utility';
-
-export enum GlBindTypes {
-  Attribute = 'a_',
-  Custom = 'c_',
-  Uniform = 'u_',
-  Varying = 'v_',
-}
-
-export enum GlTypes {
-  Custom = 'custom',
-  Int = 'int',
-  Float = 'float',
-  Mat4 = 'mat4',
-  Struct = 'struct',
-  Vec3 = 'vec3',
-  Vec4 = 'vec4',
-}
-
-export enum GlVertexFunctionSnippets {
-  Main1 = 'main.vertex.1.glsl',
-}
-
-export enum GlFragmentFunctionSnippets {
-  Main1 = 'main.fragment.1.glsl',
-  CalcDirFragment1 = 'calc-dir.fragment.1.glsl',
-}
-
-export interface VariableDeclarations {
-  length?: number;
-  name: string;
-  varType: GlTypes;
-}
-export interface Declarations extends VariableDeclarations {
-  bindType: GlBindTypes;
-}
-
-export interface GlFunctionDescription<
-  T extends GlFragmentFunctionSnippets | GlVertexFunctionSnippets
-> {
-  declarations: VariableDeclarations[];
-  name: string;
-  returnType: GlTypes;
-  snippet: T;
-}
-
-export interface ProgramCompiler {
-  (customValues?: Dictionary<string>): string;
-}
-
-export interface GlSl {
-  fragment: ProgramCompiler;
-  vertex: ProgramCompiler;
-}
-
-export interface ProgramDescription {
-  fragmentDeclarations: Declarations[];
-  fragmentFunctions: GlFunctionDescription<GlFragmentFunctionSnippets>[];
-  vertexDeclarations: Declarations[];
-  vertexFunctions: GlFunctionDescription<GlVertexFunctionSnippets>[];
-}
-
-export interface ProgramSnippet {
-  literals: Dictionary<ProgramStringPosition[]>;
-  snippet: string;
-}
-
-export interface ProgramSnippets {
-  fragment: Dictionary<ProgramSnippet>;
-  vertex: Dictionary<ProgramSnippet>;
-}
-
-export interface ShaderDict {
-  a_?: Dictionary<string>;
-  u_: Dictionary<string>;
-  v_: Dictionary<string>;
-}
-
-export interface ProgramBindingDict {
-  fragment: ShaderDict;
-  vertex: ShaderDict;
-}
-
-export interface ProgramStringPosition {
-  end: number;
-  start: number;
-}
+import {
+  GlBindTypes,
+  ProgramGeneratorDescription,
+  GlSl,
+  ProgramBindingDict,
+  Declaration,
+  ShaderDict,
+  GlFunctionDescription,
+  GlFragmentFunctionSnippets,
+  GlVertexFunctionSnippets,
+  ProgramSnippets,
+  ProgramSnippet,
+  GlTypes,
+  ProgramStringPosition,
+} from './interfaces';
 
 const vertexHeader = '';
 const fragmentHeader = 'precision mediump float;';
@@ -97,7 +26,7 @@ const glBindTypes: { [key in GlBindTypes]: string } = {
 };
 
 export function generateProgramGenerators(
-  description: ProgramDescription
+  description: ProgramGeneratorDescription
 ): GlSl {
   if (description.fragmentDeclarations.length === 0) {
     throw new Error('generateProgramGenerators requires fragmentDeclarations');
@@ -141,7 +70,7 @@ export function generateProgramGenerators(
   };
 }
 
-export function getBindings(descriptions: ProgramDescription) {
+export function getBindings(descriptions: ProgramGeneratorDescription) {
   const bindings: ProgramBindingDict = {
     fragment: {
       u_: {},
@@ -155,7 +84,7 @@ export function getBindings(descriptions: ProgramDescription) {
   };
 
   const sortDeclaration = (type: 'fragment' | 'vertex') => (
-    dec: Declarations
+    dec: Declaration
   ) => {
     (bindings as any)[type][dec.bindType][dec.name] = dec.name;
   };
@@ -171,14 +100,25 @@ function generate(
   type: 'fragment' | 'vertex',
   shaderDict: ShaderDict,
   header: string,
-  declarations: Declarations[],
+  declarations: Declaration[],
   functions: (
     | GlFunctionDescription<GlFragmentFunctionSnippets>
     | GlFunctionDescription<GlVertexFunctionSnippets>)[],
   snippets: ProgramSnippets
 ) {
   let program = header + '\n';
-  program += declarations
+  const orderedDeclarations = declarations.reduce(
+    (arr: Declaration[], next) => {
+      if (next.varType === GlTypes.StructDeclaration) {
+        arr.unshift(next);
+      } else {
+        arr.push(next);
+      }
+      return arr;
+    },
+    []
+  );
+  program += orderedDeclarations
     .map(dec => {
       return declareBindingOrStruct(
         dec.bindType,
@@ -224,7 +164,7 @@ function generate(
  * v_variable_name will be checked against varyings
  */
 export function checkRequirements(
-  description: ProgramDescription,
+  description: ProgramGeneratorDescription,
   snippets: ProgramSnippets
 ) {
   const checkShader = (sType: 'fragment' | 'vertex') => {
@@ -243,7 +183,7 @@ export function checkRequirements(
 
 export function checkRequirement(
   literalId: string,
-  declarations: Declarations[]
+  declarations: Declaration[]
 ) {
   if (literalId.indexOf('c_') === 0) {
     return;
@@ -293,8 +233,12 @@ export function getBindTypeFromConvention(name: string): GlBindTypes {
   return result as GlBindTypes;
 }
 
+function insertNewLines(str: string) {
+  return str.replace(';', ';\n');
+}
+
 function loadSnippet(name: string): ProgramSnippet {
-  const snippet = require('./shader-snippets/' + name);
+  const snippet = insertNewLines(require('./shader-snippets/' + name));
   if (!snippet) {
     throw new Error('loadSnippet could not find ' + name);
   }
@@ -306,7 +250,9 @@ function loadSnippet(name: string): ProgramSnippet {
   };
 }
 
-function loadSnippets(description: ProgramDescription): ProgramSnippets {
+function loadSnippets(
+  description: ProgramGeneratorDescription
+): ProgramSnippets {
   const fragment: Dictionary<ProgramSnippet> = {};
   const vertex: Dictionary<ProgramSnippet> = {};
   const ls = (d: Dictionary<ProgramSnippet>) => (
@@ -332,6 +278,8 @@ export function implementFunction(
   snippet: ProgramSnippet
 ) {
   const start = declareFunctionStart(fnDesc) + ' {\n';
+
+  let delta = 0;
   const compiled = Object.keys(snippet.literals).reduce((str, literalId) => {
     const bindType = getBindTypeFromConvention(literalId);
     let dict: Dictionary<string> = {};
@@ -347,14 +295,18 @@ export function implementFunction(
     }
     const strPos = snippet.literals[literalId];
     return strPos.reduce((s, el) => {
-      return s.slice(0, el.start) + dict[literalId] + s.slice(el.end + 1);
+      const start = el.start - delta;
+      const end = el.end - delta;
+      const newStr = s.slice(0, start) + dict[literalId] + s.slice(end + 1);
+      delta += Math.abs(end - start) - dict[literalId].length;
+      return newStr;
     }, str);
   }, snippet.snippet);
   const trimmed =
     compiled.split('')[compiled.length - 1] === '\n'
       ? compiled.slice(0, compiled.length - 1)
       : compiled;
-  return `${start} ${pad(trimmed)}\n}`;
+  return `${start}${pad(trimmed)}\n}`;
 }
 
 export function declareFunction(
@@ -374,7 +326,11 @@ export function declareFunctionStart(
   >
 ) {
   const vars = fnDesc.declarations.map(desc => {
-    return declareVariable(desc.varType, desc.name, desc.length);
+    if (Array.isArray(desc.length)) {
+      return declareVariable(desc.varType, desc.name);
+    } else {
+      return declareVariable(desc.varType, desc.name, desc.length);
+    }
   });
   return `${fnDesc.returnType} ${fnDesc.name}(${vars.join(', ')})`;
 }
@@ -397,23 +353,31 @@ export function declareBindingOrStruct(
   bindType: GlBindTypes,
   varType: GlTypes,
   name: string,
-  lengthOrDeclarations: Declarations[] | number = 1
+  lengthOrDeclarations: Declaration[] | number = 1
 ): string {
   const length = isNumber(lengthOrDeclarations) ? lengthOrDeclarations : 1;
-  if (varType === GlTypes.Struct) {
+  if (varType === GlTypes.StructDeclaration) {
     throwOnStruct(bindType);
     if (isNumber(lengthOrDeclarations)) {
       throw new TypeError("declare expected a struct's members");
     }
     const declarations = lengthOrDeclarations.map(dec => {
-      return pad(declareVariable(dec.varType, dec.name, dec.length) + ';');
+      if (Array.isArray(dec.length)) {
+        return pad(declareVariable(dec.varType, dec.name) + ';');
+      } else {
+        return pad(declareVariable(dec.varType, dec.name, dec.length) + ';');
+      }
     });
-    return `struct ${upperCaseFirstLetter(name)} {
+    return `struct ${structNameFromProp(name)} {
 ${declarations.join('\n')}
-}`;
-  } else if (varType === GlTypes.Custom) {
+};`;
+  } else if (varType === GlTypes.Struct) {
     throwOnStruct(bindType);
-    return `${glBindTypes[bindType]} ${declareVariable(varType, name, length)}`;
+    return `${glBindTypes[bindType]} ${declareVariable(
+      varType,
+      name,
+      length
+    )};`;
   } else {
     return `${glBindTypes[bindType]} ${declareVariable(
       varType,
@@ -423,22 +387,78 @@ ${declarations.join('\n')}
   }
 }
 
-function upperCaseFirstLetter(str: string): string {
-  return str.slice(0, 1).toUpperCase() + str.slice(1);
+/**
+ * conventions:
+ *
+ *  u_structType_yourName
+ *    -> StructType
+ *  a_structType_yourName
+ *    -> StructType
+ *  a_structType
+ *    -> StructType
+ *  structType
+ *    -> StructType
+ *  structType_yourName
+ *    -> StructType
+ *
+ */
+export function structNameFromProp(str: string): string {
+  let newStr = stripBindType(str);
+  newStr = newStr.split('_')[0];
+  return newStr.slice(0, 1).toUpperCase() + newStr.slice(1);
+}
+
+export function varNameFromProp(str: string): string {
+  const prefix = getBindType(str);
+  const parts = str.slice(prefix.length).split('_');
+  return parts.length === 1
+    ? prefix + parts[0]
+    : prefix + parts.slice(1).join('_');
+}
+
+function stripBindType(str: string): string {
+  const prefix = str.slice(0, 2);
+  let newStr = '';
+  switch (prefix) {
+    case GlBindTypes.Attribute:
+    case GlBindTypes.Custom:
+    case GlBindTypes.Uniform:
+    case GlBindTypes.Varying:
+      newStr = str.slice(2);
+      break;
+    default:
+      newStr = str;
+  }
+
+  return newStr;
+}
+
+function getBindType(str: string): string {
+  const prefix = str.slice(0, 2);
+  switch (prefix) {
+    case GlBindTypes.Attribute:
+    case GlBindTypes.Custom:
+    case GlBindTypes.Uniform:
+    case GlBindTypes.Varying:
+      return prefix;
+    default:
+      return '';
+  }
 }
 
 /**
  * declares a variable
  */
 export function declareVariable(varType: GlTypes, name: string, length = 1) {
-  if (varType === GlTypes.Struct) {
+  if (varType === GlTypes.StructDeclaration) {
     throw new TypeError(
-      'declareVariable: cannot declare a struct, use Custom instead'
+      'declareVariable: cannot declare a struct declaration, use Struct instead'
     );
   }
-  const vt = varType === GlTypes.Custom ? upperCaseFirstLetter(name) : varType;
+  const vt = varType === GlTypes.Struct ? structNameFromProp(name) : varType;
+  const finalName = varType === GlTypes.Struct ? varNameFromProp(name) : name;
   const l = length < 1 ? 1 : length;
-  return l > 1 ? `${vt} ${name}[${l}]` : `${vt} ${name}`;
+  return l > 1 ? `${vt} ${finalName}[${l}]` : `${vt} ${finalName}`;
 }
 
 export function getTemplateLiterals(

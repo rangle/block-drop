@@ -1,4 +1,8 @@
 import { Dictionary } from '@ch1/utility';
+import {
+  ProgramContextAttributeBase,
+  ProgramContextAttribute,
+} from './gl/interfaces';
 /**
  *
  *
@@ -123,14 +127,6 @@ export interface ShaderDictionary {
 export type ImageDictionary = Dictionary<HTMLImageElement>;
 export type TextureDictionary = Dictionary<WebGLTexture>;
 
-export interface ProgramContextAttributeBase {
-  name: string;
-  normalize: boolean;
-  size: number;
-  stride: number;
-  offset: number;
-}
-
 export interface ProgramContextAttributeConfig
   extends ProgramContextAttributeBase {
   type: string;
@@ -145,12 +141,6 @@ export interface ProgramContextConfig {
   uniforms: {
     name: string;
   }[];
-}
-
-export interface ProgramContextAttribute extends ProgramContextAttributeBase {
-  buffer: WebGLBuffer;
-  location: number;
-  type: number;
 }
 
 export interface ProgramContextUniform {

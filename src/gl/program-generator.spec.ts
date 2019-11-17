@@ -1,20 +1,200 @@
 import {
   declareVariable,
   getTemplateLiterals,
-  GlTypes,
   declareBindingOrStruct,
-  GlBindTypes,
   getBindTypeFromConvention,
   checkRequirement,
   implementFunction,
-  GlFragmentFunctionSnippets,
   generateProgramGenerators,
-  GlVertexFunctionSnippets,
   getBindings,
 } from './program-generator';
+import {
+  GlTypes,
+  GlFragmentFunctionSnippets,
+  GlBindTypes,
+  GlVertexFunctionSnippets,
+} from './interfaces';
+import { ProgramCompilerDescription } from './program-compiler';
+
+export const workingProgramConfigSimple: () => ProgramCompilerDescription = () => ({
+  fragmentDeclarations: [
+    {
+      bindType: GlBindTypes.Varying,
+      name: 'v_colour',
+      varType: GlTypes.Vec4,
+    },
+  ],
+  fragmentFunctions: [
+    {
+      declarations: [],
+      name: 'main',
+      returnType: GlTypes.Void,
+      snippet: GlFragmentFunctionSnippets.Main1,
+    },
+  ],
+  vertexDeclarations: [
+    {
+      bindType: GlBindTypes.Attribute,
+      glType: 'FLOAT',
+      name: 'a_position',
+      varType: GlTypes.Vec4,
+      normalize: false,
+      offset: 0,
+      size: 3,
+      stride: 0,
+    },
+    {
+      bindType: GlBindTypes.Attribute,
+      glType: 'UNSIGNED_BYTE',
+      name: 'a_colour',
+      varType: GlTypes.Vec4,
+      normalize: true,
+      offset: 0,
+      size: 3,
+      stride: 0,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
+      name: 'u_worldViewProjection',
+      varType: GlTypes.Mat4,
+    },
+    {
+      bindType: GlBindTypes.Varying,
+      name: 'v_colour',
+      varType: GlTypes.Vec4,
+    },
+  ],
+  vertexFunctions: [
+    {
+      declarations: [],
+      name: 'main',
+      returnType: GlTypes.Void,
+      snippet: GlVertexFunctionSnippets.Main1,
+    },
+  ],
+});
+
+export const workingProgramConfigComplex: () => ProgramCompilerDescription = () => ({
+  fragmentDeclarations: [
+    {
+      bindType: GlBindTypes.Varying,
+      name: 'v_colour',
+      varType: GlTypes.Vec4,
+    },
+  ],
+  fragmentFunctions: [
+    {
+      declarations: [],
+      name: 'main',
+      returnType: GlTypes.Void,
+      snippet: GlFragmentFunctionSnippets.Main1,
+    },
+  ],
+  vertexDeclarations: [
+    {
+      bindType: GlBindTypes.Attribute,
+      glType: 'FLOAT',
+      name: 'a_position',
+      varType: GlTypes.Vec4,
+      normalize: false,
+      offset: 0,
+      size: 3,
+      stride: 0,
+    },
+    {
+      bindType: GlBindTypes.Attribute,
+      glType: 'UNSIGNED_BYTE',
+      name: 'a_colour',
+      varType: GlTypes.Vec4,
+      normalize: true,
+      offset: 0,
+      size: 3,
+      stride: 0,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
+      name: 'u_worldViewProjection',
+      varType: GlTypes.Mat4,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
+      length: 3,
+      name: 'u_scalarArray',
+      varType: GlTypes.Int,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
+      length: [
+        {
+          bindType: GlBindTypes.Uniform,
+          name: 'someProp',
+          varType: GlTypes.Vec3,
+        },
+      ],
+      name: 'sampleStruct',
+      varType: GlTypes.StructDeclaration,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
+      name: 'u_sampleStruct',
+      varType: GlTypes.Struct,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
+      length: 3,
+      name: 'u_sampleStruct_sampleStructArray',
+      varType: GlTypes.Struct,
+    },
+    {
+      bindType: GlBindTypes.Varying,
+      name: 'v_colour',
+      varType: GlTypes.Vec4,
+    },
+  ],
+  vertexFunctions: [
+    {
+      declarations: [],
+      name: 'main',
+      returnType: GlTypes.Void,
+      snippet: GlVertexFunctionSnippets.Main1,
+    },
+  ],
+});
 
 describe('program generator', () => {
   describe('generateProgramGenerators', () => {
+    it('generates the expected simple fragment', () => {
+      expect(generateProgramGenerators(workingProgramConfigSimple()).fragment())
+        .toBe(`precision mediump float;
+varying vec4 v_colour;
+
+void main() {
+  gl_FragColor = v_colour;
+}`);
+    });
+
+    it('generates the expected complex vertex', () => {
+      expect(
+        generateProgramGenerators(workingProgramConfigComplex())
+          .vertex()
+          .trim()
+      ).toBe(`struct SampleStruct {
+  vec3 someProp;
+};
+attribute vec4 a_position;
+attribute vec4 a_colour;
+uniform mat4 u_worldViewProjection;
+uniform int u_scalarArray[3];
+uniform SampleStruct u_sampleStruct;
+uniform SampleStruct u_sampleStructArray[3];
+varying vec4 v_colour;
+
+void main() {
+  gl_Position = u_worldViewProjection * a_position;
+  v_colour = a_colour;
+}`);
+    });
+
     it('throws with no fragmentDeclarations', () => {
       expect(() =>
         generateProgramGenerators({
@@ -60,63 +240,6 @@ describe('program generator', () => {
         })
       ).toThrowError();
     });
-
-    it('generates the expected fragment', () => {
-      expect(
-        generateProgramGenerators({
-          fragmentDeclarations: [
-            {
-              bindType: GlBindTypes.Varying,
-              name: 'v_colour',
-              varType: GlTypes.Vec4,
-            },
-          ],
-          fragmentFunctions: [
-            {
-              declarations: [],
-              name: 'main',
-              returnType: GlTypes.Int,
-              snippet: GlFragmentFunctionSnippets.Main1,
-            },
-          ],
-          vertexDeclarations: [
-            {
-              bindType: GlBindTypes.Attribute,
-              name: 'a_position',
-              varType: GlTypes.Vec4,
-            },
-            {
-              bindType: GlBindTypes.Attribute,
-              name: 'a_colour',
-              varType: GlTypes.Vec4,
-            },
-            {
-              bindType: GlBindTypes.Uniform,
-              name: 'u_worldViewProjection',
-              varType: GlTypes.Mat4,
-            },
-            {
-              bindType: GlBindTypes.Varying,
-              name: 'v_colour',
-              varType: GlTypes.Vec4,
-            },
-          ],
-          vertexFunctions: [
-            {
-              declarations: [],
-              name: 'main',
-              returnType: GlTypes.Int,
-              snippet: GlVertexFunctionSnippets.Main1,
-            },
-          ],
-        }).fragment()
-      ).toBe(`precision mediump float;
-varying vec4 v_colour;
-
-int main() {
-   gl_FragColor = v_colour;
-}`);
-    });
   });
 
   describe('getTemplateLiterals', () => {
@@ -141,12 +264,12 @@ int main() {
 
   describe('declareVariable', () => {
     it('uppercases the first name of a Custom (struct) type', () => {
-      expect(declareVariable(GlTypes.Custom, 'foo')).toBe('Foo foo');
+      expect(declareVariable(GlTypes.Struct, 'foo')).toBe('Foo foo');
     });
 
     it('throws if struct is given (use Custom instead)', () => {
       expect(() => {
-        declareVariable(GlTypes.Struct, 'foo');
+        declareVariable(GlTypes.StructDeclaration, 'foo');
       }).toThrowError();
     });
   });
@@ -154,46 +277,132 @@ int main() {
   describe('declareBindingOrStruct', () => {
     it('can handle a simple struct', () => {
       expect(
-        declareBindingOrStruct(GlBindTypes.Uniform, GlTypes.Struct, 'foo', [
-          {
-            bindType: GlBindTypes.Uniform,
-            name: 'dummy',
-            varType: GlTypes.Int,
-          },
-        ])
+        declareBindingOrStruct(
+          GlBindTypes.Uniform,
+          GlTypes.StructDeclaration,
+          'foo',
+          [
+            {
+              bindType: GlBindTypes.Uniform,
+              name: 'dummy',
+              varType: GlTypes.Int,
+            },
+          ]
+        )
       ).toBe(`struct Foo {
   int dummy;
-}`);
+};`);
     });
     it('can handle a struct with two things', () => {
       expect(
-        declareBindingOrStruct(GlBindTypes.Uniform, GlTypes.Struct, 'foo', [
-          {
-            bindType: GlBindTypes.Uniform,
-            name: 'dummy',
-            varType: GlTypes.Int,
-          },
-          {
-            bindType: GlBindTypes.Uniform,
-            name: 'bar',
-            varType: GlTypes.Float,
-          },
-          {
-            bindType: GlBindTypes.Uniform,
-            name: 'baz',
-            varType: GlTypes.Vec3,
-          },
-        ])
+        declareBindingOrStruct(
+          GlBindTypes.Uniform,
+          GlTypes.StructDeclaration,
+          'foo',
+          [
+            {
+              bindType: GlBindTypes.Uniform,
+              name: 'dummy',
+              varType: GlTypes.Int,
+            },
+            {
+              bindType: GlBindTypes.Uniform,
+              name: 'bar',
+              varType: GlTypes.Float,
+            },
+            {
+              bindType: GlBindTypes.Uniform,
+              name: 'baz',
+              varType: GlTypes.Vec3,
+            },
+          ]
+        )
       ).toBe(`struct Foo {
   int dummy;
   float bar;
   vec3 baz;
-}`);
+};`);
     });
   });
 
   describe('implementFunction', () => {
-    it('produces the expected output', () => {});
+    it('produces the expected simple output', () => {
+      expect(
+        implementFunction(
+          {},
+          {
+            a_: {},
+            u_: {},
+            v_: {},
+          },
+          {
+            declarations: [],
+            name: 'add',
+            returnType: GlTypes.Int,
+            snippet: GlVertexFunctionSnippets.Main1,
+          },
+          {
+            literals: {},
+            snippet: 'foo',
+          }
+        )
+      ).toBe(`int add() {
+  foo
+}`);
+    });
+
+    it('produces the expected output with one uniform', () => {
+      expect(
+        implementFunction(
+          {},
+          {
+            a_: {},
+            u_: { u_bar: 'u_bar' },
+            v_: {},
+          },
+          {
+            declarations: [],
+            name: 'add',
+            returnType: GlTypes.Int,
+            snippet: GlVertexFunctionSnippets.Main1,
+          },
+          {
+            literals: { u_bar: [{ start: 4, end: 11 }] },
+            snippet: 'foo ${u_bar}',
+          }
+        )
+      ).toBe(`int add() {
+  foo u_bar
+}`);
+    });
+
+    it('produces the expected output with two uniforms', () => {
+      expect(
+        implementFunction(
+          {},
+          {
+            a_: {},
+            u_: { u_bar: 'u_bar', u_baz: 'u_baz' },
+            v_: {},
+          },
+          {
+            declarations: [],
+            name: 'add',
+            returnType: GlTypes.Int,
+            snippet: GlVertexFunctionSnippets.Main1,
+          },
+          {
+            literals: {
+              u_bar: [{ start: 4, end: 11 }],
+              u_baz: [{ start: 14, end: 21 }],
+            },
+            snippet: 'foo ${u_bar} * ${u_baz}',
+          }
+        )
+      ).toBe(`int add() {
+  foo u_bar * u_baz
+}`);
+    });
   });
 
   describe('getBindTypeFromConvention', () => {
@@ -266,7 +475,7 @@ int main() {
           { literals: {}, snippet: 'body' }
         )
       ).toBe(`float foo() {
-   body
+  body
 }`);
     });
 
@@ -287,7 +496,7 @@ int main() {
           }
         )
       ).toBe(`float foo() {
-   body my custom
+  body my custom
 }`);
     });
 
@@ -323,7 +532,7 @@ int main() {
               },
               {
                 name: 'pointDir',
-                varType: GlTypes.Custom,
+                varType: GlTypes.Struct,
               },
             ],
             name: 'foo',
@@ -333,7 +542,7 @@ int main() {
           { literals: {}, snippet: 'body' }
         )
       ).toBe(`float foo(int bar, PointDir pointDir) {
-   body
+  body
 }`);
     });
   });

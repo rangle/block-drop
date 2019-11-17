@@ -3,10 +3,10 @@ import {
   ShaderDictionary,
   ProgramContextConfig,
   ProgramContext,
-  ProgramContextAttribute,
   ProgramContextUniform,
 } from '../interfaces';
 import { Dictionary } from '@ch1/utility';
+import { ProgramContextAttribute } from './interfaces';
 
 function configAttributeTypeToRuntime(gl: WebGLRenderingContext, type: string) {
   if ((gl as any)[type] === undefined) {
