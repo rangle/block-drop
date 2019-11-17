@@ -12,9 +12,10 @@ import {
   GlTypes,
   GlFragmentFunctionSnippets,
   GlVertexFunctionSnippets,
+  GlProgram,
 } from './gl/interfaces';
 import { generateProgramGenerators } from './gl/program-generator';
-import { generateAndCreateProgram, GlProgram } from './gl/program-compiler';
+import { generateAndCreateProgram } from './gl/program-compiler';
 import { fPositions, fColours } from './gl/shape-generator';
 import {
   perspective4_4,

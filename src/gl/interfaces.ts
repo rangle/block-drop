@@ -114,3 +114,39 @@ export interface ProgramContextAttribute extends ProgramContextAttributeBase {
   location: number;
   type: number;
 }
+
+export interface ProgramAttributeDeclaration extends Declaration {
+  glType: string;
+  normalize: boolean;
+  offset: number;
+  size: number;
+  stride: number;
+}
+
+export interface ProgramAttribute extends ProgramAttributeDeclaration {
+  location: number;
+  type: number;
+}
+
+export interface ProgramCompilerDescription
+  extends ProgramGeneratorDescription {
+  fragmentDeclarations: (Declaration | ProgramAttributeDeclaration)[];
+  vertexDeclarations: (Declaration | ProgramAttributeDeclaration)[];
+}
+
+export interface AttributeSetter {
+  (buffer: WebGLBuffer): void;
+}
+
+// export type UniformSetter = ((uniformData: number) => void) | ((uniformData: number[]) => void) | ((uniformData: Matrix3_1) => void) | ((uniformData: Matrix4_1) => void) | ((uniformData: Matrix4_4) => void) | ((uniformData: Float32Array) => void) | ((uniformData: Uint8Array) => void);
+
+export interface UniformSetter {
+  (uniformData: any): void;
+}
+
+export interface GlProgram {
+  attributes: Dictionary<AttributeSetter>;
+  description: ProgramCompilerDescription;
+  program: WebGLProgram;
+  uniforms: Dictionary<UniformSetter>;
+}

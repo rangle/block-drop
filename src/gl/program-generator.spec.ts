@@ -13,8 +13,8 @@ import {
   GlFragmentFunctionSnippets,
   GlBindTypes,
   GlVertexFunctionSnippets,
+  ProgramCompilerDescription,
 } from './interfaces';
-import { ProgramCompilerDescription } from './program-compiler';
 
 export const workingProgramConfigSimple: () => ProgramCompilerDescription = () => ({
   fragmentDeclarations: [
