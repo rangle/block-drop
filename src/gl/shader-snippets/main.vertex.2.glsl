@@ -1,5 +1,5 @@
 // standard position maths
 gl_Position = ${u_worldViewProjection} * ${a_position};
 
-// simple colour varying
-${v_colour} = ${a_colour};
+// simple texture varying
+${v_texcoord} = ${a_texcoord};

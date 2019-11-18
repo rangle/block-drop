@@ -229,8 +229,18 @@ export class UniformBuilder {
           this.gl.uniformMatrix4fv(location, false, data);
         };
         break;
+      case GlTypes.Sampler2d:
+        locations[name] = (data: number) => {
+          this.gl.uniform1i(location, data);
+        };
+        break;
       case GlTypes.StructDeclaration:
         throw new TypeError(scalarWarning);
+      case GlTypes.Vec2:
+        locations[name] = (data: [number, number]) => {
+          this.gl.uniform2fv(location, data);
+        };
+        break;
       case GlTypes.Vec3:
         locations[name] = (data: Matrix3_1) => {
           this.gl.uniform3fv(location, data);

@@ -29,10 +29,19 @@ import { simpleDirPointMixConfig } from './gl/programs/simple-dir_point_mix';
 import { Dictionary } from '@ch1/utility';
 const blueTexturePath = require('../assets/blue-2048-2048.png');
 const greenTexturePath = require('../assets/green-2048-2048.png');
-// const redTexturePath = require('../assets/red-2048-2048.png');
+const redTexturePath = require('../assets/red-2048-2048.png');
 const blueDashTexturePath = require('../assets/dash-blue-2048-2048.png');
 const greenDashTexturePath = require('../assets/dash-green-2048-2048.png');
 const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
+
+export const texturePaths = {
+  blue: blueTexturePath,
+  green: greenTexturePath,
+  red: redTexturePath,
+  blueDash: blueDashTexturePath,
+  greenDash: greenDashTexturePath,
+  redDash: redDashTexturePath,
+};
 
 export const shaderDict: ShaderDictionary = {
   'advanced-directional-simple-texture': {

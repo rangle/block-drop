@@ -1,83 +1,29 @@
-import { ImageDictionary, Matrix4_4 } from './interfaces';
+import { ImageDictionary } from './interfaces';
 import {
   loadImages,
   createDrawContext,
   createGlContext,
 } from './initialization';
-import { programConfigDict, dataDict, meshConfigs } from './configuration';
-import { drawLoop } from './render';
 import {
-  GlBindTypes,
-  GlTypes,
-  GlFragmentFunctionSnippets,
-  GlVertexFunctionSnippets,
-} from './gl/interfaces';
+  programConfigDict,
+  dataDict,
+  meshConfigs,
+  texturePaths,
+} from './configuration';
+import { drawLoop } from './render';
 import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
 import { MeshProvider } from './gl/mesh-provider';
 import { ProgramProvider } from './gl/program-provider';
 import { Renderer } from './gl/renderer';
+import { vertexOnly, textureOnly } from './program-configs';
+import { MaterialProvider } from './gl/material-provider';
+import { ShapeLite } from './gl/interfaces';
 
-const programConfig = {
-  fragmentDeclarations: [
-    {
-      bindType: GlBindTypes.Varying,
-      name: 'v_colour',
-      varType: GlTypes.Vec4,
-    },
-  ],
-  fragmentFunctions: [
-    {
-      declarations: [],
-      name: 'main',
-      returnType: GlTypes.Void,
-      snippet: GlFragmentFunctionSnippets.Main1,
-    },
-  ],
-  vertexDeclarations: [
-    {
-      bindType: GlBindTypes.Attribute,
-      glType: 'FLOAT',
-      name: 'a_position',
-      varType: GlTypes.Vec4,
-      normalize: false,
-      offset: 0,
-      size: 3,
-      stride: 0,
-    },
-    {
-      bindType: GlBindTypes.Attribute,
-      glType: 'UNSIGNED_BYTE',
-      name: 'a_colour',
-      varType: GlTypes.Vec4,
-      normalize: true,
-      offset: 0,
-      size: 3,
-      stride: 0,
-    },
-    {
-      bindType: GlBindTypes.Uniform,
-      name: 'u_worldViewProjection',
-      varType: GlTypes.Mat4,
-    },
-    {
-      bindType: GlBindTypes.Varying,
-      name: 'v_colour',
-      varType: GlTypes.Vec4,
-    },
-  ],
-  vertexFunctions: [
-    {
-      declarations: [],
-      name: 'main',
-      returnType: GlTypes.Void,
-      snippet: GlVertexFunctionSnippets.Main1,
-    },
-  ],
-};
-
-const shapes: { local: Matrix4_4; mesh: string }[] = [
+const shapes: ShapeLite[] = [
   {
+    material: 'redDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
+    programPreference: 'textureOnly',
     mesh: 'redCube',
   },
   {
@@ -94,25 +40,49 @@ main2();
 
 function main2() {
   const { gl } = createGlContext();
+  const imageDict: ImageDictionary = {};
 
   const programProvider = ProgramProvider.create(gl);
-  programProvider.register('default', programConfig);
+  programProvider.register('default', vertexOnly);
   programProvider.initialize('default');
+  programProvider.register('textureOnly', textureOnly);
+  programProvider.initialize('textureOnly');
 
   const meshProvider = MeshProvider.create(gl, dataDict);
   shapes.forEach(shape => {
     meshProvider.register(shape.mesh, meshConfigs[shape.mesh], true);
   });
 
-  const renderer = Renderer.create(gl, programProvider, meshProvider);
-  renderer.shapes = shapes;
-  (window as any).RENDERER = renderer;
+  loadImages(imageDict).then(() => {
+    const materialProvider = MaterialProvider.create(gl, imageDict);
+    shapes.forEach(shape => {
+      if (shape.material) {
+        const tp = (texturePaths as any)[shape.material] as string;
+        materialProvider.register(shape.material, {
+          diffusePath: '',
+          normalPath: '',
+          specularPath: '',
+          texturePath: tp,
+          shiny: 35,
+        });
+      }
+    }, true);
 
-  const render = () => {
-    renderer.render();
-    requestAnimationFrame(render);
-  };
-  render();
+    const renderer = Renderer.create(
+      gl,
+      programProvider,
+      meshProvider,
+      materialProvider
+    );
+    renderer.shapes = shapes;
+    (window as any).RENDERER = renderer;
+
+    const render = () => {
+      renderer.render();
+      requestAnimationFrame(render);
+    };
+    render();
+  });
 }
 
 export function main() {
@@ -138,8 +108,3 @@ function error(message: string) {
 
   return err;
 }
-
-// Returns a random integer from 0 to range - 1.
-// function randomInt(range: number) {
-//   return Math.floor(Math.random() * range);
-// }

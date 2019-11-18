@@ -10,6 +10,9 @@ import {
   ObjectPool,
   Matrix4_4,
   Matrix3_1,
+  MaterialColourConfig,
+  MaterialTextureConfig,
+  MaterialTexture,
 } from '../interfaces';
 import { resize } from '../initialization';
 import {
@@ -21,9 +24,13 @@ import {
 } from '../matrix/matrix-4';
 import { createMatrix3_1 } from '../matrix/matrix-3';
 import { createObjectPool } from '../utility/object-pool';
+import { isMaterialTexture } from './shape';
 
 type MeshProvider = Provider<Mesh, MeshConfig>;
-// type MaterialProvider = Provider<MaterialColour | MaterialTexture, MaterialColourConfig | MaterialTextureConfig>;
+type MaterialProvider = Provider<
+  MaterialColourConfig | MaterialTexture,
+  MaterialColourConfig | MaterialTextureConfig
+>;
 type ProgramProvider = Provider<GlProgram, ProgramCompilerDescription>;
 
 export class Renderer {
@@ -31,10 +38,18 @@ export class Renderer {
     gl: WebGLRenderingContext,
     programProvider: ProgramProvider,
     meshProvider: MeshProvider,
+    materialProvider: MaterialProvider,
     op_3_1: ObjectPool<Matrix3_1> = createObjectPool(createMatrix3_1),
     op4_4: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
   ) {
-    return new Renderer(gl, programProvider, meshProvider, op_3_1, op4_4);
+    return new Renderer(
+      gl,
+      programProvider,
+      meshProvider,
+      materialProvider,
+      op_3_1,
+      op4_4
+    );
   }
 
   shapes: ShapeLite[] = [];
@@ -47,6 +62,7 @@ export class Renderer {
     private gl: WebGLRenderingContext,
     private programProvider: ProgramProvider,
     private meshProvider: MeshProvider,
+    private materialProvider: MaterialProvider,
     private op_3_1: ObjectPool<Matrix3_1> = createObjectPool(createMatrix3_1),
     private op4_4: ObjectPool<Matrix4_4> = createObjectPool(createMatrix4_4)
   ) {}
@@ -91,7 +107,10 @@ export class Renderer {
     );
 
     this.shapes.forEach(shape => {
-      const program = this.programProvider.get('default');
+      const programName = shape.programPreference
+        ? shape.programPreference
+        : 'default';
+      const program = this.programProvider.get(programName);
       this.gl.useProgram(program.program);
 
       const mesh = this.meshProvider.get(shape.mesh);
@@ -99,6 +118,19 @@ export class Renderer {
 
       if (program.attributes.a_colour && mesh.a_colour) {
         program.attributes.a_colour(mesh.a_colour);
+      }
+
+      if (program.attributes.a_texcoord && mesh.a_texcoord) {
+        program.attributes.a_texcoord(mesh.a_texcoord);
+      }
+
+      if (shape.material) {
+        const material = this.materialProvider.get(shape.material);
+        if (isMaterialTexture(material)) {
+          this.gl.activeTexture(this.gl.TEXTURE0);
+          this.gl.bindTexture(this.gl.TEXTURE_2D, material.texture);
+          program.uniforms.u_texture(0);
+        }
       }
 
       const worldViewProjection = multiply4_4(

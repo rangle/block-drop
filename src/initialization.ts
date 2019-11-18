@@ -10,7 +10,6 @@ import {
   DrawContext,
   SceneConfig,
 } from './interfaces';
-import { createProgramFromConfig } from './gl/program';
 import { createObjectPool } from './utility/object-pool';
 import { create1 } from './engine/engine';
 import { createLanguageState } from './languages';
@@ -22,7 +21,7 @@ import {
   blockConfig,
   dataDict,
   sceneConfig,
-  shaderDict,
+  texturePaths,
 } from './configuration';
 declare const LOG_LEVEL: string;
 const WebGLDebugUtils: any =
@@ -104,8 +103,8 @@ export function createDrawContext(
 
   const programDict = objReduce(
     programConfigs,
-    (dict: Dictionary<ProgramContext>, config, key) => {
-      dict[key] = createProgramFromConfig(shaderDict, gl, config);
+    (dict: Dictionary<ProgramContext>) => {
+      // dict[key] = createProgramFromConfig(shaderDict, gl, config);
       return dict;
     },
     {}
@@ -202,24 +201,21 @@ export function createDrawContext(
 export function loadImages(imageDict: ImageDictionary) {
   return Promise.all(
     objReduce(
-      blockConfig,
-      (promises: Promise<void>[], config) => {
-        if (config.shape && (config.shape.material as any).texturePath) {
-          const texturePath = (config.shape.material as any).texturePath;
-          promises.push(
-            new Promise((resolve, reject) => {
-              const image = new Image();
-              image.src = texturePath;
-              image.addEventListener('load', () => {
-                imageDict[texturePath] = image;
-                resolve();
-              });
-              image.addEventListener('error', (e: any) => {
-                reject(e);
-              });
-            })
-          );
-        }
+      texturePaths,
+      (promises: Promise<void>[], texturePath) => {
+        promises.push(
+          new Promise((resolve, reject) => {
+            const image = new Image();
+            image.src = texturePath;
+            image.addEventListener('load', () => {
+              imageDict[texturePath] = image;
+              resolve();
+            });
+            image.addEventListener('error', (e: any) => {
+              reject(e);
+            });
+          })
+        );
         return promises;
       },
       []

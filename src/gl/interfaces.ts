@@ -20,7 +20,9 @@ export enum GlTypes {
   Int = 'int',
   Float = 'float',
   Mat4 = 'mat4',
+  Sampler2d = 'sampler2D',
   StructDeclaration = 'struct',
+  Vec2 = 'vec2',
   Vec3 = 'vec3',
   Vec4 = 'vec4',
   Void = 'void',
@@ -28,10 +30,12 @@ export enum GlTypes {
 
 export enum GlVertexFunctionSnippets {
   Main1 = 'main.vertex.1.glsl',
+  Main2 = 'main.vertex.2.glsl',
 }
 
 export enum GlFragmentFunctionSnippets {
   Main1 = 'main.fragment.1.glsl',
+  Main2 = 'main.fragment.2.glsl',
   CalcDirFragment1 = 'calc-dir.fragment.1.glsl',
 }
 
@@ -176,5 +180,7 @@ export interface Provider<Type, TConfig> {
 
 export interface ShapeLite {
   local: Matrix4_4;
+  material?: string;
   mesh: string;
+  programPreference?: string;
 }
