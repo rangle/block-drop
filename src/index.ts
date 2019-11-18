@@ -1,29 +1,21 @@
-import { ImageDictionary } from './interfaces';
+import { ImageDictionary, Matrix4_4 } from './interfaces';
 import {
   loadImages,
   createDrawContext,
   createGlContext,
-  resize,
 } from './initialization';
-import { programConfigDict } from './configuration';
+import { programConfigDict, dataDict, meshConfigs } from './configuration';
 import { drawLoop } from './render';
 import {
   GlBindTypes,
   GlTypes,
   GlFragmentFunctionSnippets,
   GlVertexFunctionSnippets,
-  GlProgram,
 } from './gl/interfaces';
-import { generateProgramGenerators } from './gl/program-generator';
-import { generateAndCreateProgram } from './gl/program-compiler';
-import { fPositions, fColours } from './gl/shape-generator';
-import {
-  perspective4_4,
-  lookAt4_4,
-  inverse4_4,
-  multiply4_4,
-  identity4_4,
-} from './matrix/matrix-4';
+import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
+import { MeshProvider } from './gl/mesh-provider';
+import { ProgramProvider } from './gl/program-provider';
+import { Renderer } from './gl/renderer';
 
 const programConfig = {
   fragmentDeclarations: [
@@ -83,80 +75,45 @@ const programConfig = {
   ],
 };
 
+const shapes: { local: Matrix4_4; mesh: string }[] = [
+  {
+    local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
+    mesh: 'redCube',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, 100), 20, 20, 20),
+    mesh: 'greenCube',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 200, 0, 100), 20, 20, 20),
+    mesh: 'blueCube',
+  },
+];
+
 main2();
 
 function main2() {
   const { gl } = createGlContext();
-  const glsl = generateProgramGenerators(programConfig);
-  const program = generateAndCreateProgram(gl, programConfig, glsl);
-  const fPosition = gl.createBuffer();
-  if (!fPosition) {
-    throw new Error('unable to allocate gl buffer');
-  }
-  const fPos = fPositions();
-  const vertexCount = fPos.length / 3;
-  gl.bindBuffer(gl.ARRAY_BUFFER, fPosition);
-  gl.bufferData(gl.ARRAY_BUFFER, fPos, gl.STATIC_DRAW);
-  const fColour = gl.createBuffer();
-  if (!fColour) {
-    throw new Error('unable to allocate gl buffer');
-  }
-  gl.bindBuffer(gl.ARRAY_BUFFER, fColour);
-  gl.bufferData(gl.ARRAY_BUFFER, fColours(), gl.STATIC_DRAW);
 
-  render2({
-    gl,
-    program,
-    fColour,
-    fPosition,
-    vertexCount,
+  const programProvider = ProgramProvider.create(gl);
+  programProvider.register('default', programConfig);
+  programProvider.initialize('default');
+
+  const meshProvider = MeshProvider.create(gl, dataDict);
+  shapes.forEach(shape => {
+    meshProvider.register(shape.mesh, meshConfigs[shape.mesh], true);
   });
+
+  const renderer = Renderer.create(gl, programProvider, meshProvider);
+  renderer.shapes = shapes;
+  (window as any).RENDERER = renderer;
+
+  const render = () => {
+    renderer.render();
+    requestAnimationFrame(render);
+  };
+  render();
 }
-
-function render2(stuff: {
-  gl: WebGLRenderingContext;
-  program: GlProgram;
-  fColour: WebGLBuffer;
-  fPosition: WebGLBuffer;
-  vertexCount: number;
-}) {
-  const { gl, program, fPosition, fColour, vertexCount } = stuff;
-  const canvas = gl.canvas as HTMLCanvasElement;
-
-  resize(gl.canvas as HTMLCanvasElement);
-
-  // clip space to pixel space
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-  // Clear the canvas
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  gl.useProgram(program.program);
-
-  const projectionMatrix = perspective4_4(
-    (90 * Math.PI) / 180,
-    canvas.clientWidth / canvas.clientHeight,
-    1,
-    5000
-  );
-
-  const cameraMatrix = lookAt4_4([1, 1, -500], [0, 0, 0], [0, 1, 0]);
-
-  const viewMatrix = inverse4_4(cameraMatrix);
-  const viewProjectionMatrix = multiply4_4(projectionMatrix, viewMatrix);
-  const worldViewProjection = multiply4_4(viewProjectionMatrix, identity4_4());
-
-  program.attributes.a_position(fPosition);
-  program.attributes.a_colour(fColour);
-  program.uniforms.u_worldViewProjection(worldViewProjection);
-
-  const primitiveType = gl.TRIANGLES;
-
-  gl.drawArrays(primitiveType, 0, vertexCount);
-  requestAnimationFrame(() => render2(stuff));
-}
-
-// main();
 
 export function main() {
   try {

@@ -20,15 +20,13 @@ export function generateAndCreateProgram(
   generator: GlSl,
   customValues: Dictionary<string> = {}
 ): GlProgram {
-  const vertexShader = createShader(
-    gl,
-    gl.VERTEX_SHADER,
-    generator.vertex(customValues)
-  );
+  const vertexShaderRaw = generator.vertex(customValues);
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderRaw);
+  const fragmentShaderRaw = generator.fragment(customValues);
   const fragmentShader = createShader(
     gl,
     gl.FRAGMENT_SHADER,
-    generator.fragment(customValues)
+    fragmentShaderRaw
   );
   const program = createProgram(gl, vertexShader, fragmentShader);
   const attributesMeta = createAttributes(gl, program, description);
@@ -58,8 +56,10 @@ export function generateAndCreateProgram(
   return {
     attributes,
     description,
+    fragmentShader: fragmentShaderRaw,
     program,
     uniforms,
+    vertexShader: vertexShaderRaw,
   };
 }
 

@@ -167,7 +167,9 @@ export function shapeConfigToShape(
 //   return false;
 // }
 
-function isMaterialTextureConfig(thing: any): thing is MaterialTextureConfig {
+export function isMaterialTextureConfig(
+  thing: any
+): thing is MaterialTextureConfig {
   if (thing.texturePath) {
     return true;
   }

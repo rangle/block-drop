@@ -78,11 +78,12 @@ export interface ShapeDirectionalLight {
   diffuse: Matrix3_1;
   specular: Matrix3_1;
 }
+
 export interface Shape {
   context: ProgramContext;
-  lightDirectional: ShapeDirectionalLight[];
   material: MaterialColour | MaterialTexture;
   mesh: Mesh;
+  lightDirectional: ShapeDirectionalLight[];
 }
 
 export interface Mesh {

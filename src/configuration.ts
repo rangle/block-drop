@@ -104,6 +104,13 @@ const redCubeMesh: MeshConfig = {
   verticiesDataName: 'cubePositions',
 };
 
+export const meshConfigs: Dictionary<MeshConfig> = {
+  blackCube: blackCubeMesh,
+  blueCube: blueCubeMesh,
+  greenCube: greenCubeMesh,
+  redCube: redCubeMesh,
+};
+
 const blackShinyMaterialColour: MaterialColourConfig = {
   ambient: [0.01, 0.01, 0.01],
   diffuse: [0.01, 0.01, 0.01],

@@ -1,4 +1,5 @@
 import { Dictionary } from '@ch1/utility';
+import { Matrix4_4 } from '../interfaces';
 
 /**
  *
@@ -149,4 +150,31 @@ export interface GlProgram {
   description: ProgramCompilerDescription;
   program: WebGLProgram;
   uniforms: Dictionary<UniformSetter>;
+  fragmentShader: string;
+  vertexShader: string;
+}
+
+/**
+ *
+ *
+ * Provider
+ *
+ */
+
+export interface Provider<Type, TConfig> {
+  debug(): string;
+  get(name: string): Type;
+  register(name: string, config: TConfig, eager?: boolean): void;
+}
+
+/**
+ *
+ *
+ * Renderer
+ *
+ */
+
+export interface ShapeLite {
+  local: Matrix4_4;
+  mesh: string;
 }
