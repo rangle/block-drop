@@ -19,6 +19,7 @@ import {
   vertexOnly,
   textureOnly,
   directionalColour,
+  directionalTexture,
 } from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
 import { ShapeLite, Lights } from './gl/interfaces';
@@ -46,7 +47,7 @@ const shapes: ShapeLite[] = [
     material: 'redDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
     mesh: 'redCube',
-    programPreference: 'textureOnly',
+    programPreference: 'directionalTexture',
   },
   {
     local: scale4_4(translate4_4(identity4_4(), 0, 0, 100), 20, 20, 20),
@@ -113,14 +114,21 @@ function main2() {
   programProvider.register('textureOnly', textureOnly);
   programProvider.initialize('textureOnly');
 
-  const directionalColourConfig = { c_directionalLightCount: '1' };
-  const directionalColourConfigKey = JSON.stringify(directionalColourConfig);
+  const directionalConfig = { c_directionalLightCount: '1' };
+  const directionalConfigKey = JSON.stringify(directionalConfig);
 
   programProvider.register('directionalColour', directionalColour);
   programProvider.initialize(
     'directionalColour',
-    directionalColourConfig,
-    directionalColourConfigKey
+    directionalConfig,
+    directionalConfigKey
+  );
+
+  programProvider.register('directionalTexture', directionalTexture);
+  programProvider.initialize(
+    'directionalTexture',
+    directionalConfig,
+    directionalConfigKey
   );
 
   const meshProvider = MeshProvider.create(gl, dataDict);
@@ -170,7 +178,7 @@ function main2() {
     // renderer.camera.lookAt([0, 1, 1]);
 
     const render = () => {
-      renderer.render(directionalColourConfigKey);
+      renderer.render(directionalConfigKey);
       requestAnimationFrame(render);
     };
     render();

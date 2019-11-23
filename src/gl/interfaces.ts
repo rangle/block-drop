@@ -37,14 +37,17 @@ export enum GlVertexFunctionSnippets {
   Main1 = 'main.vertex.1.glsl',
   Main2 = 'main.vertex.2.glsl',
   Main3 = 'main.vertex.3.glsl',
+  Main4 = 'main.vertex.4.glsl',
   MoveColour = 'move-colour.vertex.1.glsl',
   MoveDirLight = 'move-dir-light.vertex.1.glsl',
+  MoveTexture = 'move-texture.vertex.1.glsl',
 }
 
 export enum GlFragmentFunctionSnippets {
   Main1 = 'main.fragment.1.glsl',
   Main2 = 'main.fragment.2.glsl',
   Main3 = 'main.fragment.3.glsl',
+  Main4 = 'main.fragment.4.glsl',
   CalcDirFragment1 = 'calc-dir.fragment.1.glsl',
 }
 

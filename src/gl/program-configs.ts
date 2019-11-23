@@ -20,7 +20,7 @@ const vNormal = {
   varType: GlTypes.Vec3,
 };
 
-const vSurfaceToview = {
+const vSurfaceToView = {
   bindType: GlBindTypes.Varying,
   name: 'v_surfaceToView',
   varType: GlTypes.Vec3,
@@ -128,6 +128,13 @@ const moveColour = {
   snippet: GlVertexFunctionSnippets.MoveColour,
 };
 
+const moveTexture = {
+  declarations: [],
+  name: 'moveTexture',
+  returnType: GlTypes.Void,
+  snippet: GlVertexFunctionSnippets.MoveTexture,
+};
+
 const moveDirLight = {
   declarations: [
     {
@@ -196,7 +203,7 @@ export const directionalColour: ProgramCompilerDescription = {
     uDirLights,
     vColour,
     vNormal,
-    vSurfaceToview,
+    vSurfaceToView,
   ],
   fragmentFunctions: [calcDir, createMain(GlFragmentFunctionSnippets.Main3)],
   vertexDeclarations: [
@@ -209,11 +216,40 @@ export const directionalColour: ProgramCompilerDescription = {
     uWorldViewProjection,
     vColour,
     vNormal,
-    vSurfaceToview,
+    vSurfaceToView,
   ],
   vertexFunctions: [
     createMain(GlVertexFunctionSnippets.Main3),
     moveColour,
+    moveDirLight,
+  ],
+};
+
+export const directionalTexture: ProgramCompilerDescription = {
+  fragmentDeclarations: [
+    DirLight,
+    uDirLights,
+    uTexture,
+    vNormal,
+    vTexCoord,
+    vSurfaceToView,
+  ],
+  fragmentFunctions: [calcDir, createMain(GlFragmentFunctionSnippets.Main4)],
+  vertexDeclarations: [
+    aPosition,
+    aTexCoord,
+    aNormal,
+    uViewWorldPosition,
+    uWorld,
+    uWorldInverseTranspose,
+    uWorldViewProjection,
+    vNormal,
+    vTexCoord,
+    vSurfaceToView,
+  ],
+  vertexFunctions: [
+    createMain(GlVertexFunctionSnippets.Main4),
+    moveTexture,
     moveDirLight,
   ],
 };
