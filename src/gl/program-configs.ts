@@ -77,6 +77,12 @@ const DirLight: Declaration = {
   varType: GlTypes.StructDeclaration,
 };
 
+const uShiny = {
+  bindType: GlBindTypes.Uniform,
+  name: 'u_shiny',
+  varType: GlTypes.Float,
+};
+
 const uDirLights = {
   bindType: GlBindTypes.Uniform,
   length: 1,
@@ -201,6 +207,7 @@ export const directionalColour: ProgramCompilerDescription = {
   fragmentDeclarations: [
     DirLight,
     uDirLights,
+    uShiny,
     vColour,
     vNormal,
     vSurfaceToView,
@@ -229,6 +236,7 @@ export const directionalTexture: ProgramCompilerDescription = {
   fragmentDeclarations: [
     DirLight,
     uDirLights,
+    uShiny,
     uTexture,
     vNormal,
     vTexCoord,

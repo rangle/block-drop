@@ -166,10 +166,16 @@ export class Renderer {
   private getAndSetMaterialFromShape(shape: ShapeLite, program: GlProgram) {
     if (shape.material) {
       const material = this.materialProvider.get(shape.material);
+      if (!material) {
+        return;
+      }
       if (isMaterialTexture(material)) {
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, material.texture);
         program.uniforms.u_texture(0);
+      }
+      if (program.uniforms.u_shiny) {
+        program.uniforms.u_shiny(material.shiny);
       }
     }
   }
