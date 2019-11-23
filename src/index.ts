@@ -25,6 +25,23 @@ import { ShapeLite, Lights } from './gl/interfaces';
 import { KeyboardControl } from './keyboard-control';
 
 const shapes: ShapeLite[] = [
+  // front row
+  {
+    material: 'redDash',
+    local: scale4_4(translate4_4(identity4_4(), -200, 0, -100), 20, 20, 20),
+    mesh: 'redCube',
+    programPreference: 'textureOnly',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, -100), 20, 20, 20),
+    mesh: 'greenCube',
+    programPreference: 'directionalColour',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 200, 0, -100), 20, 20, 20),
+    mesh: 'blueCube',
+  },
+  // middle row
   {
     material: 'redDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
@@ -40,6 +57,23 @@ const shapes: ShapeLite[] = [
     local: scale4_4(translate4_4(identity4_4(), 200, 0, 100), 20, 20, 20),
     mesh: 'blueCube',
   },
+  // back row
+  {
+    material: 'redDash',
+    local: scale4_4(translate4_4(identity4_4(), -200, 0, 200), 20, 20, 20),
+    mesh: 'redCube',
+    programPreference: 'textureOnly',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, 200), 20, 20, 20),
+    mesh: 'greenCube',
+    programPreference: 'directionalColour',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 200, 0, 200), 20, 20, 20),
+    mesh: 'blueCube',
+  },
+  // draw axis
   {
     local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 1),
     mesh: 'blackCube',
