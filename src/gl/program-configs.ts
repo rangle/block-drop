@@ -112,7 +112,7 @@ const uTexture = {
 
 const aTexCoord = {
   bindType: GlBindTypes.Attribute,
-  glType: 'UNSIGNED_BYTE',
+  glType: 'FLOAT',
   name: 'a_texcoord',
   varType: GlTypes.Vec2,
   normalize: false,
