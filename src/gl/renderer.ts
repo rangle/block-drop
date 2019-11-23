@@ -19,7 +19,6 @@ import {
 import { resize } from '../initialization';
 import {
   perspective4_4,
-  lookAt4_4,
   inverse4_4,
   multiply4_4,
   createMatrix4_4,
@@ -28,6 +27,7 @@ import {
 import { createMatrix3_1, normalize3_1 } from '../matrix/matrix-3';
 import { createObjectPool } from '../utility/object-pool';
 import { isMaterialTexture, isMaterialColour } from './shape';
+import { Camera } from './camera';
 
 type MeshProvider = Provider<Mesh, MeshConfig>;
 type MaterialProvider = Provider<
@@ -64,11 +64,8 @@ export class Renderer {
     spots: [],
   };
 
+  camera = Camera.create(this.op_3_1, this.op4_4);
   shapes: ShapeLite[] = [];
-
-  cameraPosition: Matrix3_1 = [1, 300, -200];
-  cameraUpDirection: Matrix3_1 = [0, 1, 0];
-  cameraTarget: Matrix3_1 = [0, 1, 0];
 
   private lastMesh: Mesh | null = null;
   private lastProgram: GlProgram | null = null;
@@ -106,15 +103,7 @@ export class Renderer {
       this.op4_4
     );
 
-    const cameraMatrix = lookAt4_4(
-      this.cameraPosition,
-      this.cameraTarget,
-      this.cameraUpDirection,
-      this.op4_4,
-      this.op_3_1
-    );
-
-    const viewMatrix = inverse4_4(cameraMatrix, this.op4_4);
+    const viewMatrix = inverse4_4(this.camera.get(), this.op4_4);
     const viewProjectionMatrix = multiply4_4(
       projectionMatrix,
       viewMatrix,
@@ -125,7 +114,6 @@ export class Renderer {
       this.onEachShape(shape, configKey, viewProjectionMatrix);
     });
 
-    this.op4_4.free(cameraMatrix);
     this.op4_4.free(viewMatrix);
     this.op4_4.free(viewProjectionMatrix);
   }
@@ -203,7 +191,7 @@ export class Renderer {
       this.op4_4.free(worldInverseTransposeMatrix);
     }
     if (program.uniforms.u_viewWorldPosition) {
-      program.uniforms.u_viewWorldPosition(this.cameraPosition);
+      program.uniforms.u_viewWorldPosition(this.camera.getPosition());
     }
   }
 

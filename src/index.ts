@@ -22,6 +22,7 @@ import {
 } from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
 import { ShapeLite, Lights } from './gl/interfaces';
+import { KeyboardControl } from './keyboard-control';
 
 const shapes: ShapeLite[] = [
   {
@@ -38,6 +39,18 @@ const shapes: ShapeLite[] = [
   {
     local: scale4_4(translate4_4(identity4_4(), 200, 0, 100), 20, 20, 20),
     mesh: 'blueCube',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 1),
+    mesh: 'blackCube',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 10000, 1),
+    mesh: 'blackCube',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 1, 10000),
+    mesh: 'blackCube',
   },
 ];
 
@@ -105,6 +118,22 @@ function main2() {
     renderer.lights = lights;
     renderer.shapes = shapes;
     (window as any).RENDERER = renderer;
+
+    const controlStep = 10;
+    const controls = KeyboardControl.create({
+      '119': () => renderer.camera.forward(controlStep),
+      '97': () => renderer.camera.strafeLeft(controlStep),
+      '115': () => renderer.camera.backward(controlStep),
+      '100': () => renderer.camera.strafeRight(controlStep),
+      '113': () => renderer.camera.up(controlStep),
+      '101': () => renderer.camera.down(controlStep),
+      '91': () => renderer.camera.rotateLeft(Math.PI / 16),
+      '93': () => renderer.camera.rotateRight(Math.PI / 16),
+    });
+
+    controls.bind();
+
+    // renderer.camera.lookAt([0, 1, 1]);
 
     const render = () => {
       renderer.render(directionalColourConfigKey);
