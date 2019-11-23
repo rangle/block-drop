@@ -1,4 +1,4 @@
-import { Dictionary, isNumber } from '@ch1/utility';
+import { Dictionary, isNumber, objReduce } from '@ch1/utility';
 import {
   GlBindTypes,
   ProgramGeneratorDescription,
@@ -13,6 +13,7 @@ import {
   ProgramSnippet,
   GlTypes,
   ProgramStringPosition,
+  ProgramLiteralPosition,
 } from './interfaces';
 
 const vertexHeader = '';
@@ -86,7 +87,12 @@ export function getBindings(descriptions: ProgramGeneratorDescription) {
   const sortDeclaration = (type: 'fragment' | 'vertex') => (
     dec: Declaration
   ) => {
-    (bindings as any)[type][dec.bindType][dec.name] = dec.name;
+    if (dec.varType === GlTypes.Struct) {
+      const name = varNameFromProp(dec.name);
+      (bindings as any)[type][dec.bindType][name] = name;
+    } else {
+      (bindings as any)[type][dec.bindType][dec.name] = dec.name;
+    }
   };
 
   descriptions.fragmentDeclarations.forEach(sortDeclaration('fragment'));
@@ -195,8 +201,14 @@ export function checkRequirement(
       return;
     }
     if (declaration.bindType === bindType) {
-      if (literalId === declaration.name) {
-        found = true;
+      if (declaration.varType === GlTypes.Struct) {
+        if (literalId === varNameFromProp(declaration.name)) {
+          found = true;
+        }
+      } else {
+        if (literalId === declaration.name) {
+          found = true;
+        }
       }
     }
   });
@@ -243,11 +255,44 @@ function loadSnippet(name: string): ProgramSnippet {
     throw new Error('loadSnippet could not find ' + name);
   }
   const literals = getTemplateLiterals(snippet);
+  const sortedLiterals = sortLiterals(literals);
 
   return {
     literals,
     snippet,
+    sortedLiterals,
   };
+}
+
+function sortLiterals(
+  literals: Dictionary<ProgramStringPosition[]>
+): ProgramLiteralPosition[] {
+  return objReduce(
+    literals,
+    (
+      arr: ProgramLiteralPosition[],
+      positions: ProgramStringPosition[],
+      name: string
+    ) => {
+      return arr.concat(
+        positions.map(position => {
+          return {
+            name,
+            position,
+          };
+        })
+      );
+    },
+    []
+  ).sort((a, b) => {
+    if (a.position.start < b.position.start) {
+      return -1;
+    }
+    if (a.position.start > b.position.start) {
+      return 1;
+    }
+    return 0;
+  });
 }
 
 function loadSnippets(
@@ -280,7 +325,8 @@ export function implementFunction(
   const start = declareFunctionStart(fnDesc) + ' {\n';
 
   let delta = 0;
-  const compiled = Object.keys(snippet.literals).reduce((str, literalId) => {
+  const compiled = snippet.sortedLiterals.reduce((str, { name, position }) => {
+    const literalId = name;
     const bindType = getBindTypeFromConvention(literalId);
     let dict: Dictionary<string> = {};
     if (bindType === GlBindTypes.Custom) {
@@ -292,15 +338,20 @@ export function implementFunction(
       dict = c;
     } else {
       dict = shaderDict[bindType] as Dictionary<string>;
+      if (!dict[literalId]) {
+        throw new RangeError(
+          'glsl function ' + fnDesc.name + ' requires a value for ' + literalId
+        );
+      }
     }
-    const strPos = snippet.literals[literalId];
-    return strPos.reduce((s, el) => {
-      const start = el.start - delta;
-      const end = el.end - delta;
-      const newStr = s.slice(0, start) + dict[literalId] + s.slice(end + 1);
-      delta += Math.abs(end - start) - dict[literalId].length;
-      return newStr;
-    }, str);
+
+    const start = position.start - delta;
+    const end = position.end - delta;
+    const newStr = str.slice(0, start) + dict[literalId] + str.slice(end + 1);
+
+    delta += Math.abs(end - start) - dict[literalId].length;
+
+    return newStr;
   }, snippet.snippet);
   const trimmed =
     compiled.split('')[compiled.length - 1] === '\n'
@@ -353,9 +404,9 @@ export function declareBindingOrStruct(
   bindType: GlBindTypes,
   varType: GlTypes,
   name: string,
-  lengthOrDeclarations: Declaration[] | number = 1
+  lengthOrDeclarations: Declaration[] | number = 0
 ): string {
-  const length = isNumber(lengthOrDeclarations) ? lengthOrDeclarations : 1;
+  const length = isNumber(lengthOrDeclarations) ? lengthOrDeclarations : 0;
   if (varType === GlTypes.StructDeclaration) {
     throwOnStruct(bindType);
     if (isNumber(lengthOrDeclarations)) {
@@ -449,7 +500,7 @@ function getBindType(str: string): string {
 /**
  * declares a variable
  */
-export function declareVariable(varType: GlTypes, name: string, length = 1) {
+export function declareVariable(varType: GlTypes, name: string, length = 0) {
   if (varType === GlTypes.StructDeclaration) {
     throw new TypeError(
       'declareVariable: cannot declare a struct declaration, use Struct instead'
@@ -457,8 +508,8 @@ export function declareVariable(varType: GlTypes, name: string, length = 1) {
   }
   const vt = varType === GlTypes.Struct ? structNameFromProp(name) : varType;
   const finalName = varType === GlTypes.Struct ? varNameFromProp(name) : name;
-  const l = length < 1 ? 1 : length;
-  return l > 1 ? `${vt} ${finalName}[${l}]` : `${vt} ${finalName}`;
+  const l = length < 0 ? 0 : length;
+  return l >= 1 ? `${vt} ${finalName}[${l}]` : `${vt} ${finalName}`;
 }
 
 export function getTemplateLiterals(

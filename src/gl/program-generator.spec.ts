@@ -136,6 +136,12 @@ export const workingProgramConfigComplex: () => ProgramCompilerDescription = () 
     },
     {
       bindType: GlBindTypes.Uniform,
+      length: 1,
+      name: 'u_floatArray',
+      varType: GlTypes.Float,
+    },
+    {
+      bindType: GlBindTypes.Uniform,
       name: 'u_sampleStruct',
       varType: GlTypes.Struct,
     },
@@ -185,6 +191,7 @@ attribute vec4 a_position;
 attribute vec4 a_colour;
 uniform mat4 u_worldViewProjection;
 uniform int u_scalarArray[3];
+uniform float u_floatArray[1];
 uniform SampleStruct u_sampleStruct;
 uniform SampleStruct u_sampleStructArray[3];
 varying vec4 v_colour;
@@ -344,6 +351,7 @@ void main() {
           {
             literals: {},
             snippet: 'foo',
+            sortedLiterals: [],
           }
         )
       ).toBe(`int add() {
@@ -369,6 +377,9 @@ void main() {
           {
             literals: { u_bar: [{ start: 4, end: 11 }] },
             snippet: 'foo ${u_bar}',
+            sortedLiterals: [
+              { name: 'u_bar', position: { start: 4, end: 11 } },
+            ],
           }
         )
       ).toBe(`int add() {
@@ -397,6 +408,10 @@ void main() {
               u_baz: [{ start: 14, end: 21 }],
             },
             snippet: 'foo ${u_bar} * ${u_baz}',
+            sortedLiterals: [
+              { name: 'u_bar', position: { start: 4, end: 11 } },
+              { name: 'u_baz', position: { start: 14, end: 21 } },
+            ],
           }
         )
       ).toBe(`int add() {
@@ -472,7 +487,7 @@ void main() {
             returnType: GlTypes.Float,
             snippet: GlFragmentFunctionSnippets.Main1,
           },
-          { literals: {}, snippet: 'body' }
+          { literals: {}, snippet: 'body', sortedLiterals: [] }
         )
       ).toBe(`float foo() {
   body
@@ -493,6 +508,9 @@ void main() {
           {
             literals: { c_var: [{ end: 14, start: 5 }] },
             snippet: 'body ${c_var}',
+            sortedLiterals: [
+              { name: 'c_var', position: { end: 14, start: 5 } },
+            ],
           }
         )
       ).toBe(`float foo() {
@@ -514,6 +532,9 @@ void main() {
           {
             literals: { c_var: [{ end: 13, start: 6 }] },
             snippet: 'body ${c_var}',
+            sortedLiterals: [
+              { name: 'c_var', position: { end: 13, start: 6 } },
+            ],
           }
         )
       ).toThrowError();
@@ -539,7 +560,7 @@ void main() {
             returnType: GlTypes.Float,
             snippet: GlFragmentFunctionSnippets.Main1,
           },
-          { literals: {}, snippet: 'body' }
+          { literals: {}, snippet: 'body', sortedLiterals: [] }
         )
       ).toBe(`float foo(int bar, PointDir pointDir) {
   body

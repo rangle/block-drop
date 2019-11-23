@@ -3,6 +3,7 @@ import {
   GlProgram,
   ProgramCompilerDescription,
   ShapeLite,
+  Lights,
 } from './interfaces';
 import {
   MeshConfig,
@@ -13,6 +14,7 @@ import {
   MaterialColourConfig,
   MaterialTextureConfig,
   MaterialTexture,
+  ShapeDirectionalLight,
 } from '../interfaces';
 import { resize } from '../initialization';
 import {
@@ -21,10 +23,11 @@ import {
   inverse4_4,
   multiply4_4,
   createMatrix4_4,
+  transpose4_4,
 } from '../matrix/matrix-4';
-import { createMatrix3_1 } from '../matrix/matrix-3';
+import { createMatrix3_1, normalize3_1 } from '../matrix/matrix-3';
 import { createObjectPool } from '../utility/object-pool';
-import { isMaterialTexture } from './shape';
+import { isMaterialTexture, isMaterialColour } from './shape';
 
 type MeshProvider = Provider<Mesh, MeshConfig>;
 type MaterialProvider = Provider<
@@ -32,6 +35,9 @@ type MaterialProvider = Provider<
   MaterialColourConfig | MaterialTextureConfig
 >;
 type ProgramProvider = Provider<GlProgram, ProgramCompilerDescription>;
+
+const defaultProgram = 'vertexOnly';
+const programsWithNoConfigs = ['textureOnly', defaultProgram];
 
 export class Renderer {
   static create(
@@ -52,11 +58,20 @@ export class Renderer {
     );
   }
 
+  lights: Lights = {
+    directionals: [],
+    points: [],
+    spots: [],
+  };
+
   shapes: ShapeLite[] = [];
 
   cameraPosition: Matrix3_1 = [1, 300, -200];
   cameraUpDirection: Matrix3_1 = [0, 1, 0];
   cameraTarget: Matrix3_1 = [0, 1, 0];
+
+  private lastMesh: Mesh | null = null;
+  private lastProgram: GlProgram | null = null;
 
   constructor(
     private gl: WebGLRenderingContext,
@@ -73,7 +88,7 @@ export class Renderer {
     };
   }
 
-  render() {
+  render(configKey: string) {
     const canvas = this.gl.canvas as HTMLCanvasElement;
     resize(canvas);
 
@@ -107,15 +122,43 @@ export class Renderer {
     );
 
     this.shapes.forEach(shape => {
-      const programName = shape.programPreference
-        ? shape.programPreference
-        : 'default';
-      const program = this.programProvider.get(programName);
+      this.onEachShape(shape, configKey, viewProjectionMatrix);
+    });
+
+    this.op4_4.free(cameraMatrix);
+    this.op4_4.free(viewMatrix);
+    this.op4_4.free(viewProjectionMatrix);
+  }
+
+  private getAndUseProgramFromShape(shape: ShapeLite, configKey: string) {
+    const programName = shape.programPreference
+      ? shape.programPreference
+      : defaultProgram;
+    const program =
+      programsWithNoConfigs.indexOf(programName) >= 0
+        ? this.programProvider.get(programName)
+        : this.programProvider.get(programName, configKey);
+    if (!program) {
+      throw new RangeError('renderer: no default program registered');
+    }
+
+    if (this.lastProgram !== program) {
+      this.lastProgram = program;
       this.gl.useProgram(program.program);
+    }
 
-      const mesh = this.meshProvider.get(shape.mesh);
+    return this.lastProgram;
+  }
+
+  private getAndSetMeshFromShape(shape: ShapeLite, program: GlProgram) {
+    const mesh = this.meshProvider.get(shape.mesh);
+    if (!mesh) {
+      throw new RangeError('renderer: no mesh registered named ' + shape.mesh);
+    }
+
+    if (this.lastMesh !== mesh) {
+      this.lastMesh = mesh;
       program.attributes.a_position(mesh.a_position);
-
       if (program.attributes.a_colour && mesh.a_colour) {
         program.attributes.a_colour(mesh.a_colour);
       }
@@ -124,29 +167,101 @@ export class Renderer {
         program.attributes.a_texcoord(mesh.a_texcoord);
       }
 
-      if (shape.material) {
-        const material = this.materialProvider.get(shape.material);
-        if (isMaterialTexture(material)) {
-          this.gl.activeTexture(this.gl.TEXTURE0);
-          this.gl.bindTexture(this.gl.TEXTURE_2D, material.texture);
-          program.uniforms.u_texture(0);
-        }
+      if (program.attributes.a_normal && mesh.a_normal) {
+        program.attributes.a_normal(mesh.a_normal);
       }
+    }
 
-      const worldViewProjection = multiply4_4(
-        viewProjectionMatrix,
-        shape.local
+    return this.lastMesh;
+  }
+
+  private getAndSetMaterialFromShape(shape: ShapeLite, program: GlProgram) {
+    if (shape.material) {
+      const material = this.materialProvider.get(shape.material);
+      if (isMaterialTexture(material)) {
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, material.texture);
+        program.uniforms.u_texture(0);
+      }
+    }
+  }
+
+  private setLightRequirements(shape: ShapeLite, program: GlProgram) {
+    if (shape.material) {
+      const material = this.materialProvider.get(shape.material);
+      if (isMaterialColour(material)) {
+      }
+    }
+    if (program.uniforms.u_worldInverseTranspose) {
+      const worldInverseMatrix = inverse4_4(shape.local, this.op4_4);
+      const worldInverseTransposeMatrix = transpose4_4(
+        worldInverseMatrix,
+        this.op4_4
       );
-      program.uniforms.u_worldViewProjection(worldViewProjection);
+      program.uniforms.u_worldInverseTranspose(worldInverseTransposeMatrix);
+      this.op4_4.free(worldInverseTransposeMatrix);
+      this.op4_4.free(worldInverseTransposeMatrix);
+    }
+    if (program.uniforms.u_viewWorldPosition) {
+      program.uniforms.u_viewWorldPosition(this.cameraPosition);
+    }
+  }
 
-      const primitiveType = this.gl.TRIANGLES;
-      this.gl.drawArrays(primitiveType, 0, mesh.vertexCount);
+  private setDirectionalLight(
+    light: ShapeDirectionalLight,
+    program: GlProgram,
+    i: number
+  ) {
+    const prefix = `u_dirLights[${i}].`;
 
-      this.op4_4.free(worldViewProjection);
+    const direction = `${prefix}direction`;
+    if (program.uniforms[direction]) {
+      program.uniforms[direction](normalize3_1(light.direction, this.op_3_1));
+    }
+
+    const ambient = `${prefix}ambient`;
+    if (program.uniforms[ambient]) {
+      program.uniforms[ambient](light.ambient);
+    }
+
+    const diffuse = `${prefix}diffuse`;
+    if (program.uniforms[diffuse]) {
+      program.uniforms[diffuse](light.diffuse);
+    }
+
+    const specular = `${prefix}specular`;
+    if (program.uniforms[specular]) {
+      program.uniforms[specular](light.specular);
+    }
+  }
+
+  private getAndSetLights(shape: ShapeLite, program: GlProgram) {
+    this.setLightRequirements(shape, program);
+
+    this.lights.directionals.forEach((light, i) => {
+      this.setDirectionalLight(light, program, i);
     });
+  }
 
-    this.op4_4.free(cameraMatrix);
-    this.op4_4.free(viewMatrix);
-    this.op4_4.free(viewProjectionMatrix);
+  private onEachShape(
+    shape: ShapeLite,
+    configKey: string,
+    viewProjectionMatrix: Matrix4_4
+  ) {
+    const program = this.getAndUseProgramFromShape(shape, configKey);
+
+    const mesh = this.getAndSetMeshFromShape(shape, program);
+
+    this.getAndSetMaterialFromShape(shape, program);
+
+    this.getAndSetLights(shape, program);
+
+    const worldViewProjection = multiply4_4(viewProjectionMatrix, shape.local);
+    program.uniforms.u_worldViewProjection(worldViewProjection);
+
+    const primitiveType = this.gl.TRIANGLES;
+    this.gl.drawArrays(primitiveType, 0, mesh.vertexCount);
+
+    this.op4_4.free(worldViewProjection);
   }
 }

@@ -62,12 +62,7 @@ export class ProgramProvider
       }
       return this.programs[programName].programs[key];
     }
-    throw new RangeError(
-      'ProgramProvider: no program reigstered for ' +
-        programName +
-        ' with key: ' +
-        key
-    );
+    return null;
   }
 
   initialize(

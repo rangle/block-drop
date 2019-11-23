@@ -1,3 +1,12 @@
+/**
+@param colour vec4
+@param normal vec3
+@param surfaceToViewDirection vec3
+@param dirLight DirLight
+@param shiny float
+
+@return vec3
+*/
 vec3 halfVector = normalize(dirLight.direction + surfaceToViewDirection);
 
 float light = dot(normal, dirLight.direction);

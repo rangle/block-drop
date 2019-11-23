@@ -163,8 +163,8 @@ export class UniformBuilder {
     }
 
     if (isNumber(dec.length)) {
-      const length = dec.length <= 0 ? 1 : dec.length;
-      if (length > 1) {
+      const length = dec.length <= 0 ? 0 : dec.length;
+      if (length > 0) {
         this.createArray(locations, dec, length, name);
       } else {
         this.createScalar(locations, dec, name);
@@ -260,13 +260,13 @@ export class UniformBuilder {
     const structName = structNameFromProp(dec.name);
     const varName = varNameFromProp(dec.name);
     if (isNumber(dec.length)) {
-      const length = dec.length <= 1 ? 1 : dec.length;
-      if (length === 1) {
+      const length = dec.length <= 0 ? 0 : dec.length;
+      if (length === 0) {
         this.structMembers[structName].forEach(member => {
           this.createScalar(locations, member, varName + '.' + member.name);
         });
       } else {
-        for (let i = 0; i <= length; i += 1) {
+        for (let i = 0; i < length; i += 1) {
           this.structMembers[structName].forEach(member => {
             this.createScalar(
               locations,
@@ -337,7 +337,7 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string) {
 
   const log = gl.getShaderInfoLog(shader);
   gl.deleteShader(shader);
-  throw new Error('shader error: ' + log);
+  throw new Error('shader error: ' + log + '\n\n' + source);
 }
 
 function createProgram(

@@ -15,20 +15,25 @@ import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
 import { MeshProvider } from './gl/mesh-provider';
 import { ProgramProvider } from './gl/program-provider';
 import { Renderer } from './gl/renderer';
-import { vertexOnly, textureOnly } from './program-configs';
+import {
+  vertexOnly,
+  textureOnly,
+  directionalColour,
+} from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
-import { ShapeLite } from './gl/interfaces';
+import { ShapeLite, Lights } from './gl/interfaces';
 
 const shapes: ShapeLite[] = [
   {
     material: 'redDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
-    programPreference: 'textureOnly',
     mesh: 'redCube',
+    programPreference: 'textureOnly',
   },
   {
     local: scale4_4(translate4_4(identity4_4(), 0, 0, 100), 20, 20, 20),
     mesh: 'greenCube',
+    programPreference: 'directionalColour',
   },
   {
     local: scale4_4(translate4_4(identity4_4(), 200, 0, 100), 20, 20, 20),
@@ -36,17 +41,40 @@ const shapes: ShapeLite[] = [
   },
 ];
 
+const lights: Lights = {
+  directionals: [
+    {
+      direction: [200, 300, 500],
+      ambient: [0.2, 0.2, 0.2],
+      diffuse: [0.3, 0.3, 0.3],
+      specular: [0.2, 0.2, 0.2],
+    },
+  ],
+  points: [],
+  spots: [],
+};
+
 main2();
 
 function main2() {
   const { gl } = createGlContext();
   const imageDict: ImageDictionary = {};
-
   const programProvider = ProgramProvider.create(gl);
-  programProvider.register('default', vertexOnly);
-  programProvider.initialize('default');
+  programProvider.register('vertexOnly', vertexOnly);
+  programProvider.initialize('vertexOnly');
+
   programProvider.register('textureOnly', textureOnly);
   programProvider.initialize('textureOnly');
+
+  const directionalColourConfig = { c_directionalLightCount: '1' };
+  const directionalColourConfigKey = JSON.stringify(directionalColourConfig);
+
+  programProvider.register('directionalColour', directionalColour);
+  programProvider.initialize(
+    'directionalColour',
+    directionalColourConfig,
+    directionalColourConfigKey
+  );
 
   const meshProvider = MeshProvider.create(gl, dataDict);
   shapes.forEach(shape => {
@@ -74,11 +102,12 @@ function main2() {
       meshProvider,
       materialProvider
     );
+    renderer.lights = lights;
     renderer.shapes = shapes;
     (window as any).RENDERER = renderer;
 
     const render = () => {
-      renderer.render();
+      renderer.render(directionalColourConfigKey);
       requestAnimationFrame(render);
     };
     render();

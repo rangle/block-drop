@@ -1,5 +1,10 @@
 import { Dictionary } from '@ch1/utility';
-import { Matrix4_4 } from '../interfaces';
+import {
+  Matrix4_4,
+  ShapeDirectionalLight,
+  ShapePointLight,
+  ShapeSpotLight,
+} from '../interfaces';
 
 /**
  *
@@ -31,11 +36,15 @@ export enum GlTypes {
 export enum GlVertexFunctionSnippets {
   Main1 = 'main.vertex.1.glsl',
   Main2 = 'main.vertex.2.glsl',
+  Main3 = 'main.vertex.3.glsl',
+  MoveColour = 'move-colour.vertex.1.glsl',
+  MoveDirLight = 'move-dir-light.vertex.1.glsl',
 }
 
 export enum GlFragmentFunctionSnippets {
   Main1 = 'main.fragment.1.glsl',
   Main2 = 'main.fragment.2.glsl',
+  Main3 = 'main.fragment.3.glsl',
   CalcDirFragment1 = 'calc-dir.fragment.1.glsl',
 }
 
@@ -73,9 +82,15 @@ export interface ProgramGeneratorDescription {
   vertexFunctions: GlFunctionDescription<GlVertexFunctionSnippets>[];
 }
 
+export interface ProgramLiteralPosition {
+  name: string;
+  position: ProgramStringPosition;
+}
+
 export interface ProgramSnippet {
   literals: Dictionary<ProgramStringPosition[]>;
   snippet: string;
+  sortedLiterals: ProgramLiteralPosition[];
 }
 
 export interface ProgramSnippets {
@@ -167,7 +182,7 @@ export interface GlProgram {
 
 export interface Provider<Type, TConfig> {
   debug(): string;
-  get(name: string): Type;
+  get(name: string, key?: string): null | Type;
   register(name: string, config: TConfig, eager?: boolean): void;
 }
 
@@ -183,4 +198,10 @@ export interface ShapeLite {
   material?: string;
   mesh: string;
   programPreference?: string;
+}
+
+export interface Lights {
+  directionals: ShapeDirectionalLight[];
+  points: ShapePointLight[];
+  spots: ShapeSpotLight[];
 }

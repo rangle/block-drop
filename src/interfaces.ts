@@ -79,6 +79,20 @@ export interface ShapeDirectionalLight {
   specular: Matrix3_1;
 }
 
+export interface ShapePointLight {
+  position: Matrix3_1;
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+}
+
+export interface ShapeSpotLight {
+  position: Matrix3_1;
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+}
+
 export interface Shape {
   context: ProgramContext;
   material: MaterialColour | MaterialTexture;
