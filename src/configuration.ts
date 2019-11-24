@@ -47,7 +47,7 @@ const greenShinyMaterialColour: MaterialColourConfig = {
   ambient: [0.2, 0.2, 0.2],
   diffuse: [0.2, 0.9, 0.2],
   specular: [0.7, 1, 0],
-  shiny: 32,
+  shiny: 0.002,
 };
 
 export const materialColours = {

@@ -16,8 +16,6 @@ const vColour = {
 
 const vNormal = createVec3v('v_normal');
 
-const vSurfaceToView = createVec3v('v_surfaceToView');
-
 const aPosition = {
   bindType: GlBindTypes.Attribute,
   glType: 'FLOAT',
@@ -56,6 +54,8 @@ const vTexCoord = {
   name: 'v_texcoord',
   varType: GlTypes.Vec2,
 };
+
+const vFragCoord = createVec3v('v_fragcoord');
 
 const DirLight: Declaration = {
   bindType: GlBindTypes.Uniform,
@@ -159,20 +159,7 @@ const moveTexture = {
 };
 
 const moveDirLight = {
-  declarations: [
-    {
-      ...uWorldInverseTranspose,
-      name: 'worldInverseTranspose',
-    },
-    {
-      ...uViewWorldPosition,
-      name: 'viewWorldPosition',
-    },
-    {
-      name: 'surfaceWorldPosition',
-      varType: GlTypes.Vec3,
-    },
-  ],
+  declarations: [],
   name: 'moveDirLight',
   returnType: GlTypes.Void,
   snippet: GlVertexFunctionSnippets.MoveDirLight,
@@ -189,7 +176,7 @@ const calcDir: GlFunctionDescription<GlFragmentFunctionSnippets> = {
       varType: GlTypes.Vec3,
     },
     {
-      name: 'surfaceToViewDirection',
+      name: 'viewDirection',
       varType: GlTypes.Vec3,
     },
     {
@@ -227,22 +214,22 @@ export const directionalColour: ProgramCompilerDescription = {
     MaterialColour,
     uMaterialColour,
     uDirLights,
+    uViewWorldPosition,
     vColour,
+    vFragCoord,
     vNormal,
-    vSurfaceToView,
   ],
   fragmentFunctions: [calcDir, createMain(GlFragmentFunctionSnippets.Main3)],
   vertexDeclarations: [
     aPosition,
     aColour,
     aNormal,
-    uViewWorldPosition,
     uWorld,
     uWorldInverseTranspose,
     uWorldViewProjection,
     vColour,
+    vFragCoord,
     vNormal,
-    vSurfaceToView,
   ],
   vertexFunctions: [
     createMain(GlVertexFunctionSnippets.Main3),
@@ -258,22 +245,22 @@ export const directionalTexture: ProgramCompilerDescription = {
     MaterialColour,
     MaterialTexture,
     uMaterialTexture,
+    uViewWorldPosition,
+    vFragCoord,
     vNormal,
     vTexCoord,
-    vSurfaceToView,
   ],
   fragmentFunctions: [calcDir, createMain(GlFragmentFunctionSnippets.Main4)],
   vertexDeclarations: [
     aPosition,
     aTexCoord,
     aNormal,
-    uViewWorldPosition,
     uWorld,
     uWorldInverseTranspose,
     uWorldViewProjection,
+    vFragCoord,
     vNormal,
     vTexCoord,
-    vSurfaceToView,
   ],
   vertexFunctions: [
     createMain(GlVertexFunctionSnippets.Main4),

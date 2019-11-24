@@ -1,21 +1,20 @@
 /**
 @param material MaterialColour
 @param normal vec3
-@param surfaceToViewDirection vec3
+@param viewDirection vec3
 @param dirLight DirLight
 
 @return vec3
 */
-vec3 halfVector = normalize(dirLight.direction + surfaceToViewDirection);
+vec3 lightDir = normalize(-dirLight.direction);
 
-float light = dot(normal, dirLight.direction);
-float spec = 0.0;
-if (light > 0.0) {
-  spec = pow(dot(normal, halfVector), material.shiny);
-}
+float diff = max(dot(normal, dirLight.direction), 0.0);
+
+vec3 reflectDir = reflect(-dirLight.direction, normal);
+float spec = pow(max(dot(viewDirection, reflectDir), 0.0), material.shiny);
 
 vec3 ambient = dirLight.ambient * material.ambient.rgb;
-vec3 diffuse = light * dirLight.diffuse * material.diffuse.rgb;
-vec3 specular = spec * dirLight.specular * material.specular.rgb;
+vec3 diffuse = dirLight.diffuse * diff * material.diffuse.rgb;
+vec3 specular = dirLight.specular * spec * material.specular.rgb;
 
-return ambient + diffuse + specular;
+return (ambient + diffuse + specular);
