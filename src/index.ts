@@ -28,88 +28,88 @@ const shapes: ShapeLite[] = [
   //draw floor
   {
     material: 'blackColour',
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 10000),
+    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 10000),
     mesh: 'blackCube',
     programPreference: 'directionalPointColour',
   },
   // front row
   {
     material: 'redTextureDash',
-    local: scale4_4(translate4_4(identity4_4(), -200, 20, -100), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), -200, 20, -100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'textureOnly',
   },
   {
     material: 'greenColour',
-    local: scale4_4(translate4_4(identity4_4(), 0, 20, -100), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 0, 20, -100), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalPointColour',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 200, 20, -100), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 200, 20, -100), 20, 20, 20),
     mesh: 'blueCube',
   },
   // middle row
   {
     material: 'redTexture',
-    local: scale4_4(translate4_4(identity4_4(), -200, 20, 100), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), -200, 20, 100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'directionalTexture',
   },
   {
     material: 'blueTexture',
-    local: scale4_4(translate4_4(identity4_4(), -35, 70, 50), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), -35, 70, 50), 20, 20, 20),
     mesh: 'blueCube',
     programPreference: 'directionalPointTexture',
   },
   {
     material: 'greenColour',
-    local: scale4_4(translate4_4(identity4_4(), 35, 70, 25), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 35, 70, 25), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalPointColour',
   },
   {
     material: 'greenColour',
-    local: scale4_4(translate4_4(identity4_4(), 0, 20, 100), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 0, 20, 100), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalPointColour',
   },
   {
     material: 'blueTexture',
-    local: scale4_4(translate4_4(identity4_4(), 200, 20, 100), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 200, 20, 100), 20, 20, 20),
     mesh: 'blueCube',
     programPreference: 'directionalPointSpotTexture',
   },
   // back row
   {
     material: 'redTexture',
-    local: scale4_4(translate4_4(identity4_4(), -200, 20, 200), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), -200, 20, 200), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'directionalTexture',
   },
   {
     material: 'greenColour',
-    local: scale4_4(translate4_4(identity4_4(), 0, 20, 200), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 0, 20, 200), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalPointSpotColour',
   },
   {
     material: 'blueTexture',
-    local: scale4_4(translate4_4(identity4_4(), 200, 20, 200), 20, 20, 20),
+    world: scale4_4(translate4_4(identity4_4(), 200, 20, 200), 20, 20, 20),
     mesh: 'blueCube',
     programPreference: 'directionalPointSpotTexture',
   },
   // draw axis
   {
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 1),
+    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 1),
     mesh: 'blackCube',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 10000, 1),
+    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 10000, 1),
     mesh: 'blackCube',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 1, 10000),
+    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 1, 10000),
     mesh: 'blackCube',
   },
 ];
@@ -249,14 +249,14 @@ function main() {
 
     const controlStep = 10;
     const controls = KeyboardControl.create({
-      '119': () => renderer.camera.forward(controlStep),
-      '97': () => renderer.camera.strafeLeft(controlStep),
-      '115': () => renderer.camera.backward(controlStep),
-      '100': () => renderer.camera.strafeRight(controlStep),
-      '113': () => renderer.camera.up(controlStep),
-      '101': () => renderer.camera.down(controlStep),
-      '91': () => renderer.camera.rotateLeft(Math.PI / 16),
-      '93': () => renderer.camera.rotateRight(Math.PI / 16),
+      '119': () => renderer.camera.trs.forward(controlStep),
+      '97': () => renderer.camera.trs.strafeLeft(controlStep),
+      '115': () => renderer.camera.trs.backward(controlStep),
+      '100': () => renderer.camera.trs.strafeRight(controlStep),
+      '113': () => renderer.camera.trs.up(controlStep),
+      '101': () => renderer.camera.trs.down(controlStep),
+      '91': () => renderer.camera.trs.rotateLeft(Math.PI / 16),
+      '93': () => renderer.camera.trs.rotateRight(Math.PI / 16),
     });
 
     controls.bind();

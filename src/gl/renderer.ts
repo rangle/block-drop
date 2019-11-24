@@ -201,10 +201,10 @@ export class Renderer {
       }
     }
     if (program.uniforms.u_world) {
-      program.uniforms.u_world(shape.local);
+      program.uniforms.u_world(shape.world);
     }
     if (program.uniforms.u_worldInverseTranspose) {
-      const worldInverseMatrix = inverse4_4(shape.local, this.op4_4);
+      const worldInverseMatrix = inverse4_4(shape.world, this.op4_4);
       const worldInverseTransposeMatrix = transpose4_4(
         worldInverseMatrix,
         this.op4_4
@@ -370,7 +370,7 @@ export class Renderer {
 
     const worldViewProjection = multiply4_4(
       viewProjectionMatrix,
-      shape.local,
+      shape.world,
       this.op4_4
     );
     program.uniforms.u_worldViewProjection(worldViewProjection);

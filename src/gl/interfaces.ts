@@ -199,7 +199,7 @@ export interface Provider<Type, TConfig> {
  */
 
 export interface ShapeLite {
-  local: Matrix4_4;
+  world: Matrix4_4;
   material?: string;
   mesh: string;
   programPreference?: string;
