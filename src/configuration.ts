@@ -34,13 +34,24 @@ const blueDashTexturePath = require('../assets/dash-blue-2048-2048.png');
 const greenDashTexturePath = require('../assets/dash-green-2048-2048.png');
 const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
 
-export const texturePaths = {
-  blue: blueTexturePath,
-  green: greenTexturePath,
-  red: redTexturePath,
-  blueDash: blueDashTexturePath,
-  greenDash: greenDashTexturePath,
-  redDash: redDashTexturePath,
+export const materialTexturePaths = {
+  blueTexture: blueTexturePath,
+  greenTexture: greenTexturePath,
+  redTexture: redTexturePath,
+  blueTextureDash: blueDashTexturePath,
+  greenTextureDash: greenDashTexturePath,
+  redTextureDash: redDashTexturePath,
+};
+
+const greenShinyMaterialColour: MaterialColourConfig = {
+  ambient: [0.2, 0.2, 0.2],
+  diffuse: [0.2, 0.9, 0.2],
+  specular: [0.7, 1, 0],
+  shiny: 32,
+};
+
+export const materialColours = {
+  greenColour: greenShinyMaterialColour,
 };
 
 export const shaderDict: ShaderDictionary = {

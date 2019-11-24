@@ -172,10 +172,27 @@ export class Renderer {
       if (isMaterialTexture(material)) {
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, material.texture);
-        program.uniforms.u_texture(0);
+        program.uniforms['u_material.texture'](0);
+        program.uniforms['u_material.diffuse'](0);
+        program.uniforms['u_material.specular'](0);
+      } else {
+        program.uniforms['u_material.ambient'](material.ambient);
+        program.uniforms['u_material.diffuse'](material.diffuse);
+        program.uniforms['u_material.specular'](material.specular);
       }
-      if (program.uniforms.u_shiny) {
-        program.uniforms.u_shiny(material.shiny);
+      program.uniforms['u_material.shiny'](material.shiny);
+    } else {
+      if (program.uniforms['u_material.ambient']) {
+        program.uniforms['u_material.ambient']([1, 1, 1]);
+      }
+      if (program.uniforms['u_material.diffuse']) {
+        program.uniforms['u_material.diffuse']([1, 1, 1]);
+      }
+      if (program.uniforms['u_material.specular']) {
+        program.uniforms['u_material.specular']([1, 1, 1]);
+      }
+      if (program.uniforms['u_material.shiny']) {
+        program.uniforms['u_material.shiny'](32);
       }
     }
   }

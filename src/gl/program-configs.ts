@@ -14,17 +14,9 @@ const vColour = {
   varType: GlTypes.Vec4,
 };
 
-const vNormal = {
-  bindType: GlBindTypes.Varying,
-  name: 'v_normal',
-  varType: GlTypes.Vec3,
-};
+const vNormal = createVec3v('v_normal');
 
-const vSurfaceToView = {
-  bindType: GlBindTypes.Varying,
-  name: 'v_surfaceToView',
-  varType: GlTypes.Vec3,
-};
+const vSurfaceToView = createVec3v('v_surfaceToView');
 
 const aPosition = {
   bindType: GlBindTypes.Attribute,
@@ -77,16 +69,47 @@ const DirLight: Declaration = {
   varType: GlTypes.StructDeclaration,
 };
 
-const uShiny = {
+const MaterialColour: Declaration = {
   bindType: GlBindTypes.Uniform,
-  name: 'u_shiny',
-  varType: GlTypes.Float,
+  length: [
+    createVec3u('ambient'),
+    createVec3u('diffuse'),
+    createVec3u('specular'),
+    createFloatu('shiny'),
+  ],
+  name: 'MaterialColour',
+  varType: GlTypes.StructDeclaration,
+};
+
+const MaterialTexture: Declaration = {
+  bindType: GlBindTypes.Uniform,
+  length: [
+    createTextureu('diffuse'),
+    createTextureu('normal'),
+    createTextureu('specular'),
+    createTextureu('texture'),
+    createFloatu('shiny'),
+  ],
+  name: 'MaterialTexture',
+  varType: GlTypes.StructDeclaration,
 };
 
 const uDirLights = {
   bindType: GlBindTypes.Uniform,
   length: 1,
   name: 'u_dirLight_dirLights',
+  varType: GlTypes.Struct,
+};
+
+const uMaterialColour = {
+  bindType: GlBindTypes.Uniform,
+  name: 'u_materialColour_material',
+  varType: GlTypes.Struct,
+};
+
+const uMaterialTexture = {
+  bindType: GlBindTypes.Uniform,
+  name: 'u_materialTexture_material',
   varType: GlTypes.Struct,
 };
 
@@ -109,12 +132,6 @@ const uWorldInverseTranspose = {
 };
 
 const uViewWorldPosition = createVec3u('u_viewWorldPosition');
-
-const uTexture = {
-  bindType: GlBindTypes.Uniform,
-  name: 'u_texture',
-  varType: GlTypes.Sampler2d,
-};
 
 const aTexCoord = {
   bindType: GlBindTypes.Attribute,
@@ -164,8 +181,8 @@ const moveDirLight = {
 const calcDir: GlFunctionDescription<GlFragmentFunctionSnippets> = {
   declarations: [
     {
-      name: 'colour',
-      varType: GlTypes.Vec4,
+      name: 'materialColour_material',
+      varType: GlTypes.Struct,
     },
     {
       name: 'normal',
@@ -178,10 +195,6 @@ const calcDir: GlFunctionDescription<GlFragmentFunctionSnippets> = {
     {
       name: 'dirLight_dirLight',
       varType: GlTypes.Struct,
-    },
-    {
-      name: 'shiny',
-      varType: GlTypes.Float,
     },
   ],
   name: 'calcDir',
@@ -197,7 +210,12 @@ export const vertexOnly: ProgramCompilerDescription = {
 };
 
 export const textureOnly: ProgramCompilerDescription = {
-  fragmentDeclarations: [vTexCoord, uTexture],
+  fragmentDeclarations: [
+    vTexCoord,
+    MaterialTexture,
+    MaterialColour,
+    uMaterialTexture,
+  ],
   fragmentFunctions: [createMain(GlFragmentFunctionSnippets.Main2)],
   vertexDeclarations: [aPosition, aTexCoord, uWorldViewProjection, vTexCoord],
   vertexFunctions: [createMain(GlVertexFunctionSnippets.Main2)],
@@ -206,8 +224,9 @@ export const textureOnly: ProgramCompilerDescription = {
 export const directionalColour: ProgramCompilerDescription = {
   fragmentDeclarations: [
     DirLight,
+    MaterialColour,
+    uMaterialColour,
     uDirLights,
-    uShiny,
     vColour,
     vNormal,
     vSurfaceToView,
@@ -236,8 +255,9 @@ export const directionalTexture: ProgramCompilerDescription = {
   fragmentDeclarations: [
     DirLight,
     uDirLights,
-    uShiny,
-    uTexture,
+    MaterialColour,
+    MaterialTexture,
+    uMaterialTexture,
     vNormal,
     vTexCoord,
     vSurfaceToView,
@@ -278,5 +298,29 @@ function createVec3u(name: string) {
     bindType: GlBindTypes.Uniform,
     name,
     varType: GlTypes.Vec3,
+  };
+}
+
+function createVec3v(name: string) {
+  return {
+    bindType: GlBindTypes.Varying,
+    name,
+    varType: GlTypes.Vec3,
+  };
+}
+
+function createFloatu(name: string) {
+  return {
+    bindType: GlBindTypes.Uniform,
+    name,
+    varType: GlTypes.Float,
+  };
+}
+
+function createTextureu(name: string) {
+  return {
+    bindType: GlBindTypes.Uniform,
+    name,
+    varType: GlTypes.Sampler2d,
   };
 }

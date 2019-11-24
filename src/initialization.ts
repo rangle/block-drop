@@ -21,7 +21,7 @@ import {
   blockConfig,
   dataDict,
   sceneConfig,
-  texturePaths,
+  materialTexturePaths,
 } from './configuration';
 declare const LOG_LEVEL: string;
 const WebGLDebugUtils: any =
@@ -201,7 +201,7 @@ export function createDrawContext(
 export function loadImages(imageDict: ImageDictionary) {
   return Promise.all(
     objReduce(
-      texturePaths,
+      materialTexturePaths,
       (promises: Promise<void>[], texturePath) => {
         promises.push(
           new Promise((resolve, reject) => {

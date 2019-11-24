@@ -1,4 +1,4 @@
-import { ImageDictionary } from './interfaces';
+import { ImageDictionary, MaterialColour } from './interfaces';
 import {
   loadImages,
   createDrawContext,
@@ -8,7 +8,8 @@ import {
   programConfigDict,
   dataDict,
   meshConfigs,
-  texturePaths,
+  materialTexturePaths,
+  materialColours,
 } from './configuration';
 import { drawLoop } from './render';
 import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
@@ -28,7 +29,7 @@ import { KeyboardControl } from './keyboard-control';
 const shapes: ShapeLite[] = [
   // front row
   {
-    material: 'redDash',
+    material: 'redTextureDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, -100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'textureOnly',
@@ -44,12 +45,13 @@ const shapes: ShapeLite[] = [
   },
   // middle row
   {
-    material: 'redDash',
+    material: 'redTextureDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'directionalTexture',
   },
   {
+    material: 'greenColour',
     local: scale4_4(translate4_4(identity4_4(), 0, 0, 100), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalColour',
@@ -60,7 +62,7 @@ const shapes: ShapeLite[] = [
   },
   // back row
   {
-    material: 'redDash',
+    material: 'redTextureDash',
     local: scale4_4(translate4_4(identity4_4(), -200, 0, 200), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'textureOnly',
@@ -140,14 +142,21 @@ function main2() {
     const materialProvider = MaterialProvider.create(gl, imageDict);
     shapes.forEach(shape => {
       if (shape.material) {
-        const tp = (texturePaths as any)[shape.material] as string;
-        materialProvider.register(shape.material, {
-          diffusePath: '',
-          normalPath: '',
-          specularPath: '',
-          texturePath: tp,
-          shiny: 35,
-        });
+        const tp = (materialTexturePaths as any)[shape.material] as string;
+        if (tp) {
+          materialProvider.register(shape.material, {
+            diffusePath: '',
+            normalPath: '',
+            specularPath: '',
+            texturePath: tp,
+            shiny: 35,
+          });
+          return;
+        }
+        const cp = (materialColours as any)[shape.material] as MaterialColour;
+        if (cp) {
+          materialProvider.register(shape.material, cp);
+        }
       }
     }, true);
 
