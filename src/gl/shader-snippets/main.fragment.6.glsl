@@ -13,6 +13,9 @@ vec3 dirTotal = vec3(0.0, 0.0, 0.0);
 for (int i = 0; i < ${c_directionalLightCount}; i += 1) {
   dirTotal += calcDir(materialColour, normal, viewDirection, ${u_dirLights}[i]);
 }
+for (int i = 0; i < ${c_pointLightCount}; i += 1) {
+  dirTotal += calcPoint(materialColour, normal, viewDirection, ${u_pointLights}[i]);
+}
 
 dirTotal = dirTotal / (dirTotal + vec3(1.0));
 

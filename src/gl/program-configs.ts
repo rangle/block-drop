@@ -351,6 +351,44 @@ export const directionalPointColour: ProgramCompilerDescription = {
   ],
 };
 
+export const directionalPointTexture: ProgramCompilerDescription = {
+  fragmentDeclarations: [
+    DirLight,
+    PointLight,
+    MaterialColour,
+    MaterialTexture,
+    uMaterialTexture,
+    uDirLights,
+    uPointLights,
+    uViewWorldPosition,
+    vFragCoord,
+    vTexCoord,
+    vNormal,
+  ],
+  fragmentFunctions: [
+    calcDir,
+    calcPoint,
+    createMain(GlFragmentFunctionSnippets.Main6),
+  ],
+  vertexDeclarations: [
+    aPosition,
+    aColour,
+    aNormal,
+    aTexCoord,
+    uWorld,
+    uWorldInverseTranspose,
+    uWorldViewProjection,
+    vFragCoord,
+    vNormal,
+    vTexCoord,
+  ],
+  vertexFunctions: [
+    createMain(GlVertexFunctionSnippets.Main4),
+    moveDirLight,
+    moveTexture,
+  ],
+};
+
 function createMain<
   T extends GlFragmentFunctionSnippets | GlVertexFunctionSnippets
 >(snippet: T): GlFunctionDescription<T> {

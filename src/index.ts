@@ -22,6 +22,7 @@ import {
   directionalColour,
   directionalTexture,
   directionalPointColour,
+  directionalPointTexture,
 } from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
 import { ShapeLite, Lights } from './gl/interfaces';
@@ -54,14 +55,20 @@ const shapes: ShapeLite[] = [
   },
   // middle row
   {
-    material: 'redTextureDash',
+    material: 'redTexture',
     local: scale4_4(translate4_4(identity4_4(), -200, 20, 100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'directionalTexture',
   },
   {
+    material: 'blueTexture',
+    local: scale4_4(translate4_4(identity4_4(), -35, 70, 50), 20, 20, 20),
+    mesh: 'blueCube',
+    programPreference: 'directionalPointTexture',
+  },
+  {
     material: 'greenColour',
-    local: scale4_4(translate4_4(identity4_4(), 10, 70, 25), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), 35, 70, 25), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalPointColour',
   },
@@ -77,8 +84,10 @@ const shapes: ShapeLite[] = [
   },
   // back row
   {
+    material: 'redTexture',
     local: scale4_4(translate4_4(identity4_4(), -200, 20, 200), 20, 20, 20),
     mesh: 'redCube',
+    programPreference: 'directionalTexture',
   },
   {
     material: 'greenColour',
@@ -156,6 +165,13 @@ function main2() {
     lightConfigKey
   );
 
+  programProvider.register('directionalPointTexture', directionalPointTexture);
+  programProvider.initialize(
+    'directionalPointTexture',
+    lightConfig,
+    lightConfigKey
+  );
+
   const meshProvider = MeshProvider.create(gl, dataDict);
   shapes.forEach(shape => {
     meshProvider.register(shape.mesh, meshConfigs[shape.mesh], true);
@@ -172,7 +188,7 @@ function main2() {
             normalPath: '',
             specularPath: '',
             texturePath: tp,
-            shiny: 35,
+            shiny: 32,
           });
           return;
         }
