@@ -1,7 +1,7 @@
 /**
  * Match Clear
  */
-import { GameConfigOptions } from '../../interfaces';
+import { GameConfigOptions } from '.././interfaces';
 
 import { deepFreeze } from '@ch1/utility';
 

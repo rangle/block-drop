@@ -1,7 +1,7 @@
 /**
  * shortcut for importing blocks from arrays
  */
-import { Block, Direction, Matrix } from '../interfaces';
+import { Block, Direction, Matrix } from './interfaces';
 
 import {
   rotateLeft as rotateMatrixLeft,

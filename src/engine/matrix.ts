@@ -1,7 +1,7 @@
 /**
  * Naive matrix functions
  */
-import { Matrix } from '../interfaces';
+import { Matrix } from './interfaces';
 
 /**
  * Non destructive rotateLeft function

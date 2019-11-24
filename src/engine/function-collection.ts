@@ -1,5 +1,5 @@
 import { isFunction, partial } from '@ch1/utility';
-import { FunctionsCollection } from '../interfaces';
+import { FunctionsCollection } from './interfaces';
 
 export function getFunctionFrom(
   defaultFn: any,

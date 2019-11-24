@@ -1,10 +1,5 @@
 import { Dictionary } from '@ch1/utility';
-import {
-  Matrix4_4,
-  ShapeDirectionalLight,
-  ShapePointLight,
-  ShapeSpotLight,
-} from '../interfaces';
+import { Matrix4_4, Matrix3_1 } from '../interfaces';
 
 /**
  *
@@ -210,4 +205,86 @@ export interface Lights {
   directionals: ShapeDirectionalLight[];
   points: ShapePointLight[];
   spots: ShapeSpotLight[];
+}
+
+/**
+ *
+ *
+ * GL Shapes
+ *
+ *
+ */
+export interface ShapeDirectionalLightConfig {
+  direction: Matrix3_1;
+  ambient?: Matrix3_1;
+  diffuse?: Matrix3_1;
+  specular?: Matrix3_1;
+}
+export interface ShapeConfig {
+  lightDirectionalConfigs?: ShapeDirectionalLightConfig[];
+  programName: string;
+  mesh: MeshConfig;
+  material: MaterialColourConfig | MaterialTextureConfig;
+}
+
+export interface MeshConfig {
+  coloursDataName: string;
+  normalsDataName: string;
+  textureCoordDataName: string;
+  verticiesDataName: string;
+}
+
+export interface MaterialColourConfig {
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+  shiny: number;
+}
+
+export interface MaterialTextureConfig {
+  texturePath: string;
+  diffusePath: string;
+  normalPath: string;
+  specularPath: string;
+  shiny: number;
+}
+
+export interface ShapeDirectionalLight {
+  direction: Matrix3_1;
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+}
+
+export interface ShapePointLight {
+  position: Matrix3_1;
+  ambient: Matrix3_1;
+  diffuse: Matrix3_1;
+  specular: Matrix3_1;
+  constant: number;
+  linear: number;
+  quadratic: number;
+}
+
+export interface ShapeSpotLight extends ShapePointLight {
+  cutOff: number;
+  outerCutOff: number;
+}
+
+export interface Mesh {
+  a_colour?: WebGLBuffer;
+  a_normal?: WebGLBuffer;
+  a_position: WebGLBuffer;
+  a_texcoord?: WebGLBuffer;
+  vertexCount: number;
+}
+
+export type MaterialColour = MaterialColourConfig;
+
+export interface MaterialTexture {
+  diffuse: WebGLTexture;
+  normal: WebGLTexture;
+  specular: WebGLTexture;
+  texture: WebGLTexture;
+  shiny: number;
 }

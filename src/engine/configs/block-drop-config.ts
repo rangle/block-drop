@@ -3,7 +3,7 @@
  */
 
 import { deepFreeze } from '@ch1/utility';
-import { GameConfigOptions } from '../../interfaces';
+import { GameConfigOptions } from '.././interfaces';
 
 export const DEFAULT_CONFIG_1: GameConfigOptions = deepFreeze({
   width: 11,

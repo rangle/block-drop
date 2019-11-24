@@ -1,4 +1,5 @@
-import { Board1, BooleanFunction, TypedArray, Matrix3_1 } from '../interfaces';
+import { Matrix3_1 } from '../interfaces';
+import { Board1, BooleanFunction, TypedArray } from '../engine/interfaces';
 
 export const aspectRatio = (width: number, height: number) =>
   divide(width, height);

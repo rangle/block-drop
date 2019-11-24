@@ -1,12 +1,12 @@
 import { Dictionary } from '@ch1/utility';
-import { Provider } from './interfaces';
 import {
   MaterialTextureConfig,
   MaterialColourConfig,
   MaterialColour,
   MaterialTexture,
-  ImageDictionary,
-} from '../interfaces';
+  Provider,
+} from './interfaces';
+import { ImageDictionary } from '../interfaces';
 import { isMaterialTextureConfig, isMaterialTexture } from './shape';
 
 export class MaterialProvider

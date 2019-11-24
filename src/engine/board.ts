@@ -5,7 +5,7 @@ import { forEach, rotateLeft, rotateRight } from './block';
 
 import { makeCollection } from './function-collection';
 
-import { Block, Board, Board1 } from '../interfaces';
+import { Block, Board, Board1 } from './interfaces';
 
 import { throwOutOfBounds } from '../utility/util';
 

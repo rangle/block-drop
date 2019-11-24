@@ -27,7 +27,7 @@ import {
   GameConfigOptions,
   NextBlockConfig,
   GameControls,
-} from '../interfaces';
+} from './interfaces';
 
 import randomFunctions, { between, randomSet } from './random';
 

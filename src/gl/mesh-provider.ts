@@ -1,6 +1,6 @@
-import { MeshConfig, Mesh, DataDictionary } from '../interfaces';
+import { DataDictionary } from '../interfaces';
 import { Dictionary } from '@ch1/utility';
-import { Provider } from './interfaces';
+import { MeshConfig, Mesh, Provider } from './interfaces';
 
 export class MeshProvider implements Provider<Mesh, MeshConfig> {
   static configsAreEqual(a: MeshConfig, b: MeshConfig) {

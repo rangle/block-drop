@@ -4,7 +4,7 @@ import { makeCollection } from './function-collection';
 
 import { canMoveDown, DC2MAX, addBlock } from './board';
 
-import { Block, Game } from '../interfaces';
+import { Block, Game } from './interfaces';
 
 import { intMidFloor, invertBoolean } from '../utility/util';
 

@@ -1,4 +1,4 @@
-import { GameControls } from '../interfaces';
+import { GameControls } from './interfaces';
 
 export function createPollGamePad(controls: GameControls, interval: number) {
   let then = performance.now();

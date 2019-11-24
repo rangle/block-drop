@@ -1,17 +1,11 @@
-import { ImageDictionary, MaterialColour } from './interfaces';
+import { ImageDictionary } from './interfaces';
+import { loadImages, createGlContext } from './initialization';
 import {
-  loadImages,
-  createDrawContext,
-  createGlContext,
-} from './initialization';
-import {
-  programConfigDict,
   dataDict,
   meshConfigs,
   materialTexturePaths,
   materialColours,
 } from './configuration';
-import { drawLoop } from './render';
 import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
 import { MeshProvider } from './gl/mesh-provider';
 import { ProgramProvider } from './gl/program-provider';
@@ -25,7 +19,7 @@ import {
   directionalPointTexture,
 } from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
-import { ShapeLite, Lights } from './gl/interfaces';
+import { ShapeLite, Lights, MaterialColour } from './gl/interfaces';
 import { KeyboardControl } from './keyboard-control';
 
 const shapes: ShapeLite[] = [
@@ -137,9 +131,9 @@ const lights: Lights = {
   spots: [],
 };
 
-main2();
+main();
 
-function main2() {
+function main() {
   const { gl } = createGlContext();
   const imageDict: ImageDictionary = {};
   const programProvider = ProgramProvider.create(gl);
@@ -231,28 +225,4 @@ function main2() {
     };
     render();
   });
-}
-
-export function main() {
-  try {
-    const imageDict: ImageDictionary = {};
-    loadImages(imageDict)
-      .then(() => {
-        const context = createDrawContext(programConfigDict, imageDict);
-        drawLoop(context);
-      })
-      .catch((e: Error) => {
-        throw e;
-      });
-  } catch (err) {
-    console.log(err);
-    window.document.body.appendChild(error(err.message));
-  }
-}
-
-function error(message: string) {
-  const err = window.document.createElement('div');
-  err.innerHTML = message;
-
-  return err;
 }

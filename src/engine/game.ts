@@ -12,7 +12,7 @@
 import rulesFunctions from './rules';
 import boardFunctions, { gravityDrop } from './board';
 import { debugBlock, move } from './block';
-import { Block, Board, Game, GameConfig } from '../interfaces';
+import { Block, Board, Game, GameConfig } from './interfaces';
 import { rotateLeft, rotateRight } from './block';
 import { noop } from '@ch1/utility';
 

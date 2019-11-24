@@ -1,22 +1,18 @@
 import {
-  Provider,
   GlProgram,
-  ProgramCompilerDescription,
-  ShapeLite,
-  Lights,
-} from './interfaces';
-import {
-  MeshConfig,
-  Mesh,
-  ObjectPool,
-  Matrix4_4,
-  Matrix3_1,
   MaterialColourConfig,
   MaterialTextureConfig,
   MaterialTexture,
+  MeshConfig,
+  Mesh,
+  Provider,
+  ProgramCompilerDescription,
   ShapeDirectionalLight,
+  ShapeLite,
   ShapePointLight,
-} from '../interfaces';
+  Lights,
+} from './interfaces';
+import { ObjectPool, Matrix4_4, Matrix3_1 } from '../interfaces';
 import { resize } from '../initialization';
 import {
   perspective4_4,
