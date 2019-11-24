@@ -372,7 +372,6 @@ export const directionalPointTexture: ProgramCompilerDescription = {
   ],
   vertexDeclarations: [
     aPosition,
-    aColour,
     aNormal,
     aTexCoord,
     uWorld,

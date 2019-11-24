@@ -132,11 +132,10 @@ export class Renderer {
     }
 
     if (this.lastProgram !== program) {
-      this.lastProgram = program;
       this.gl.useProgram(program.program);
     }
 
-    return this.lastProgram;
+    return program;
   }
 
   private getAndSetMeshFromShape(shape: ShapeLite, program: GlProgram) {
@@ -145,8 +144,7 @@ export class Renderer {
       throw new RangeError('renderer: no mesh registered named ' + shape.mesh);
     }
 
-    if (this.lastMesh !== mesh) {
-      this.lastMesh = mesh;
+    if (this.lastMesh !== mesh || this.lastProgram !== program) {
       program.attributes.a_position(mesh.a_position);
       if (program.attributes.a_colour && mesh.a_colour) {
         program.attributes.a_colour(mesh.a_colour);
@@ -161,7 +159,7 @@ export class Renderer {
       }
     }
 
-    return this.lastMesh;
+    return mesh;
   }
 
   private getAndSetMaterialFromShape(shape: ShapeLite, program: GlProgram) {
@@ -316,6 +314,9 @@ export class Renderer {
 
     const worldViewProjection = multiply4_4(viewProjectionMatrix, shape.local);
     program.uniforms.u_worldViewProjection(worldViewProjection);
+
+    this.lastProgram = program;
+    this.lastMesh = mesh;
 
     const primitiveType = this.gl.TRIANGLES;
     this.gl.drawArrays(primitiveType, 0, mesh.vertexCount);
