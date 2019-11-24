@@ -44,13 +44,21 @@ export const materialTexturePaths = {
 };
 
 const greenShinyMaterialColour: MaterialColourConfig = {
-  ambient: [0.2, 0.2, 0.2],
-  diffuse: [0.2, 0.9, 0.2],
-  specular: [0.7, 1, 0],
-  shiny: 0.002,
+  ambient: [45 / 255, 201 / 255, 51 / 255],
+  diffuse: [45 / 255, 201 / 255, 51 / 255],
+  specular: [45 / 255, 201 / 255, 51 / 255],
+  shiny: 128,
+};
+
+const blackShinyMaterialColour: MaterialColourConfig = {
+  ambient: [0.01, 0.01, 0.01],
+  diffuse: [0.1, 0.1, 0.1],
+  specular: [0.3, 0.3, 0.3],
+  shiny: 32,
 };
 
 export const materialColours = {
+  blackColour: blackShinyMaterialColour,
   greenColour: greenShinyMaterialColour,
 };
 
@@ -129,13 +137,6 @@ export const meshConfigs: Dictionary<MeshConfig> = {
   blueCube: blueCubeMesh,
   greenCube: greenCubeMesh,
   redCube: redCubeMesh,
-};
-
-const blackShinyMaterialColour: MaterialColourConfig = {
-  ambient: [0.01, 0.01, 0.01],
-  diffuse: [0.01, 0.01, 0.01],
-  specular: [0.01, 0.01, 0.01],
-  shiny: 32,
 };
 
 const blueShinyMaterialTexture: MaterialTextureConfig = {

@@ -84,13 +84,14 @@ export interface ShapePointLight {
   ambient: Matrix3_1;
   diffuse: Matrix3_1;
   specular: Matrix3_1;
+  constant: number;
+  linear: number;
+  quadratic: number;
 }
 
-export interface ShapeSpotLight {
-  position: Matrix3_1;
-  ambient: Matrix3_1;
-  diffuse: Matrix3_1;
-  specular: Matrix3_1;
+export interface ShapeSpotLight extends ShapePointLight {
+  cutOff: number;
+  outerCutOff: number;
 }
 
 export interface Shape {

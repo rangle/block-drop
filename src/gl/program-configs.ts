@@ -69,6 +69,21 @@ const DirLight: Declaration = {
   varType: GlTypes.StructDeclaration,
 };
 
+const PointLight: Declaration = {
+  bindType: GlBindTypes.Uniform,
+  length: [
+    createVec3u('position'),
+    createVec3u('ambient'),
+    createVec3u('diffuse'),
+    createVec3u('specular'),
+    createFloatu('constant'),
+    createFloatu('linear'),
+    createFloatu('quadratic'),
+  ],
+  name: 'PointLight',
+  varType: GlTypes.StructDeclaration,
+};
+
 const MaterialColour: Declaration = {
   bindType: GlBindTypes.Uniform,
   length: [
@@ -98,6 +113,13 @@ const uDirLights = {
   bindType: GlBindTypes.Uniform,
   length: 1,
   name: 'u_dirLight_dirLights',
+  varType: GlTypes.Struct,
+};
+
+const uPointLights = {
+  bindType: GlBindTypes.Uniform,
+  length: 1,
+  name: 'u_pointLight_pointLights',
   varType: GlTypes.Struct,
 };
 
@@ -189,6 +211,30 @@ const calcDir: GlFunctionDescription<GlFragmentFunctionSnippets> = {
   snippet: GlFragmentFunctionSnippets.CalcDirFragment1,
 };
 
+const calcPoint: GlFunctionDescription<GlFragmentFunctionSnippets> = {
+  declarations: [
+    {
+      name: 'materialColour_material',
+      varType: GlTypes.Struct,
+    },
+    {
+      name: 'normal',
+      varType: GlTypes.Vec3,
+    },
+    {
+      name: 'viewDirection',
+      varType: GlTypes.Vec3,
+    },
+    {
+      name: 'pointLight_pointLight',
+      varType: GlTypes.Struct,
+    },
+  ],
+  name: 'calcPoint',
+  returnType: GlTypes.Vec3,
+  snippet: GlFragmentFunctionSnippets.CalcPointFragment1,
+};
+
 export const vertexOnly: ProgramCompilerDescription = {
   fragmentDeclarations: [vColour],
   fragmentFunctions: [createMain(GlFragmentFunctionSnippets.Main1)],
@@ -265,6 +311,42 @@ export const directionalTexture: ProgramCompilerDescription = {
   vertexFunctions: [
     createMain(GlVertexFunctionSnippets.Main4),
     moveTexture,
+    moveDirLight,
+  ],
+};
+
+export const directionalPointColour: ProgramCompilerDescription = {
+  fragmentDeclarations: [
+    DirLight,
+    MaterialColour,
+    PointLight,
+    uMaterialColour,
+    uDirLights,
+    uPointLights,
+    uViewWorldPosition,
+    vColour,
+    vFragCoord,
+    vNormal,
+  ],
+  fragmentFunctions: [
+    calcDir,
+    calcPoint,
+    createMain(GlFragmentFunctionSnippets.Main5),
+  ],
+  vertexDeclarations: [
+    aPosition,
+    aColour,
+    aNormal,
+    uWorld,
+    uWorldInverseTranspose,
+    uWorldViewProjection,
+    vColour,
+    vFragCoord,
+    vNormal,
+  ],
+  vertexFunctions: [
+    createMain(GlVertexFunctionSnippets.Main3),
+    moveColour,
     moveDirLight,
   ],
 };

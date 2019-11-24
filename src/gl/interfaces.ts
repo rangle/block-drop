@@ -48,7 +48,9 @@ export enum GlFragmentFunctionSnippets {
   Main2 = 'main.fragment.2.glsl',
   Main3 = 'main.fragment.3.glsl',
   Main4 = 'main.fragment.4.glsl',
+  Main5 = 'main.fragment.5.glsl',
   CalcDirFragment1 = 'calc-dir.fragment.1.glsl',
+  CalcPointFragment1 = 'calc-point.fragment.1.glsl',
 }
 
 export interface VariableDeclaration {

@@ -21,59 +21,73 @@ import {
   textureOnly,
   directionalColour,
   directionalTexture,
+  directionalPointColour,
 } from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
 import { ShapeLite, Lights } from './gl/interfaces';
 import { KeyboardControl } from './keyboard-control';
 
 const shapes: ShapeLite[] = [
+  //draw floor
+  {
+    material: 'blackColour',
+    local: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 10000),
+    mesh: 'blackCube',
+    programPreference: 'directionalPointColour',
+  },
   // front row
   {
     material: 'redTextureDash',
-    local: scale4_4(translate4_4(identity4_4(), -200, 0, -100), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), -200, 20, -100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'textureOnly',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, -100), 20, 20, 20),
+    material: 'greenColour',
+    local: scale4_4(translate4_4(identity4_4(), 0, 20, -100), 20, 20, 20),
     mesh: 'greenCube',
-    programPreference: 'directionalColour',
+    programPreference: 'directionalPointColour',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 200, 0, -100), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), 200, 20, -100), 20, 20, 20),
     mesh: 'blueCube',
   },
   // middle row
   {
     material: 'redTextureDash',
-    local: scale4_4(translate4_4(identity4_4(), -200, 0, 100), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), -200, 20, 100), 20, 20, 20),
     mesh: 'redCube',
     programPreference: 'directionalTexture',
   },
   {
     material: 'greenColour',
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, 100), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), 10, 70, 25), 20, 20, 20),
     mesh: 'greenCube',
-    programPreference: 'directionalColour',
+    programPreference: 'directionalPointColour',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 200, 0, 100), 20, 20, 20),
+    material: 'greenColour',
+    local: scale4_4(translate4_4(identity4_4(), 0, 20, 100), 20, 20, 20),
+    mesh: 'greenCube',
+    programPreference: 'directionalPointColour',
+  },
+  {
+    local: scale4_4(translate4_4(identity4_4(), 200, 20, 100), 20, 20, 20),
     mesh: 'blueCube',
   },
   // back row
   {
-    material: 'redTextureDash',
-    local: scale4_4(translate4_4(identity4_4(), -200, 0, 200), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), -200, 20, 200), 20, 20, 20),
     mesh: 'redCube',
-    programPreference: 'textureOnly',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 0, 0, 200), 20, 20, 20),
+    material: 'greenColour',
+    local: scale4_4(translate4_4(identity4_4(), 0, 20, 200), 20, 20, 20),
     mesh: 'greenCube',
     programPreference: 'directionalColour',
   },
   {
-    local: scale4_4(translate4_4(identity4_4(), 200, 0, 200), 20, 20, 20),
+    local: scale4_4(translate4_4(identity4_4(), 200, 20, 200), 20, 20, 20),
     mesh: 'blueCube',
   },
   // draw axis
@@ -94,13 +108,23 @@ const shapes: ShapeLite[] = [
 const lights: Lights = {
   directionals: [
     {
-      direction: [200, 300, 500],
-      ambient: [0.2, 0.2, 0.2],
-      diffuse: [0.3, 0.3, 0.3],
-      specular: [0.2, 0.2, 0.2],
+      direction: [3, 5, -10],
+      ambient: [0.05, 0.05, 0.05],
+      diffuse: [0.85, 0.85, 0.85],
+      specular: [0.5, 0.5, 0.5],
     },
   ],
-  points: [],
+  points: [
+    {
+      position: [0, 75, 0],
+      ambient: [0.05, 0.05, 0.05],
+      diffuse: [13.9, 0.0, 0.0],
+      specular: [0.9, 0.9, 0.9],
+      constant: 1.0,
+      linear: 0.014,
+      quadratic: 0.0007,
+    },
+  ],
   spots: [],
 };
 
@@ -116,21 +140,20 @@ function main2() {
   programProvider.register('textureOnly', textureOnly);
   programProvider.initialize('textureOnly');
 
-  const directionalConfig = { c_directionalLightCount: '1' };
-  const directionalConfigKey = JSON.stringify(directionalConfig);
+  const lightConfig = { c_directionalLightCount: '1', c_pointLightCount: '1' };
+  const lightConfigKey = JSON.stringify(lightConfig);
 
   programProvider.register('directionalColour', directionalColour);
-  programProvider.initialize(
-    'directionalColour',
-    directionalConfig,
-    directionalConfigKey
-  );
+  programProvider.initialize('directionalColour', lightConfig, lightConfigKey);
 
   programProvider.register('directionalTexture', directionalTexture);
+  programProvider.initialize('directionalTexture', lightConfig, lightConfigKey);
+
+  programProvider.register('directionalPointColour', directionalPointColour);
   programProvider.initialize(
-    'directionalTexture',
-    directionalConfig,
-    directionalConfigKey
+    'directionalPointColour',
+    lightConfig,
+    lightConfigKey
   );
 
   const meshProvider = MeshProvider.create(gl, dataDict);
@@ -187,7 +210,7 @@ function main2() {
     // renderer.camera.lookAt([0, 1, 1]);
 
     const render = () => {
-      renderer.render(directionalConfigKey);
+      renderer.render(lightConfigKey);
       requestAnimationFrame(render);
     };
     render();

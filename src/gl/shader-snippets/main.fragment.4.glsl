@@ -13,4 +13,6 @@ for (int i = 0; i < ${c_directionalLightCount}; i += 1) {
   dirTotal += calcDir(materialColour, normal, viewDirection, ${u_dirLights}[i]);
 }
 
+dirTotal = dirTotal / (dirTotal + vec3(1.0));
+
 gl_FragColor = vec4(dirTotal, colour.a);

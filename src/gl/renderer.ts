@@ -15,6 +15,7 @@ import {
   MaterialTextureConfig,
   MaterialTexture,
   ShapeDirectionalLight,
+  ShapePointLight,
 } from '../interfaces';
 import { resize } from '../initialization';
 import {
@@ -203,6 +204,9 @@ export class Renderer {
       if (isMaterialColour(material)) {
       }
     }
+    if (program.uniforms.u_world) {
+      program.uniforms.u_world(shape.local);
+    }
     if (program.uniforms.u_worldInverseTranspose) {
       const worldInverseMatrix = inverse4_4(shape.local, this.op4_4);
       const worldInverseTransposeMatrix = transpose4_4(
@@ -246,11 +250,54 @@ export class Renderer {
     }
   }
 
+  private setPointLight(light: ShapePointLight, program: GlProgram, i: number) {
+    const prefix = `u_pointLights[${i}].`;
+
+    const position = `${prefix}position`;
+    if (program.uniforms[position]) {
+      program.uniforms[position](light.position);
+    }
+
+    const ambient = `${prefix}ambient`;
+    if (program.uniforms[ambient]) {
+      program.uniforms[ambient](light.ambient);
+    }
+
+    const diffuse = `${prefix}diffuse`;
+    if (program.uniforms[diffuse]) {
+      program.uniforms[diffuse](light.diffuse);
+    }
+
+    const specular = `${prefix}specular`;
+    if (program.uniforms[specular]) {
+      program.uniforms[specular](light.specular);
+    }
+
+    const constant = `${prefix}constant`;
+    if (program.uniforms[constant]) {
+      program.uniforms[constant](light.constant);
+    }
+
+    const linear = `${prefix}linear`;
+    if (program.uniforms[linear]) {
+      program.uniforms[linear](light.linear);
+    }
+
+    const quadratic = `${prefix}quadratic`;
+    if (program.uniforms[quadratic]) {
+      program.uniforms[quadratic](light.quadratic);
+    }
+  }
+
   private getAndSetLights(shape: ShapeLite, program: GlProgram) {
     this.setLightRequirements(shape, program);
 
     this.lights.directionals.forEach((light, i) => {
       this.setDirectionalLight(light, program, i);
+    });
+
+    this.lights.points.forEach((light, i) => {
+      this.setPointLight(light, program, i);
     });
   }
 
