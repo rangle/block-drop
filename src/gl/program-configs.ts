@@ -208,7 +208,7 @@ const calcDir: GlFunctionDescription<GlFragmentFunctionSnippets> = {
   ],
   name: 'calcDir',
   returnType: GlTypes.Vec3,
-  snippet: GlFragmentFunctionSnippets.CalcDirFragment1,
+  snippet: GlFragmentFunctionSnippets.CalcDirFragment2,
 };
 
 const calcPoint: GlFunctionDescription<GlFragmentFunctionSnippets> = {
