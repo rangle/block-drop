@@ -117,6 +117,7 @@ export class Renderer {
 
     this.op4_4.free(viewMatrix);
     this.op4_4.free(viewProjectionMatrix);
+    this.op4_4.free(projectionMatrix);
   }
 
   private getAndUseProgramFromShape(shape: ShapeLite, configKey: string) {
@@ -212,7 +213,7 @@ export class Renderer {
         this.op4_4
       );
       program.uniforms.u_worldInverseTranspose(worldInverseTransposeMatrix);
-      this.op4_4.free(worldInverseTransposeMatrix);
+      this.op4_4.free(worldInverseMatrix);
       this.op4_4.free(worldInverseTransposeMatrix);
     }
     if (program.uniforms.u_viewWorldPosition) {
@@ -312,7 +313,11 @@ export class Renderer {
 
     this.getAndSetLights(shape, program);
 
-    const worldViewProjection = multiply4_4(viewProjectionMatrix, shape.local);
+    const worldViewProjection = multiply4_4(
+      viewProjectionMatrix,
+      shape.local,
+      this.op4_4
+    );
     program.uniforms.u_worldViewProjection(worldViewProjection);
 
     this.lastProgram = program;

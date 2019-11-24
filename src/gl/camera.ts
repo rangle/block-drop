@@ -40,12 +40,13 @@ export class Camera {
   }
 
   private computeMatrix() {
-    const identity = identity4_4();
+    const identity = identity4_4(this.op4_4);
     const translated = translate4_4(
       identity,
       this.position[0],
       this.position[1],
-      this.position[2]
+      this.position[2],
+      this.op4_4
     );
     const rotatedX = xRotate4_4(translated, this.rotation[0], this.op4_4);
     const rotatedY = yRotate4_4(rotatedX, this.rotation[1], this.op4_4);
