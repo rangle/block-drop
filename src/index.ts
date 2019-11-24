@@ -113,15 +113,15 @@ const lights: Lights = {
     {
       direction: [3, 5, -10],
       ambient: [0.05, 0.05, 0.05],
-      diffuse: [0.85, 0.85, 0.85],
-      specular: [0.5, 0.5, 0.5],
+      diffuse: [0.25, 0.25, 0.25],
+      specular: [0.3, 0.3, 0.3],
     },
   ],
   points: [
     {
       position: [0, 75, 0],
       ambient: [0.05, 0.05, 0.05],
-      diffuse: [13.9, 0.0, 0.0],
+      diffuse: [5.9, 0.0, 0.0],
       specular: [0.9, 0.9, 0.9],
       constant: 1.0,
       linear: 0.014,
@@ -143,7 +143,11 @@ function main() {
   programProvider.register('textureOnly', textureOnly);
   programProvider.initialize('textureOnly');
 
-  const lightConfig = { c_directionalLightCount: '1', c_pointLightCount: '1' };
+  const lightConfig = {
+    c_directionalLightCount: '1',
+    c_gamma: '2.2',
+    c_pointLightCount: '1',
+  };
   const lightConfigKey = JSON.stringify(lightConfig);
 
   programProvider.register('directionalColour', directionalColour);
