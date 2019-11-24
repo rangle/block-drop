@@ -17,6 +17,8 @@ import {
   directionalTexture,
   directionalPointColour,
   directionalPointTexture,
+  directionalPointSpotColour,
+  directionalPointSpotTexture,
 } from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
 import { ShapeLite, Lights, MaterialColour } from './gl/interfaces';
@@ -73,8 +75,10 @@ const shapes: ShapeLite[] = [
     programPreference: 'directionalPointColour',
   },
   {
+    material: 'blueTexture',
     local: scale4_4(translate4_4(identity4_4(), 200, 20, 100), 20, 20, 20),
     mesh: 'blueCube',
+    programPreference: 'directionalPointSpotTexture',
   },
   // back row
   {
@@ -87,11 +91,13 @@ const shapes: ShapeLite[] = [
     material: 'greenColour',
     local: scale4_4(translate4_4(identity4_4(), 0, 20, 200), 20, 20, 20),
     mesh: 'greenCube',
-    programPreference: 'directionalColour',
+    programPreference: 'directionalPointSpotColour',
   },
   {
+    material: 'blueTexture',
     local: scale4_4(translate4_4(identity4_4(), 200, 20, 200), 20, 20, 20),
     mesh: 'blueCube',
+    programPreference: 'directionalPointSpotTexture',
   },
   // draw axis
   {
@@ -128,7 +134,20 @@ const lights: Lights = {
       quadratic: 0.0007,
     },
   ],
-  spots: [],
+  spots: [
+    {
+      direction: [20, 10, -100],
+      position: [225, 35, 225],
+      ambient: [0.05, 0.05, 0.05],
+      diffuse: [5.9, 5.9, 5.9],
+      specular: [0.9, 0.9, 0.9],
+      constant: 1.0,
+      linear: 0.014,
+      quadratic: 0.0007,
+      cutOff: Math.PI / 4,
+      outerCutOff: Math.PI / 2,
+    },
+  ],
 };
 
 main();
@@ -147,6 +166,7 @@ function main() {
     c_directionalLightCount: '1',
     c_gamma: '2.2',
     c_pointLightCount: '1',
+    c_spotLightCount: '1',
   };
   const lightConfigKey = JSON.stringify(lightConfig);
 
@@ -166,6 +186,26 @@ function main() {
   programProvider.register('directionalPointTexture', directionalPointTexture);
   programProvider.initialize(
     'directionalPointTexture',
+    lightConfig,
+    lightConfigKey
+  );
+
+  programProvider.register(
+    'directionalPointSpotColour',
+    directionalPointSpotColour
+  );
+  programProvider.initialize(
+    'directionalPointSpotColour',
+    lightConfig,
+    lightConfigKey
+  );
+
+  programProvider.register(
+    'directionalPointSpotTexture',
+    directionalPointSpotTexture
+  );
+  programProvider.initialize(
+    'directionalPointSpotTexture',
     lightConfig,
     lightConfigKey
   );

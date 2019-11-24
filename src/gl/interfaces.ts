@@ -45,9 +45,12 @@ export enum GlFragmentFunctionSnippets {
   Main4 = 'main.fragment.4.glsl',
   Main5 = 'main.fragment.5.glsl',
   Main6 = 'main.fragment.6.glsl',
+  Main7 = 'main.fragment.7.glsl',
+  Main8 = 'main.fragment.8.glsl',
   CalcDirFragment1 = 'calc-dir.fragment.1.glsl',
   CalcDirFragment2 = 'calc-dir.fragment.2.glsl',
   CalcPointFragment1 = 'calc-point.fragment.1.glsl',
+  CalcSpotFragment1 = 'calc-spot.fragment.1.glsl',
 }
 
 export interface VariableDeclaration {
@@ -268,6 +271,7 @@ export interface ShapePointLight {
 }
 
 export interface ShapeSpotLight extends ShapePointLight {
+  direction: Matrix3_1;
   cutOff: number;
   outerCutOff: number;
 }

@@ -84,6 +84,24 @@ const PointLight: Declaration = {
   varType: GlTypes.StructDeclaration,
 };
 
+const SpotLight: Declaration = {
+  bindType: GlBindTypes.Uniform,
+  length: [
+    createVec3u('direction'),
+    createVec3u('position'),
+    createVec3u('ambient'),
+    createVec3u('diffuse'),
+    createVec3u('specular'),
+    createFloatu('constant'),
+    createFloatu('linear'),
+    createFloatu('quadratic'),
+    createFloatu('cutOff'),
+    createFloatu('outerCutOff'),
+  ],
+  name: 'SpotLight',
+  varType: GlTypes.StructDeclaration,
+};
+
 const MaterialColour: Declaration = {
   bindType: GlBindTypes.Uniform,
   length: [
@@ -120,6 +138,13 @@ const uPointLights = {
   bindType: GlBindTypes.Uniform,
   length: 1,
   name: 'u_pointLight_pointLights',
+  varType: GlTypes.Struct,
+};
+
+const uSpotLights = {
+  bindType: GlBindTypes.Uniform,
+  length: 1,
+  name: 'u_spotLight_spotLights',
   varType: GlTypes.Struct,
 };
 
@@ -233,6 +258,30 @@ const calcPoint: GlFunctionDescription<GlFragmentFunctionSnippets> = {
   name: 'calcPoint',
   returnType: GlTypes.Vec3,
   snippet: GlFragmentFunctionSnippets.CalcPointFragment1,
+};
+
+const calcSpot: GlFunctionDescription<GlFragmentFunctionSnippets> = {
+  declarations: [
+    {
+      name: 'materialColour_material',
+      varType: GlTypes.Struct,
+    },
+    {
+      name: 'normal',
+      varType: GlTypes.Vec3,
+    },
+    {
+      name: 'viewDirection',
+      varType: GlTypes.Vec3,
+    },
+    {
+      name: 'spotLight_spotLight',
+      varType: GlTypes.Struct,
+    },
+  ],
+  name: 'calcSpot',
+  returnType: GlTypes.Vec3,
+  snippet: GlFragmentFunctionSnippets.CalcSpotFragment1,
 };
 
 export const vertexOnly: ProgramCompilerDescription = {
@@ -369,6 +418,85 @@ export const directionalPointTexture: ProgramCompilerDescription = {
     calcDir,
     calcPoint,
     createMain(GlFragmentFunctionSnippets.Main6),
+  ],
+  vertexDeclarations: [
+    aPosition,
+    aNormal,
+    aTexCoord,
+    uWorld,
+    uWorldInverseTranspose,
+    uWorldViewProjection,
+    vFragCoord,
+    vNormal,
+    vTexCoord,
+  ],
+  vertexFunctions: [
+    createMain(GlVertexFunctionSnippets.Main4),
+    moveDirLight,
+    moveTexture,
+  ],
+};
+
+export const directionalPointSpotColour: ProgramCompilerDescription = {
+  fragmentDeclarations: [
+    DirLight,
+    MaterialColour,
+    PointLight,
+    SpotLight,
+    uMaterialColour,
+    uDirLights,
+    uPointLights,
+    uSpotLights,
+    uViewWorldPosition,
+    vColour,
+    vFragCoord,
+    vNormal,
+  ],
+  fragmentFunctions: [
+    calcDir,
+    calcPoint,
+    calcSpot,
+    createMain(GlFragmentFunctionSnippets.Main7),
+  ],
+  vertexDeclarations: [
+    aPosition,
+    aColour,
+    aNormal,
+    uWorld,
+    uWorldInverseTranspose,
+    uWorldViewProjection,
+    vColour,
+    vFragCoord,
+    vNormal,
+  ],
+  vertexFunctions: [
+    createMain(GlVertexFunctionSnippets.Main3),
+    moveColour,
+    moveDirLight,
+  ],
+};
+
+export const directionalPointSpotTexture: ProgramCompilerDescription = {
+  fragmentDeclarations: [
+    DirLight,
+    PointLight,
+    SpotLight,
+    MaterialColour,
+    MaterialTexture,
+    uMaterialTexture,
+    uDirLights,
+    uPointLights,
+    uSpotLights,
+    uViewWorldPosition,
+    vFragCoord,
+    vTexCoord,
+    vNormal,
+  ],
+  fragmentFunctions: [
+    calcDir,
+    calcPoint,
+    calcSpot,
+    createMain(GlFragmentFunctionSnippets.Main8),
   ],
   vertexDeclarations: [
     aPosition,

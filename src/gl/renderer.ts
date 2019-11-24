@@ -11,6 +11,7 @@ import {
   ShapeLite,
   ShapePointLight,
   Lights,
+  ShapeSpotLight,
 } from './interfaces';
 import { ObjectPool, Matrix4_4, Matrix3_1 } from '../interfaces';
 import { resize } from '../initialization';
@@ -284,6 +285,60 @@ export class Renderer {
     }
   }
 
+  private setSpotLight(light: ShapeSpotLight, program: GlProgram, i: number) {
+    const prefix = `u_spotLights[${i}].`;
+
+    const direction = `${prefix}direction`;
+    if (program.uniforms[direction]) {
+      program.uniforms[direction](light.direction);
+    }
+
+    const position = `${prefix}position`;
+    if (program.uniforms[position]) {
+      program.uniforms[position](light.position);
+    }
+
+    const ambient = `${prefix}ambient`;
+    if (program.uniforms[ambient]) {
+      program.uniforms[ambient](light.ambient);
+    }
+
+    const diffuse = `${prefix}diffuse`;
+    if (program.uniforms[diffuse]) {
+      program.uniforms[diffuse](light.diffuse);
+    }
+
+    const specular = `${prefix}specular`;
+    if (program.uniforms[specular]) {
+      program.uniforms[specular](light.specular);
+    }
+
+    const constant = `${prefix}constant`;
+    if (program.uniforms[constant]) {
+      program.uniforms[constant](light.constant);
+    }
+
+    const linear = `${prefix}linear`;
+    if (program.uniforms[linear]) {
+      program.uniforms[linear](light.linear);
+    }
+
+    const quadratic = `${prefix}quadratic`;
+    if (program.uniforms[quadratic]) {
+      program.uniforms[quadratic](light.quadratic);
+    }
+
+    const cutOff = `${prefix}cutOff`;
+    if (program.uniforms[cutOff]) {
+      program.uniforms[cutOff](light.cutOff);
+    }
+
+    const outerCutOff = `${prefix}outerCutOff`;
+    if (program.uniforms[outerCutOff]) {
+      program.uniforms[outerCutOff](light.outerCutOff);
+    }
+  }
+
   private getAndSetLights(shape: ShapeLite, program: GlProgram) {
     this.setLightRequirements(shape, program);
 
@@ -293,6 +348,10 @@ export class Renderer {
 
     this.lights.points.forEach((light, i) => {
       this.setPointLight(light, program, i);
+    });
+
+    this.lights.spots.forEach((light, i) => {
+      this.setSpotLight(light, program, i);
     });
   }
 
