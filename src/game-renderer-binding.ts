@@ -2,6 +2,7 @@ import { ShapeLite, Lights } from './gl/interfaces';
 import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
 import { Renderer } from './gl/renderer';
 import { KeyboardControl } from './keyboard-control';
+import { ObjectPool, Matrix4_4 } from './interfaces';
 
 const cubeSize = 20;
 
@@ -16,13 +17,21 @@ const shapes: ShapeLite[] = [
 ];
 
 export class GameRendererBinding {
-  static create(renderer: Renderer, engine: any, lights: Lights) {
-    return new GameRendererBinding(renderer, engine, lights);
+  static create(
+    opShape: ObjectPool<ShapeLite>,
+    op4_4: ObjectPool<Matrix4_4>,
+    renderer: Renderer,
+    engine: any,
+    lights: Lights
+  ) {
+    return new GameRendererBinding(opShape, op4_4, renderer, engine, lights);
   }
 
   private gameRedraw = false;
 
   constructor(
+    private opShape: ObjectPool<ShapeLite>,
+    private op4_4: ObjectPool<Matrix4_4>,
     private renderer: Renderer,
     private engine: any,
     private lights: Lights
@@ -61,12 +70,98 @@ export class GameRendererBinding {
     gameControls.bind();
   }
 
+  private createCube(
+    type: CubeType,
+    x: number,
+    y: number,
+    z = 0,
+    cs = cubeSize
+  ): ShapeLite {
+    const cube = this.opShape.malloc();
+    cube.material = textureFromCubeType(type);
+    cube.mesh = meshFromCubeType(type);
+    cube.world = scale4_4(
+      translate4_4(identity4_4(this.op4_4), x, y, z, this.op4_4),
+      cs,
+      cs,
+      cs,
+      this.op4_4
+    );
+    cube.programPreference = 'directionalPointSpotTexture';
+
+    return cube;
+  }
+
+  private getBlockFromInt(
+    int: number,
+    x: number,
+    y: number,
+    z = 0,
+    cs = cubeSize
+  ) {
+    switch (int) {
+      case 10:
+        return this.createCube(CubeType.Green, x, y, z, cs);
+      case 19:
+        return this.createCube(CubeType.GreenDash, x, y, z, cs);
+      case 20:
+        return this.createCube(CubeType.Red, x, y, z, cs);
+      case 29:
+        return this.createCube(CubeType.RedDash, x, y, z, cs);
+      case 30:
+        return this.createCube(CubeType.Blue, x, y, z, cs);
+      case 39:
+        return this.createCube(CubeType.BlueDash, x, y, z, cs);
+      default:
+        return this.createCube(CubeType.Blue, x, y, z, cs);
+    }
+  }
+
+  private fullRedraw(engine: any, blocks: ShapeLite[] = []) {
+    for (let i = 0; i < engine.buffer.length; i += 1) {
+      const el = engine.buffer[i];
+      if (el !== 0) {
+        const j = engine.config.width * engine.config.height - i - 1;
+        const y = cubeSize * Math.floor(j / engine.config.width) + cubeSize;
+        const x = -cubeSize * (j % engine.config.width);
+        const block = this.getBlockFromInt(el, x, y);
+        blocks.push(block);
+      }
+    }
+
+    return blocks;
+  }
+
   start(lightConfigKey: string) {
-    const render = () => {
+    let last = 0;
+    let fpsStart = 0;
+    let fps = 0;
+    const render = (now: number) => {
+      if (!last) {
+        last = now;
+      }
+      const since = now - last;
+      last = now;
+      const fpsDuration = now - fpsStart;
+      if (fpsDuration >= 1000) {
+        fpsStart = now;
+        console.log('fps', fpsDuration, fps);
+        fps = 0;
+      }
+      if (since > 2000) {
+        console.log('slowing down!!! redraws taking too long');
+        requestAnimationFrame(render);
+        return;
+      }
+      fps += 1;
+
       if (this.gameRedraw) {
         this.gameRedraw = false;
         const head = this.renderer.shapes.shift();
-        const blocks = fullRedraw(this.engine);
+        this.renderer.shapes.forEach(shape => {
+          this.opShape.free(shape);
+        });
+        const blocks = this.fullRedraw(this.engine);
         if (head) {
           blocks.unshift(head);
         }
@@ -75,38 +170,8 @@ export class GameRendererBinding {
       this.renderer.render(lightConfigKey);
       requestAnimationFrame(render);
     };
-    render();
+    render(0);
   }
-}
-
-function fullRedraw(engine: any, blocks: ShapeLite[] = []) {
-  for (let i = 0; i < engine.buffer.length; i += 1) {
-    const el = engine.buffer[i];
-    if (el !== 0) {
-      const j = engine.config.width * engine.config.height - i - 1;
-      const y = cubeSize * Math.floor(j / engine.config.width) + cubeSize;
-      const x = -cubeSize * (j % engine.config.width);
-      const block = getBlockFromInt(el, x, y);
-      blocks.push(block);
-    }
-  }
-
-  return blocks;
-}
-
-function createCube(
-  type: CubeType,
-  x: number,
-  y: number,
-  z = 0,
-  cs = cubeSize
-): ShapeLite {
-  return {
-    material: textureFromCubeType(type),
-    world: scale4_4(translate4_4(identity4_4(), x, y, z), cs, cs, cs),
-    mesh: meshFromCubeType(type),
-    programPreference: 'directionalPointSpotTexture',
-  };
 }
 
 function textureFromCubeType(type: CubeType) {
@@ -150,29 +215,4 @@ enum CubeType {
   Red,
   Green,
   Blue,
-}
-
-export function getBlockFromInt(
-  int: number,
-  x: number,
-  y: number,
-  z = 0,
-  cs = cubeSize
-) {
-  switch (int) {
-    case 10:
-      return createCube(CubeType.Green, x, y, z, cs);
-    case 19:
-      return createCube(CubeType.GreenDash, x, y, z, cs);
-    case 20:
-      return createCube(CubeType.Red, x, y, z, cs);
-    case 29:
-      return createCube(CubeType.RedDash, x, y, z, cs);
-    case 30:
-      return createCube(CubeType.Blue, x, y, z, cs);
-    case 39:
-      return createCube(CubeType.BlueDash, x, y, z, cs);
-    default:
-      return createCube(CubeType.Blue, x, y, z, cs);
-  }
 }

@@ -11,10 +11,13 @@ import { MeshProvider } from './gl/mesh-provider';
 import { ProgramProvider } from './gl/program-provider';
 import { Renderer } from './gl/renderer';
 import { MaterialProvider } from './gl/material-provider';
-import { MeshConfig, Lights } from './gl/interfaces';
+import { MeshConfig, Lights, ShapeLite } from './gl/interfaces';
 import { create1 } from './engine/engine';
 import { objEach } from '@ch1/utility';
 import { GameRendererBinding } from './game-renderer-binding';
+import { createObjectPool } from './utility/object-pool';
+import { createMatrix4_4 } from './matrix/matrix-4';
+import { createMatrix3_1 } from './matrix/matrix-3';
 
 const lights: Lights = {
   directionals: [
@@ -58,6 +61,15 @@ function main() {
   const { gl } = createGlContext();
   const imageDict: ImageDictionary = {};
   const programProvider = ProgramProvider.create(gl);
+
+  const op3_1 = createObjectPool(createMatrix3_1);
+  const op4_4 = createObjectPool(createMatrix4_4);
+  const opCube = createObjectPool<ShapeLite>(() => ({
+    material: '',
+    mesh: '',
+    preferredProgram: '',
+    world: op4_4.malloc(),
+  }));
 
   const lightConfig = {
     c_directionalLightCount: '1',
@@ -110,7 +122,9 @@ function main() {
       gl,
       programProvider,
       meshProvider,
-      materialProvider
+      materialProvider,
+      op3_1,
+      op4_4
     );
     renderer.lights = lights;
     (window as any).RENDERER = renderer;
@@ -121,7 +135,13 @@ function main() {
       seed: 'hello-world',
     });
 
-    const bindings = GameRendererBinding.create(renderer, engine, lights);
+    const bindings = GameRendererBinding.create(
+      opCube,
+      op4_4,
+      renderer,
+      engine,
+      lights
+    );
     bindings.start(lightConfigKey);
   });
 }
