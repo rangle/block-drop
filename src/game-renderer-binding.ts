@@ -50,7 +50,7 @@ export class GameRendererBinding {
       '87': () => renderer.camera.trs.forward(controlStep),
       '65': () => renderer.camera.trs.strafeLeft(controlStep),
       '83': () => renderer.camera.trs.backward(controlStep),
-      '58': () => renderer.camera.trs.strafeRight(controlStep),
+      '68': () => renderer.camera.trs.strafeRight(controlStep),
       '81': () => renderer.camera.trs.up(controlStep),
       '69': () => renderer.camera.trs.down(controlStep),
       '219': () => renderer.camera.trs.rotateLeft(Math.PI / 16),
@@ -134,26 +134,17 @@ export class GameRendererBinding {
 
   start(lightConfigKey: string) {
     let last = 0;
-    let fpsStart = 0;
-    let fps = 0;
     const render = (now: number) => {
       if (!last) {
         last = now;
       }
       const since = now - last;
       last = now;
-      const fpsDuration = now - fpsStart;
-      if (fpsDuration >= 1000) {
-        fpsStart = now;
-        console.log('fps', fpsDuration, fps);
-        fps = 0;
-      }
       if (since > 2000) {
         console.log('slowing down!!! redraws taking too long');
         requestAnimationFrame(render);
         return;
       }
-      fps += 1;
 
       if (this.gameRedraw) {
         this.gameRedraw = false;
