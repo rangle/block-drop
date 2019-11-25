@@ -22,10 +22,10 @@ export class KeyboardControl {
           )
         : undefined;
 
-    window.addEventListener('keypress', handler);
+    window.addEventListener('keydown', handler);
 
     this.release = () => {
-      window.removeEventListener('keypress', handler);
+      window.removeEventListener('keydown', handler);
       this.release = noop;
     };
   }
