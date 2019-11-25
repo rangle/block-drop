@@ -27,6 +27,7 @@ export class GameRendererBinding {
     return new GameRendererBinding(opShape, op4_4, renderer, engine, lights);
   }
 
+  private animations: ShapeLite[] = [];
   private gameRedraw = false;
 
   constructor(
@@ -99,17 +100,31 @@ export class GameRendererBinding {
     z = 0,
     cs = cubeSize
   ) {
+    /** @todo remove this mutatey animations bit */
+    let cube: ShapeLite;
     switch (int) {
       case 10:
         return this.createCube(CubeType.Green, x, y, z, cs);
+      case 11:
+        cube = this.createCube(CubeType.Green, x, y, z, cs);
+        this.animations.push(cube);
+        return cube;
       case 19:
         return this.createCube(CubeType.GreenDash, x, y, z, cs);
       case 20:
         return this.createCube(CubeType.Red, x, y, z, cs);
+      case 21:
+        cube = this.createCube(CubeType.Red, x, y, z, cs);
+        this.animations.push(cube);
+        return cube;
       case 29:
         return this.createCube(CubeType.RedDash, x, y, z, cs);
       case 30:
         return this.createCube(CubeType.Blue, x, y, z, cs);
+      case 31:
+        cube = this.createCube(CubeType.Blue, x, y, z, cs);
+        this.animations.push(cube);
+        return cube;
       case 39:
         return this.createCube(CubeType.BlueDash, x, y, z, cs);
       default:
@@ -147,6 +162,7 @@ export class GameRendererBinding {
       }
 
       if (this.gameRedraw) {
+        this.animations = [];
         this.gameRedraw = false;
         const head = this.renderer.shapes.shift();
         this.renderer.shapes.forEach(shape => {
@@ -158,6 +174,11 @@ export class GameRendererBinding {
         }
         this.renderer.shapes = blocks;
       }
+      this.animations.forEach(shape => {
+        const w = shape.world;
+        shape.world = scale4_4(w, 0.9, 0.9, 0.9, this.op4_4);
+        this.op4_4.free(w);
+      });
       this.renderer.render(lightConfigKey);
       requestAnimationFrame(render);
     };
