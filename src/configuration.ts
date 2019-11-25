@@ -14,6 +14,16 @@ import {
 } from './gl/shape-generator';
 import { Dictionary } from '@ch1/utility';
 import { MaterialColourConfig, MeshConfig } from './gl/interfaces';
+import {
+  vertexOnly,
+  textureOnly,
+  directionalColour,
+  directionalTexture,
+  directionalPointColour,
+  directionalPointTexture,
+  directionalPointSpotColour,
+  directionalPointSpotTexture,
+} from './gl/program-configs';
 const blueTexturePath = require('../assets/blue-2048-2048.png');
 const greenTexturePath = require('../assets/green-2048-2048.png');
 const redTexturePath = require('../assets/red-2048-2048.png');
@@ -98,3 +108,46 @@ export const meshConfigs: Dictionary<MeshConfig> = {
   greenCube: greenCubeMesh,
   redCube: redCubeMesh,
 };
+
+export const programs = [
+  {
+    name: 'vertexOnly',
+    programConfig: vertexOnly,
+    useLights: false,
+  },
+  {
+    name: 'textureOnly',
+    programConfig: textureOnly,
+    useLights: false,
+  },
+  {
+    name: 'directionalColour',
+    programConfig: directionalColour,
+    useLights: true,
+  },
+  {
+    name: 'directionalTexture',
+    programConfig: directionalTexture,
+    useLights: true,
+  },
+  {
+    name: 'directionalPointColour',
+    programConfig: directionalPointColour,
+    useLights: true,
+  },
+  {
+    name: 'directionalPointTexture',
+    programConfig: directionalPointTexture,
+    useLights: true,
+  },
+  {
+    name: 'directionalPointSpotColour',
+    programConfig: directionalPointSpotColour,
+    useLights: true,
+  },
+  {
+    name: 'directionalPointSpotTexture',
+    programConfig: directionalPointSpotTexture,
+    useLights: true,
+  },
+];

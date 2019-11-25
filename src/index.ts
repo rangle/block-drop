@@ -5,24 +5,17 @@ import {
   meshConfigs,
   materialTexturePaths,
   materialColours,
+  programs,
 } from './configuration';
 import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
 import { MeshProvider } from './gl/mesh-provider';
 import { ProgramProvider } from './gl/program-provider';
 import { Renderer } from './gl/renderer';
-import {
-  vertexOnly,
-  textureOnly,
-  directionalColour,
-  directionalTexture,
-  directionalPointColour,
-  directionalPointTexture,
-  directionalPointSpotColour,
-  directionalPointSpotTexture,
-} from './gl/program-configs';
 import { MaterialProvider } from './gl/material-provider';
-import { ShapeLite, Lights, MaterialColour } from './gl/interfaces';
+import { ShapeLite, Lights, MeshConfig } from './gl/interfaces';
 import { KeyboardControl } from './keyboard-control';
+import { create1 } from './engine/engine';
+import { objEach } from '@ch1/utility';
 
 const shapes: ShapeLite[] = [
   //draw floor
@@ -156,11 +149,6 @@ function main() {
   const { gl } = createGlContext();
   const imageDict: ImageDictionary = {};
   const programProvider = ProgramProvider.create(gl);
-  programProvider.register('vertexOnly', vertexOnly);
-  programProvider.initialize('vertexOnly');
-
-  programProvider.register('textureOnly', textureOnly);
-  programProvider.initialize('textureOnly');
 
   const lightConfig = {
     c_directionalLightCount: '1',
@@ -170,72 +158,44 @@ function main() {
   };
   const lightConfigKey = JSON.stringify(lightConfig);
 
-  programProvider.register('directionalColour', directionalColour);
-  programProvider.initialize('directionalColour', lightConfig, lightConfigKey);
-
-  programProvider.register('directionalTexture', directionalTexture);
-  programProvider.initialize('directionalTexture', lightConfig, lightConfigKey);
-
-  programProvider.register('directionalPointColour', directionalPointColour);
-  programProvider.initialize(
-    'directionalPointColour',
-    lightConfig,
-    lightConfigKey
-  );
-
-  programProvider.register('directionalPointTexture', directionalPointTexture);
-  programProvider.initialize(
-    'directionalPointTexture',
-    lightConfig,
-    lightConfigKey
-  );
-
-  programProvider.register(
-    'directionalPointSpotColour',
-    directionalPointSpotColour
-  );
-  programProvider.initialize(
-    'directionalPointSpotColour',
-    lightConfig,
-    lightConfigKey
-  );
-
-  programProvider.register(
-    'directionalPointSpotTexture',
-    directionalPointSpotTexture
-  );
-  programProvider.initialize(
-    'directionalPointSpotTexture',
-    lightConfig,
-    lightConfigKey
-  );
+  programs.forEach(program => {
+    programProvider.register(program.name, program.programConfig);
+    if (program.useLights) {
+      programProvider.initialize(program.name, lightConfig, lightConfigKey);
+    } else {
+      programProvider.initialize(program.name);
+    }
+  });
 
   const meshProvider = MeshProvider.create(gl, dataDict);
-  shapes.forEach(shape => {
-    meshProvider.register(shape.mesh, meshConfigs[shape.mesh], true);
+  objEach(meshConfigs, (meshConfig: MeshConfig, name?: string) => {
+    if (!name) {
+      return;
+    }
+    meshProvider.register(name, meshConfig, true);
   });
 
   loadImages(imageDict).then(() => {
     const materialProvider = MaterialProvider.create(gl, imageDict);
-    shapes.forEach(shape => {
-      if (shape.material) {
-        const tp = (materialTexturePaths as any)[shape.material] as string;
-        if (tp) {
-          materialProvider.register(shape.material, {
-            diffusePath: '',
-            normalPath: '',
-            specularPath: '',
-            texturePath: tp,
-            shiny: 32,
-          });
-          return;
-        }
-        const cp = (materialColours as any)[shape.material] as MaterialColour;
-        if (cp) {
-          materialProvider.register(shape.material, cp);
-        }
+    objEach(materialTexturePaths, (path, name) => {
+      if (!name) {
+        return;
       }
-    }, true);
+      materialProvider.register(name, {
+        diffusePath: '',
+        normalPath: '',
+        specularPath: '',
+        texturePath: path,
+        shiny: 32,
+      });
+    });
+
+    objEach(materialColours, (colour, name) => {
+      if (!name) {
+        return;
+      }
+      materialProvider.register(name, colour);
+    });
 
     const renderer = Renderer.create(
       gl,
@@ -261,9 +221,23 @@ function main() {
 
     controls.bind();
 
+    let gameRedraw = false;
+
+    const engine = create1({
+      debug: true,
+      preview: 3,
+      seed: 'hello-world',
+    });
+
+    engine.on('redraw', () => (gameRedraw = true));
+
     // renderer.camera.lookAt([0, 1, 1]);
 
     const render = () => {
+      if (gameRedraw) {
+        gameRedraw = false;
+        console.log('redraw');
+      }
       renderer.render(lightConfigKey);
       requestAnimationFrame(render);
     };
