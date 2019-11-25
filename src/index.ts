@@ -27,86 +27,6 @@ const shapes: ShapeLite[] = [
     mesh: 'blackCube',
     programPreference: 'directionalPointColour',
   },
-  // front row
-  {
-    material: 'redTextureDash',
-    world: scale4_4(translate4_4(identity4_4(), -200, 20, -100), 20, 20, 20),
-    mesh: 'redCube',
-    programPreference: 'textureOnly',
-  },
-  {
-    material: 'greenColour',
-    world: scale4_4(translate4_4(identity4_4(), 0, 20, -100), 20, 20, 20),
-    mesh: 'greenCube',
-    programPreference: 'directionalPointColour',
-  },
-  {
-    world: scale4_4(translate4_4(identity4_4(), 200, 20, -100), 20, 20, 20),
-    mesh: 'blueCube',
-  },
-  // middle row
-  {
-    material: 'redTexture',
-    world: scale4_4(translate4_4(identity4_4(), -200, 20, 100), 20, 20, 20),
-    mesh: 'redCube',
-    programPreference: 'directionalTexture',
-  },
-  {
-    material: 'blueTexture',
-    world: scale4_4(translate4_4(identity4_4(), -35, 70, 50), 20, 20, 20),
-    mesh: 'blueCube',
-    programPreference: 'directionalPointTexture',
-  },
-  {
-    material: 'greenColour',
-    world: scale4_4(translate4_4(identity4_4(), 35, 70, 25), 20, 20, 20),
-    mesh: 'greenCube',
-    programPreference: 'directionalPointColour',
-  },
-  {
-    material: 'greenColour',
-    world: scale4_4(translate4_4(identity4_4(), 0, 20, 100), 20, 20, 20),
-    mesh: 'greenCube',
-    programPreference: 'directionalPointColour',
-  },
-  {
-    material: 'blueTexture',
-    world: scale4_4(translate4_4(identity4_4(), 200, 20, 100), 20, 20, 20),
-    mesh: 'blueCube',
-    programPreference: 'directionalPointSpotTexture',
-  },
-  // back row
-  {
-    material: 'redTexture',
-    world: scale4_4(translate4_4(identity4_4(), -200, 20, 200), 20, 20, 20),
-    mesh: 'redCube',
-    programPreference: 'directionalTexture',
-  },
-  {
-    material: 'greenColour',
-    world: scale4_4(translate4_4(identity4_4(), 0, 20, 200), 20, 20, 20),
-    mesh: 'greenCube',
-    programPreference: 'directionalPointSpotColour',
-  },
-  {
-    material: 'blueTexture',
-    world: scale4_4(translate4_4(identity4_4(), 200, 20, 200), 20, 20, 20),
-    mesh: 'blueCube',
-    programPreference: 'directionalPointSpotTexture',
-  },
-  // draw axis
-  {
-    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 10000, 1, 1),
-    mesh: 'blackCube',
-  },
-  {
-    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 10000, 1),
-    mesh: 'blackCube',
-  },
-  {
-    world: scale4_4(translate4_4(identity4_4(), 0, 0, 0), 1, 1, 10000),
-    mesh: 'blackCube',
-  },
 ];
 
 const lights: Lights = {
@@ -120,7 +40,7 @@ const lights: Lights = {
   ],
   points: [
     {
-      position: [0, 75, 0],
+      position: [0, 10, 0],
       ambient: [0.05, 0.05, 0.05],
       diffuse: [5.9, 0.0, 0.0],
       specular: [0.9, 0.9, 0.9],
@@ -245,8 +165,11 @@ function main() {
 
     renderer.shapes = shapes;
 
-    renderer.camera.trs.setX(-129);
+    const midX = (-engine.config.width * cubeSize) / 2;
+    renderer.camera.trs.setX(midX);
     renderer.camera.trs.setY(160);
+    lights.points[0].position[0] = midX;
+
     const render = () => {
       if (gameRedraw) {
         gameRedraw = false;
@@ -268,7 +191,7 @@ function fullRedraw(engine: any, blocks: ShapeLite[] = []) {
   for (let i = 0; i < engine.buffer.length; i += 1) {
     const el = engine.buffer[i];
     if (el !== 0) {
-      const j = engine.config.width * engine.config.height - i;
+      const j = engine.config.width * engine.config.height - i - 1;
       const y = cubeSize * Math.floor(j / engine.config.width) + cubeSize;
       const x = -cubeSize * (j % engine.config.width);
       const block = getBlockFromInt(el, x, y);
