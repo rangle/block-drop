@@ -12,6 +12,7 @@ import {
   ShapePointLight,
   Lights,
   ShapeSpotLight,
+  MaterialColour,
 } from './interfaces';
 import { ObjectPool, Matrix4_4, Matrix3_1 } from '../interfaces';
 import { resize } from '../initialization';
@@ -160,24 +161,56 @@ export class Renderer {
     return mesh;
   }
 
+  private bindTexture(
+    number: number,
+    texture: WebGLTexture,
+    program: GlProgram,
+    prop: string
+  ) {
+    this.gl.activeTexture((this.gl as any)['TEXTURE' + number]);
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    program.uniforms[`u_material.${prop}`](number);
+  }
+
+  private setTexture(
+    material: MaterialColour | MaterialTexture,
+    program: GlProgram
+  ) {
+    if (isMaterialTexture(material)) {
+      this.bindTexture(0, material.texture, program, 'texture');
+
+      if (material.texture === material.diffuse) {
+        program.uniforms['u_material.diffuse'](0);
+      } else {
+        this.bindTexture(1, material.diffuse, program, 'diffuse');
+      }
+      if (material.texture === material.specular) {
+        program.uniforms['u_material.specular'](0);
+      } else {
+        this.bindTexture(2, material.specular, program, 'specular');
+        program.uniforms['u_material.specular'](2);
+      }
+      if (material.texture === material.normal) {
+        program.uniforms['u_material.normal'](0);
+      } else {
+        this.bindTexture(3, material.normal, program, 'normal');
+        program.uniforms['u_material.normal'](3);
+      }
+    } else {
+      program.uniforms['u_material.ambient'](material.ambient);
+      program.uniforms['u_material.diffuse'](material.diffuse);
+      program.uniforms['u_material.specular'](material.specular);
+    }
+    program.uniforms['u_material.shiny'](material.shiny);
+  }
+
   private getAndSetMaterialFromShape(shape: ShapeLite, program: GlProgram) {
     if (shape.material) {
       const material = this.materialProvider.get(shape.material);
       if (!material) {
         return;
       }
-      if (isMaterialTexture(material)) {
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, material.texture);
-        program.uniforms['u_material.texture'](0);
-        program.uniforms['u_material.diffuse'](0);
-        program.uniforms['u_material.specular'](0);
-      } else {
-        program.uniforms['u_material.ambient'](material.ambient);
-        program.uniforms['u_material.diffuse'](material.diffuse);
-        program.uniforms['u_material.specular'](material.specular);
-      }
-      program.uniforms['u_material.shiny'](material.shiny);
+      this.setTexture(material, program);
     } else {
       if (program.uniforms['u_material.ambient']) {
         program.uniforms['u_material.ambient']([1, 1, 1]);

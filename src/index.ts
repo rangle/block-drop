@@ -6,6 +6,9 @@ import {
   materialTexturePaths,
   materialColours,
   programs,
+  materialNormalPaths,
+  materialSpecularPaths,
+  materialDiffusePaths,
 } from './configuration';
 import { MeshProvider } from './gl/mesh-provider';
 import { ProgramProvider } from './gl/program-provider';
@@ -103,9 +106,13 @@ function main() {
         return;
       }
       materialProvider.register(name, {
-        diffusePath: '',
-        normalPath: '',
-        specularPath: '',
+        diffusePath: materialDiffusePaths[name]
+          ? materialDiffusePaths[name]
+          : '',
+        normalPath: materialNormalPaths[name] ? materialNormalPaths[name] : '',
+        specularPath: materialSpecularPaths[name]
+          ? materialSpecularPaths[name]
+          : '',
         texturePath: path,
         shiny: 32,
       });

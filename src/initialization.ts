@@ -2,7 +2,12 @@ import { objReduce } from '@ch1/utility';
 import { ImageDictionary } from './interfaces';
 import { createLanguageState } from './languages';
 import { createEventEmitter } from './utility/event';
-import { materialTexturePaths } from './configuration';
+import {
+  materialTexturePaths,
+  materialNormalPaths,
+  materialSpecularPaths,
+  materialDiffusePaths,
+} from './configuration';
 declare const LOG_LEVEL: string;
 const WebGLDebugUtils: any =
   LOG_LEVEL === 'debug'
@@ -65,26 +70,27 @@ export function createGlContext() {
 }
 
 export function loadImages(imageDict: ImageDictionary) {
+  const onEachImage = (promises: Promise<void>[], texturePath: string) => {
+    promises.push(
+      new Promise((resolve, reject) => {
+        const image = new Image();
+        image.src = texturePath;
+        image.addEventListener('load', () => {
+          imageDict[texturePath] = image;
+          resolve();
+        });
+        image.addEventListener('error', (e: any) => {
+          reject(e);
+        });
+      })
+    );
+    return promises;
+  };
   return Promise.all(
-    objReduce(
-      materialTexturePaths,
-      (promises: Promise<void>[], texturePath) => {
-        promises.push(
-          new Promise((resolve, reject) => {
-            const image = new Image();
-            image.src = texturePath;
-            image.addEventListener('load', () => {
-              imageDict[texturePath] = image;
-              resolve();
-            });
-            image.addEventListener('error', (e: any) => {
-              reject(e);
-            });
-          })
-        );
-        return promises;
-      },
-      []
+    objReduce(materialTexturePaths, onEachImage, []).concat(
+      objReduce(materialNormalPaths, onEachImage, []),
+      objReduce(materialSpecularPaths, onEachImage, []),
+      objReduce(materialDiffusePaths, onEachImage, [])
     )
   );
 }

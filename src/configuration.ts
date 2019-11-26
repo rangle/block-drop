@@ -30,8 +30,37 @@ const redTexturePath = require('../assets/red-2048-2048.png');
 const blueDashTexturePath = require('../assets/dash-blue-2048-2048.png');
 const greenDashTexturePath = require('../assets/dash-green-2048-2048.png');
 const redDashTexturePath = require('../assets/dash-red-2048-2048.png');
+const normalTexturePath = require('../assets/normal-2048-2048.png');
+const specularTexturePath = require('../assets/specular-2048-2048.png');
 
 export const materialTexturePaths = {
+  blueTexture: blueTexturePath,
+  greenTexture: greenTexturePath,
+  redTexture: redTexturePath,
+  blueTextureDash: blueDashTexturePath,
+  greenTextureDash: greenDashTexturePath,
+  redTextureDash: redDashTexturePath,
+};
+
+export const materialNormalPaths: Dictionary<string> = {
+  blueTexture: normalTexturePath,
+  greenTexture: normalTexturePath,
+  redTexture: normalTexturePath,
+  blueTextureDash: normalTexturePath,
+  greenTextureDash: normalTexturePath,
+  redTextureDash: normalTexturePath,
+};
+
+export const materialSpecularPaths: Dictionary<string> = {
+  blueTexture: specularTexturePath,
+  greenTexture: specularTexturePath,
+  redTexture: specularTexturePath,
+  blueTextureDash: specularTexturePath,
+  greenTextureDash: specularTexturePath,
+  redTextureDash: specularTexturePath,
+};
+
+export const materialDiffusePaths: Dictionary<string> = {
   blueTexture: blueTexturePath,
   greenTexture: greenTexturePath,
   redTexture: redTexturePath,
