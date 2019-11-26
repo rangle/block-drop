@@ -42,7 +42,8 @@ export class GameRendererBinding {
 
     const midX = (-engine.config.width * cubeSize) / 2;
     renderer.camera.trs.setX(midX);
-    renderer.camera.trs.setY(160);
+    renderer.camera.trs.setY(270);
+    renderer.camera.trs.setZ(290);
 
     this.lights.points[0].position[0] = midX;
 
