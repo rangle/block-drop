@@ -27,6 +27,7 @@ import { createMatrix3_1, normalize3_1 } from '../matrix/matrix-3';
 import { createObjectPool } from '../utility/object-pool';
 import { isMaterialTexture, isMaterialColour } from './shape';
 import { Camera } from './camera';
+import { LightsManager } from '../lights-manager';
 
 type MeshProvider = Provider<Mesh, MeshConfig>;
 type MaterialProvider = Provider<
@@ -84,7 +85,7 @@ export class Renderer {
     };
   }
 
-  render(configKey: string) {
+  render(lightsManager: LightsManager) {
     const canvas = this.gl.canvas as HTMLCanvasElement;
     resize(canvas);
 
@@ -110,7 +111,7 @@ export class Renderer {
     );
 
     this.shapes.forEach(shape => {
-      this.onEachShape(shape, configKey, viewProjectionMatrix);
+      this.onEachShape(shape, lightsManager, viewProjectionMatrix);
     });
 
     this.op4_4.free(viewMatrix);
@@ -118,14 +119,22 @@ export class Renderer {
     this.op4_4.free(projectionMatrix);
   }
 
-  private getAndUseProgramFromShape(shape: ShapeLite, configKey: string) {
+  private getProgramWithLights(name: string, lightsManager: LightsManager) {
+    const key = lightsManager.getKey(name);
+    return this.programProvider.get(name, key);
+  }
+
+  private getAndUseProgramFromShape(
+    shape: ShapeLite,
+    lightsManager: LightsManager
+  ) {
     const programName = shape.programPreference
       ? shape.programPreference
       : defaultProgram;
     const program =
       programsWithNoConfigs.indexOf(programName) >= 0
         ? this.programProvider.get(programName)
-        : this.programProvider.get(programName, configKey);
+        : this.getProgramWithLights(programName, lightsManager);
     if (!program) {
       throw new RangeError('renderer: no default program registered');
     }
@@ -390,10 +399,10 @@ export class Renderer {
 
   private onEachShape(
     shape: ShapeLite,
-    configKey: string,
+    lightsManager: LightsManager,
     viewProjectionMatrix: Matrix4_4
   ) {
-    const program = this.getAndUseProgramFromShape(shape, configKey);
+    const program = this.getAndUseProgramFromShape(shape, lightsManager);
 
     const mesh = this.getAndSetMeshFromShape(shape, program);
 

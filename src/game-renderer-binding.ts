@@ -1,8 +1,9 @@
-import { ShapeLite, Lights } from './gl/interfaces';
+import { ShapeLite } from './gl/interfaces';
 import { identity4_4, translate4_4, scale4_4 } from './matrix/matrix-4';
 import { Renderer } from './gl/renderer';
 import { KeyboardControl } from './keyboard-control';
-import { ObjectPool, Matrix4_4 } from './interfaces';
+import { ObjectPool, Matrix4_4, Matrix3_1 } from './interfaces';
+import { LightsManager } from './lights-manager';
 
 const cubeSize = 20;
 
@@ -22,20 +23,27 @@ export class GameRendererBinding {
     op4_4: ObjectPool<Matrix4_4>,
     renderer: Renderer,
     engine: any,
-    lights: Lights
+    lightsManager: LightsManager
   ) {
-    return new GameRendererBinding(opShape, op4_4, renderer, engine, lights);
+    return new GameRendererBinding(
+      opShape,
+      op4_4,
+      renderer,
+      engine,
+      lightsManager
+    );
   }
 
   private animations: ShapeLite[] = [];
   private gameRedraw = false;
+  private turnsSinceRedraw = 0;
 
   constructor(
     private opShape: ObjectPool<ShapeLite>,
     private op4_4: ObjectPool<Matrix4_4>,
     private renderer: Renderer,
     private engine: any,
-    private lights: Lights
+    private lightsManager: LightsManager
   ) {
     renderer.shapes = shapes;
     engine.on('redraw', () => (this.gameRedraw = true));
@@ -44,8 +52,6 @@ export class GameRendererBinding {
     renderer.camera.trs.setX(midX);
     renderer.camera.trs.setY(270);
     renderer.camera.trs.setZ(290);
-
-    this.lights.points[0].position[0] = midX;
 
     const controlStep = 10;
     const viewControls = KeyboardControl.create({
@@ -108,6 +114,7 @@ export class GameRendererBinding {
         return this.createCube(CubeType.Green, x, y, z, cs);
       case 11:
         cube = this.createCube(CubeType.Green, x, y, z, cs);
+        cube.tag = 'green';
         this.animations.push(cube);
         return cube;
       case 19:
@@ -116,6 +123,7 @@ export class GameRendererBinding {
         return this.createCube(CubeType.Red, x, y, z, cs);
       case 21:
         cube = this.createCube(CubeType.Red, x, y, z, cs);
+        cube.tag = 'red';
         this.animations.push(cube);
         return cube;
       case 29:
@@ -125,6 +133,7 @@ export class GameRendererBinding {
       case 31:
         cube = this.createCube(CubeType.Blue, x, y, z, cs);
         this.animations.push(cube);
+        cube.tag = 'blue';
         return cube;
       case 39:
         return this.createCube(CubeType.BlueDash, x, y, z, cs);
@@ -148,7 +157,7 @@ export class GameRendererBinding {
     return blocks;
   }
 
-  start(lightConfigKey: string) {
+  start() {
     let last = 0;
     const render = (now: number) => {
       if (!last) {
@@ -162,9 +171,11 @@ export class GameRendererBinding {
         return;
       }
 
+      this.turnsSinceRedraw += 1;
       if (this.gameRedraw) {
         this.animations = [];
         this.gameRedraw = false;
+        this.turnsSinceRedraw = 0;
         const head = this.renderer.shapes.shift();
         this.renderer.shapes.forEach(shape => {
           this.opShape.free(shape);
@@ -175,16 +186,49 @@ export class GameRendererBinding {
         }
         this.renderer.shapes = blocks;
       }
+      this.lightsManager.resetLights();
       this.animations.forEach(shape => {
         const w = shape.world;
         shape.world = scale4_4(w, 0.9, 0.9, 0.9, this.op4_4);
         this.op4_4.free(w);
+        const colour = getLightColourFromShape(
+          shape,
+          this.turnsSinceRedraw * 0.1
+        );
+        this.lightsManager.addPoint({
+          position: [shape.world[12], shape.world[13], shape.world[14]],
+          ambient: [0.05, 0.05, 0.05],
+          diffuse: colour,
+          specular: [5, 5, 5],
+          constant: 1.0,
+          linear: 0.07,
+          quadratic: 0.017,
+        });
       });
-      this.renderer.render(lightConfigKey);
+      this.renderer.render(this.lightsManager);
       requestAnimationFrame(render);
     };
     render(0);
   }
+}
+
+function getLightColourFromShape(
+  shape: ShapeLite,
+  intensity: number
+): Matrix3_1 {
+  const max = intensity * 9;
+  const mid = max / 2;
+  const low = max / 3;
+  if (shape.tag === 'red') {
+    return [max, low, low];
+  }
+  if (shape.tag === 'green') {
+    return [mid, max, low];
+  }
+  if (shape.tag === 'blue') {
+    return [low, max, max];
+  }
+  return [max, max, low];
 }
 
 function textureFromCubeType(type: CubeType) {

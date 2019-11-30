@@ -21,6 +21,7 @@ import { GameRendererBinding } from './game-renderer-binding';
 import { createObjectPool } from './utility/object-pool';
 import { createMatrix4_4 } from './matrix/matrix-4';
 import { createMatrix3_1 } from './matrix/matrix-3';
+import { LightsManager } from './lights-manager';
 
 const lights: Lights = {
   directionals: [
@@ -31,31 +32,8 @@ const lights: Lights = {
       specular: [0.3, 0.3, 0.3],
     },
   ],
-  points: [
-    {
-      position: [0, 10, 0],
-      ambient: [0.05, 0.05, 0.05],
-      diffuse: [5.9, 0.0, 0.0],
-      specular: [0.9, 0.9, 0.9],
-      constant: 1.0,
-      linear: 0.014,
-      quadratic: 0.0007,
-    },
-  ],
-  spots: [
-    {
-      direction: [20, 10, -100],
-      position: [225, 35, 225],
-      ambient: [0.05, 0.05, 0.05],
-      diffuse: [5.9, 5.9, 5.9],
-      specular: [0.9, 0.9, 0.9],
-      constant: 1.0,
-      linear: 0.014,
-      quadratic: 0.0007,
-      cutOff: Math.PI / 4,
-      outerCutOff: Math.PI / 2,
-    },
-  ],
+  points: [],
+  spots: [],
 };
 
 main();
@@ -72,21 +50,14 @@ function main() {
     mesh: '',
     preferredProgram: '',
     world: op4_4.malloc(),
+    tag: '',
   }));
 
-  const lightConfig = {
-    c_directionalLightCount: '1',
-    c_gamma: '2.2',
-    c_pointLightCount: '1',
-    c_spotLightCount: '1',
-  };
-  const lightConfigKey = JSON.stringify(lightConfig);
+  const lightsManager = LightsManager.create(programProvider, lights, 2.2);
 
   programs.forEach(program => {
     programProvider.register(program.name, program.programConfig);
-    if (program.useLights) {
-      programProvider.initialize(program.name, lightConfig, lightConfigKey);
-    } else {
+    if (program.useLights === false) {
       programProvider.initialize(program.name);
     }
   });
@@ -147,8 +118,8 @@ function main() {
       op4_4,
       renderer,
       engine,
-      lights
+      lightsManager
     );
-    bindings.start(lightConfigKey);
+    bindings.start();
   });
 }

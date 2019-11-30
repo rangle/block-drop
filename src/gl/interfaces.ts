@@ -203,6 +203,7 @@ export interface ShapeLite {
   material?: string;
   mesh: string;
   programPreference?: string;
+  tag?: string;
 }
 
 export interface Lights {
