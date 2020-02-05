@@ -1,6 +1,6 @@
 defaults: 
   docker: &docker
-    - image: 'circleci/node:8-browsers'
+    - image: 'circleci/node:12-browsers'
 
 version: 2
 jobs:
