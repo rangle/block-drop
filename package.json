@@ -34,7 +34,7 @@
       "cross-env NODE_ENV=production webpack --config ./webpack/webpack.vue.config.js",
     "build:ci": "yarn clean && yarn build:complete",
     "clean": "rimraf ./coverage && rimraf ./dist && rimraf ./lib",
-    "deploy:prod": "aws s3 sync dist/block-drop s3://block-drop",
+    "deploy:prod": "aws s3 sync dist/block-drop s3://blockdrop.ranglelabs.io",
     "deploy": "aws s3 sync --delete dist/block-drop s3://block-drop-dev",
     "dev":
       "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback --host 0.0.0.0",
