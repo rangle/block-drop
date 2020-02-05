@@ -10,6 +10,7 @@ jobs:
       - checkout
       - restore_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
+      - run: yarn config set ignore-engines true
       - run: yarn install
       - save_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
@@ -35,6 +36,7 @@ jobs:
       - checkout
       - restore_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
+      - run: yarn config set ignore-engines true
       - run: yarn install
       - save_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
@@ -48,6 +50,7 @@ jobs:
       - checkout
       - restore_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
+      - run: yarn config set ignore-engines true
       - run: yarn install
       - save_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
