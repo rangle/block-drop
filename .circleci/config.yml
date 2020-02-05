@@ -1,6 +1,6 @@
 defaults: 
   docker: &docker
-    - image: 'circleci/node:12-browsers'
+    - image: 'circleci/node:8-browsers'
 
 version: 2
 jobs:
@@ -10,7 +10,6 @@ jobs:
       - checkout
       - restore_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
-      - run: yarn config set ignore-engines true
       - run: yarn install
       - save_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
@@ -36,7 +35,6 @@ jobs:
       - checkout
       - restore_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
-      - run: yarn config set ignore-engines true
       - run: yarn install
       - save_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
@@ -50,7 +48,6 @@ jobs:
       - checkout
       - restore_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
-      - run: yarn config set ignore-engines true
       - run: yarn install
       - save_cache:
           key: 'dependency-cache-{{ checksum "yarn.lock" }}'
