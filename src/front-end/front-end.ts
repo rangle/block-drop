@@ -15,6 +15,14 @@ import './register-service-worker';
 const store: EngineStore = create(rootReducer) as EngineStore;
 const resizer = init(store);
 
+const availableFrameworks = {
+  vue: FRAMEWORK_DESCRIPTIONS[0],
+  angular: FRAMEWORK_DESCRIPTIONS[1],
+  react: FRAMEWORK_DESCRIPTIONS[2],
+};
+
+const defaultInitialFramework = availableFrameworks.vue;
+
 (<any>store).dispatch(bootstrapRoutes(window.location.pathname));
 
 // no idea why editor dislikes store.dispatch :/
@@ -101,7 +109,47 @@ function hideGame() {
   Object.keys(frameworkElements).forEach(id => hide(frameworkElements[id]));
 }
 
-function mount() {
+function determineInitialFramework(
+  frameworkString: string = defaultInitialFramework.name,
+) {
+  let initialFramework;
+  switch (frameworkString) {
+    case 'vue':
+      initialFramework = availableFrameworks.vue.id;
+      break;
+    case 'angular':
+      initialFramework = availableFrameworks.angular.id;
+      break;
+    case 'react':
+      initialFramework = availableFrameworks.react.id;
+      break;
+    default:
+      initialFramework = defaultInitialFramework.id;
+  }
+  return initialFramework;
+}
+
+function determineInitialToggleElement(
+  frameworkString: string = defaultInitialFramework.name,
+) {
+  let initialToggleElement;
+  switch (frameworkString) {
+    case 'vue':
+      initialToggleElement = availableFrameworks.vue.toggleElement;
+      break;
+    case 'angular':
+      initialToggleElement = availableFrameworks.angular.toggleElement;
+      break;
+    case 'react':
+      initialToggleElement = availableFrameworks.react.toggleElement;
+      break;
+    default:
+      initialToggleElement = defaultInitialFramework.toggleElement;
+  }
+  return initialToggleElement;
+}
+
+function mount(framework: string) {
   storeSub = store.subscribe(() => {
     const state = store.getState();
     if (state.game.isStopped) {
@@ -115,9 +163,11 @@ function mount() {
 
   hide(splashEl);
   makeVisible(nav);
-  const initialFramework = 'bd-root-angular';
+  const initialFramework = determineInitialFramework(framework);
   loadFramework(
-    document.getElementById('angular-toggle') as HTMLButtonElement,
+    document.getElementById(
+      determineInitialToggleElement(framework),
+    ) as HTMLButtonElement,
     initialFramework,
     20,
   );
