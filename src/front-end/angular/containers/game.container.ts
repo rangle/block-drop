@@ -91,6 +91,9 @@ export class Game implements AfterViewInit, OnInit, OnDestroy {
 
   private onStateChange() {
     this.cdRef.detectChanges();
+
+    // unideal fix for getting "next" preview to update in Angular - TODO: fix so this is only called when a new block drops
+    this.redraw();
   }
 
   ngOnInit() {
