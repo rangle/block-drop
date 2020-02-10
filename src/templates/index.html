@@ -67,8 +67,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </p>
       <p class="f1">Go ahead and play it. But be careful, it's addictive.</p>
       <div class="mt5">
-        <button onclick="BLOCK_DROP.mount()" class="bg-vue-green shadow-vue-green blue-black f1 pt4 pb3 ph5 br4 calibre-medium ttu">
-          Play
+        <button onclick="BLOCK_DROP.mount('vue')" class="bg-vue-green shadow-vue-green blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
+          Play in Vue
+        </button>
+
+        <button onclick="BLOCK_DROP.mount('angular')" class="bg-angular-red shadow-angular-red blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
+          Play in Angular
+        </button>
+   
+        <button onclick="BLOCK_DROP.mount('react')" class="bg-react-blue shadow-react-blue blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
+          Play in React
         </button>
       </div>
     </main>
