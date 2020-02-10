@@ -8,18 +8,18 @@ export const NextPieces = () => ({
     <h3 class="blue-black bg-vue-green f4 f2-m f1-l ma0 pt1 pt2-m pt3-l tc">
       NEXT
     </h3>
-    <div class="pa2 pa3-ns">
+    <div class="pa2 pa3-ns flex flex-column-reverse">
       <div
         v-for="(block, i) in preview"
-        v-bind:class="{ mb3: i < (preview.length - 1) }"
+        v-bind:class="{ mb3: i !== 0 }"
         v-bind:key="i"
       >
+        <hr 
+          class="ma0 mb3 bn shadow-vue-green bg-vue-green h0-25" 
+          v-if="i === 0"/>
         <bd-block
           v-bind:block="block"
         />
-        <hr 
-          class="ma0 mt3 bn shadow-vue-green bg-vue-green h0-25" 
-          v-if="i === 0"/>
       </div>
     </div>
   </div>
