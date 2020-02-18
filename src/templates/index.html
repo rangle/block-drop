@@ -17,111 +17,112 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Block Drop</title>
-  </head>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Block Drop</title>
+</head>
 
-  <body class="w-100 h-100 calibre-medium white bg-blue-black flex flex-column">
-    <header class="flex justify-between items-center pv2 pv3-m pv4-l ph2 ph4-ns">
-      <img src="assets/rangle-logo.svg" alt="Rangle.io Logo" class="w-45 h-100">
-      <nav class="flex self-end items-center" style="visibility: hidden;">
-        <button 
-          id="vue-toggle"
-          class="mh1 mh2-ns pa1 pa2-ns w2-5 w3-m w3-5-l h2-5 h3-m h3-5-l shadow-vue-green br3 br4-ns bg-transparent b--vue-green bw1 bw2-m bw3-l" 
-          onclick="BLOCK_DROP.loadFramework(this, 'bd-root-vue', 10)"
-          title="Switch to Vue"
-        >
-          <img src="assets/vue-logo.svg" alt="Vue Logo" class="w-100 h-100">
-        </button>
-        <button 
-          id="angular-toggle"
-          class="mh1 mh2-ns pa1 pa2-ns w2-5 w3-m w3-5-l h2-5 h3-m h3-5-l shadow-angular-red br3 br4-ns bg-transparent b--angular-red bw1 bw2-m bw3-l" 
-          onclick="BLOCK_DROP.loadFramework(this, 'bd-root-angular', 20)"
-          title="Switch to Angular"
-        >
-          <img src="assets/angular-logo.svg" alt="Angular Logo" class="w-100 h-100">
-        </button>
-        <button 
-          id="react-toggle"
-          class="ml1 ml2-ns pa1 pa2-ns w2-5 w3-m w3-5-l h2-5 h3-m h3-5-l shadow-react-blue br3 br4-ns bg-transparent b--react-blue bw1 bw2-m bw3-l" 
-          onclick="BLOCK_DROP.loadFramework(this, 'bd-root-react', 30)"
-          title="Switch to React"
-        >
-          <img src="assets/react-logo.svg" alt="React Logo" class="w-100 h-100">
-        </button>
-      </nav>
-    </header>
+<body class="w-100 h-100 calibre-medium white bg-blue-black flex flex-column">
+  <header class="flex justify-between items-center pv2 pv3-m pv4-l ph2 ph4-ns">
+    <img src="assets/rangle-logo.svg" alt="Rangle.io Logo" class="w-45 h-100">
+    <nav class="flex self-end items-center" style="visibility: hidden;">
+      <button id="vue-toggle"
+        class="mh1 mh2-ns pa1 pa2-ns w2-5 w3-m w3-5-l h2-5 h3-m h3-5-l shadow-vue-green br3 br4-ns bg-transparent b--vue-green bw1 bw2-m bw3-l"
+        onclick="BLOCK_DROP.loadFramework(this, 'bd-root-vue', 10)" title="Switch to Vue">
+        <img src="assets/vue-logo.svg" alt="Vue Logo" class="w-100 h-100">
+      </button>
+      <button id="angular-toggle"
+        class="mh1 mh2-ns pa1 pa2-ns w2-5 w3-m w3-5-l h2-5 h3-m h3-5-l shadow-angular-red br3 br4-ns bg-transparent b--angular-red bw1 bw2-m bw3-l"
+        onclick="BLOCK_DROP.loadFramework(this, 'bd-root-angular', 20)" title="Switch to Angular">
+        <img src="assets/angular-logo.svg" alt="Angular Logo" class="w-100 h-100">
+      </button>
+      <button id="react-toggle"
+        class="ml1 ml2-ns pa1 pa2-ns w2-5 w3-m w3-5-l h2-5 h3-m h3-5-l shadow-react-blue br3 br4-ns bg-transparent b--react-blue bw1 bw2-m bw3-l"
+        onclick="BLOCK_DROP.loadFramework(this, 'bd-root-react', 30)" title="Switch to React">
+        <img src="assets/react-logo.svg" alt="React Logo" class="w-100 h-100">
+      </button>
+    </nav>
+  </header>
 
   <div id="bd-splash" class="h-100 flex-column">
     <hr class="ma0 bn shadow-vue-green bg-vue-green h0-25 h0-5-l">
     <main class="pa3 pa5-ns">
       <p class="f1 mt0">
-        <span class="vue-green">Block Drop</span> is a game our developers designed to dynamically switch between JavaScript frameworks. It supports
-        <span class="vue-green">Vue</span>, <span class="angular-red">Angular</span>, and <span class="react-blue">React</span>.
+        <span class="vue-green">Block Drop</span> is a game our developers designed to dynamically switch between
+        JavaScript frameworks. It supports
+        <span class="vue-green">Vue</span>, <span class="angular-red">Angular</span>, and <span
+          class="react-blue">React</span>.
       </p>
-      <p class="f1">Go ahead and play it. But be careful, it's addictive.</p>
 
       <hr class="ma0 bn shadow-vue-green bg-vue-green h0-25 h0-5-l w5">
-      
+
       <h2 class="f-l vue-green mb0 mt5 text-shadow-vue-green">How to Play</h2>
 
       <p class="f1 mt4">
-        As blocks fall, try to align them so that <span class="vue-green">tiles of the same colour</span> touch sides. If <span class="vue-green">nine tiles or more</span> of the same colour connect, they'll vanish in a puff of glory!
+        As blocks fall, try to align them so that <span class="vue-green">tiles of the same colour</span> touch sides.
+        If <span class="vue-green">nine tiles or more</span> of the same colour connect, they'll vanish in a puff of
+        glory!
       </p>
 
       <p class="f1 mt3">
-        The more tiles you poof away, the higher your score - plus, you'll get <span class="vue-green">bonus points</span> for poofing tiles in the <span class="vue-green">colour of the current framework.</span>
+        The more tiles you poof away, the higher your score - plus, you'll get <span class="vue-green">bonus
+          points</span> for poofing tiles in the <span class="vue-green">colour of the current framework.</span>
       </p>
 
       <p class="f1 mt3">
-        Use the <span class="vue-green">left and right arrow keys</span> to <span class="vue-green">move blocks horizontally</span> as they fall. The <span class="vue-green">down arrow speeds the block's descent</span>, and the <span class="vue-green">up arrow drops it like it's hot.</span>
+        Use the <span class="vue-green">left and right arrow button</span> to <span class="vue-green">move blocks
+          horizontally</span> as they fall. The <span class="vue-green">down arrow button speeds the block's
+          descent</span>,
+        and the <span class="vue-green">up arrow button drops it like it's hot.</span>
       </p>
 
       <p class="f1 mt3">
-        Pressing <span class="vue-green">"W" rotates the block clockwise</span>, and <span class="vue-green">"Q" rotates it counter-clockwise.</span>
+        To <span class="vue-green">rotate the block</span>, press the <span class="vue-green">Y/B buttons.</span>
       </p>
 
       <p class="f1 mt3">
-        If your stack touches the top of the board, you lose all your points and the game restarts. <span class="vue-green">BLOCK FAIL!</span>
+        <span class="vue-green">L/R buttons shifts frameworks. Pause</span> with <span class="vue-green">START.</span>
       </p>
 
       <p class="f1 mt3">
-        Ready to play? <span class="vue-green">You got this!</span>
+        If your stack touches the top of the board, you lose all your points and the game restarts.
       </p>
 
       <div class="mt5">
-        <button onclick="BLOCK_DROP.mount('vue')" class="bg-vue-green shadow-vue-green blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
+        <button onclick="BLOCK_DROP.mount('vue')"
+          class="bg-vue-green shadow-vue-green blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
           Play in Vue
         </button>
 
-        <button onclick="BLOCK_DROP.mount('angular')" class="bg-angular-red shadow-angular-red blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
+        <button onclick="BLOCK_DROP.mount('angular')"
+          class="bg-angular-red shadow-angular-red blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
           Play in Angular
         </button>
-   
-        <button onclick="BLOCK_DROP.mount('react')" class="bg-react-blue shadow-react-blue blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
+
+        <button onclick="BLOCK_DROP.mount('react')"
+          class="bg-react-blue shadow-react-blue blue-black f2 pt4 pb3 ph4 br4 calibre-medium ttu ma2">
           Play in React
         </button>
       </div>
     </main>
   </div>
 
-    <div id="bd-root-react" class="h-100 flex-column"></div>
-    <div id="bd-root-vue" class="h-100 flex-column">
-      <hr class="ma0 bn shadow-vue-green bg-vue-green h0-25 h0-5-l">
-    </div>
-    <div id="bd-root-angular" class="h-100 flex-column">
-      <!--
+  <div id="bd-root-react" class="h-100 flex-column"></div>
+  <div id="bd-root-vue" class="h-100 flex-column">
+    <hr class="ma0 bn shadow-vue-green bg-vue-green h0-25 h0-5-l">
+  </div>
+  <div id="bd-root-angular" class="h-100 flex-column">
+    <!--
        Angular is in its own box because when Angular 2 is unmounted it destroys
        its root element.  By wrapping it in a div we can re-mount it with less
        JavaScript
       -->
-      <hr class="ma0 bn shadow-angular-red bg-angular-red h0-25 h0-5-l">
-      <bd-angular></bd-angular>
-    </div>
-  </body>
+    <hr class="ma0 bn shadow-angular-red bg-angular-red h0-25 h0-5-l">
+    <bd-angular></bd-angular>
+  </div>
+</body>
 
 </html>
