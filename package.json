@@ -123,6 +123,6 @@
     "zone.js": "^0.8.20"
   },
   "dependencies": {
-    "superstatic": "^5.0.1"
+    "superstatic": "^5.0.2"
   }
 }
