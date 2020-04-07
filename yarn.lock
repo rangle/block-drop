@@ -8664,9 +8664,10 @@ subarg@^1.0.0:
   dependencies:
     minimist "^1.1.0"
 
-superstatic@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/superstatic/-/superstatic-5.0.1.tgz#f0a83942ad8e93c5c53a98341c4a3de229dff94e"
+superstatic@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/superstatic/-/superstatic-5.0.2.tgz#d7ce9329ee30daaa762b01d43b548d0b7306ba54"
+  integrity sha1-186TKe4w2qp2KwHUO1SNC3MGulQ=
   dependencies:
     as-array "^2.0.0"
     async "^1.5.2"
