@@ -7,7 +7,14 @@
     "type": "git",
     "url": "git+https://github.com/bennett000/block-drop.git"
   },
-  "keywords": ["game", "block", "drop", "gravity", "clear", "lines"],
+  "keywords": [
+    "game",
+    "block",
+    "drop",
+    "gravity",
+    "clear",
+    "lines"
+  ],
   "author": "Michael J. Bennett",
   "contributors": [],
   "license": "GPL-3.0",
@@ -20,24 +27,17 @@
   },
   "scripts": {
     "prebuild": "yarn run clean",
-    "build":
-      "yarn build:angular && yarn build:complete && yarn build:engine && yarn build:react && yarn build:vue",
-    "build:angular":
-      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.angular.config.js",
-    "build:complete":
-      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.complete.config.js",
-    "build:engine":
-      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.engine.config.js",
-    "build:react":
-      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.react.config.js",
-    "build:vue":
-      "cross-env NODE_ENV=production webpack --config ./webpack/webpack.vue.config.js",
+    "build": "yarn build:angular && yarn build:complete && yarn build:engine && yarn build:react && yarn build:vue",
+    "build:angular": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.angular.config.js",
+    "build:complete": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.complete.config.js",
+    "build:engine": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.engine.config.js",
+    "build:react": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.react.config.js",
+    "build:vue": "cross-env NODE_ENV=production webpack --config ./webpack/webpack.vue.config.js",
     "build:ci": "yarn clean && yarn build:complete",
     "clean": "rimraf ./coverage && rimraf ./dist && rimraf ./lib",
     "deploy:prod": "aws s3 sync dist/block-drop s3://blockdrop.ranglelabs.io",
     "deploy": "aws s3 sync --delete dist/block-drop s3://block-drop-dev",
-    "dev":
-      "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback --host 0.0.0.0",
+    "dev": "cross-env NODE_ENV=debug webpack-dev-server --history-api-fallback --host 0.0.0.0",
     "pree2e": "echo \"Make sure Block Drop Is Running !!!\"",
     "e2e": "wdio ./wdio.conf.js",
     "format": "prettier --write \"**/*.*(ts|js|css|json|md)\"",
@@ -48,10 +48,15 @@
     "test:ci": "jest --ci --runInBand",
     "test:watch": "jest --watch",
     "tsc": "tsc -p ./tsconfig.build.json",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "lint-staged": {
-    "*.+(js|ts|css|json|md)": ["prettier --write", "git add"]
+    "*.+(js|ts|css|json|md)": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "devDependencies": {
     "@angular-redux/router": "^7.0.0",
@@ -123,6 +128,8 @@
     "zone.js": "^0.8.20"
   },
   "dependencies": {
-    "superstatic": "^5.0.1"
-  }
+    "superstatic": "^5.0.1",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
