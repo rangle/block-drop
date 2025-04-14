@@ -5,7 +5,7 @@ const colours = deepFreeze({
   black: 'bd-black',
   blue: 'bd-blue',
   red: 'bd-red',
-  green: 'bd-blue',
+  green: 'bd-green',
   bgGreen: 'bd-bg-green',
   bgBlue: 'bd-bg-blue',
   bgRed: 'bd-bg-red',
@@ -104,5 +104,23 @@ export function tileByNumber(val: number) {
       return tileShadowBlue;
     default:
       return tileDefault;
+  }
+}
+export function tileColorByNumber(val: number) {
+  switch (val) {
+    case 10:
+    case 11:
+    case 10 + SHADOW_OFFSET:
+      return 'vue-green';
+    case 20:
+    case 21:
+    case 20 + SHADOW_OFFSET:
+      return 'angular-red';
+    case 30:
+    case 31:
+    case 30 + SHADOW_OFFSET:
+      return `react-blue`;
+    default:
+      return 'white';
   }
 }

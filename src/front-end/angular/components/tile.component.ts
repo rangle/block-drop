@@ -12,7 +12,9 @@ import { tileByNumber } from '../../styles';
       width: 100%;
     }
   </style>
-  <div [ngClass]="value === 0 ? emptyTile : tileByNumber(value)"></div>`,
+  <div [ngClass]="value === 0 ? emptyTile : tileByNumber(value)">
+    <ng-content></ng-content>
+  </div>`,
 })
 export class Tile {
   @Input() value: number;
